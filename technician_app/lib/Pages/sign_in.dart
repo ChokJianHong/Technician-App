@@ -47,7 +47,9 @@ class SignInPage extends StatelessWidget {
                 child: Text(
                   "Forgot Password",
                   style: TextStyle(
-                      color: Color(0xFF828282), fontWeight: FontWeight.bold),
+                      color: Color(0xFF828282),
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'SF Pro'),
                 ),
               ),
               const SizedBox(height: 20),

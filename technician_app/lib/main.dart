@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Pages/sign_in.dart';
+import 'Pages/home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,10 +22,11 @@ class MyApp extends StatelessWidget {
           color: Color(0xFF4E31AA), // Hex color for AppBar
         ),
         textTheme: const TextTheme(
-          bodySmall: TextStyle(fontSize: 14, color: Color(0xFFFCFEFE)),
+          bodySmall: TextStyle(
+              fontSize: 14, color: Color(0xFFFCFEFE), fontFamily: 'SF Pro'),
         ),
       ),
-      home: SignInPage(),
+      home: const HomePage(),
     );
   }
 }
