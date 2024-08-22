@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'Pages/home.dart';
+import 'package:technician_app/Pages/home.dart';
+import 'package:technician_app/Pages/Completed_Job_Details.dart'; // Remove if not needed
+import 'package:technician_app/Pages/test.dart'; // Remove if not needed
 
 void main() {
   runApp(const MyApp());
@@ -14,19 +16,24 @@ class MyApp extends StatelessWidget {
       title: 'Themed App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF3A1078),
-            primary: const Color(0xFF3A1078),
-            secondary: const Color(0xFF4E31AA),
-            tertiary: const Color(0xFF3795BD)),
+          seedColor: const Color(0xFF3A1078),
+          primary: const Color(0xFF3A1078),
+          secondary: const Color(0xFF4E31AA),
+          tertiary: const Color(0xFF3795BD),
+        ),
         appBarTheme: const AppBarTheme(
           color: Color(0xFF4E31AA), // Hex color for AppBar
         ),
         textTheme: const TextTheme(
           bodySmall: TextStyle(
-              fontSize: 14, color: Color(0xFFFCFEFE), fontFamily: 'SF Pro'),
+            fontSize: 14,
+            color: Color(0xFFFCFEFE),
+            fontFamily: 'SF Pro',
+          ),
         ),
       ),
-      home: const HomePage(),
+      home: const HomePage(), // Choose the home page you want
+      debugShowCheckedModeBanner: false, // Add if needed
     );
   }
 }
