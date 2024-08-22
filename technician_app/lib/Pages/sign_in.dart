@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import '../assets/components/text_box.dart'; // Import the custom text box widget
+import '../assets/components/button.dart'; // Import custom button
 
 class SignInPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  SignInPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,14 +40,19 @@ class SignInPage extends StatelessWidget {
                   controller: passwordController,
                   hintText: 'Password',
                   obscureText: true),
+              const SizedBox(height: 10),
+              // Forget Password
+              const Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  "Forgot Password",
+                  style: TextStyle(
+                      color: Color(0xFF828282), fontWeight: FontWeight.bold),
+                ),
+              ),
               const SizedBox(height: 20),
               //Sign in button
-              ElevatedButton(
-                onPressed: () {
-                  // Handle sign in logic
-                },
-                child: const Text('Sign In'),
-              ),
+              MyButton(text: "Sign In", onTap: () {})
             ],
           ),
         ),

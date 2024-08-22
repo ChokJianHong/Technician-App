@@ -13,16 +13,18 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Themed App',
       theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF3A1078),
-              primary: const Color(0xFF3A1078),
-              secondary: const Color(0xFF4E31AA),
-              tertiary: const Color(0xFFF7F7F8)),
-          appBarTheme: const AppBarTheme(
-            color: Color(0xFF4E31AA), // Hex color for AppBar
-          ),
-          textTheme: const TextTheme(
-              bodySmall: TextStyle(fontSize: 14, color: Color(0xFFF7F7F8)))),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF3A1078),
+            primary: const Color(0xFF3A1078),
+            secondary: const Color(0xFF4E31AA),
+            tertiary: const Color(0xFF3795BD)),
+        appBarTheme: const AppBarTheme(
+          color: Color(0xFF4E31AA), // Hex color for AppBar
+        ),
+        textTheme: const TextTheme(
+          bodySmall: TextStyle(fontSize: 14, color: Color(0xFFFCFEFE)),
+        ),
+      ),
       home: SignInPage(),
     );
   }
