@@ -21,7 +21,7 @@ class SignInPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               // Logo
-              Image.asset('lib/assets/pictures/signinlock.png'),
+              Image.asset('lib/Pages/signinlock.png'),
               const SizedBox(height: 20),
               // Text for user
               Text(
