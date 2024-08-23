@@ -14,7 +14,7 @@ To use this widget, you need:
 - a function ( on tap )
 
 
- */
+*/
 
 class MyButton extends StatelessWidget {
   final String text;

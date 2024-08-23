@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:technician_app/Assets/Components/BottomNav.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
 
@@ -22,8 +21,8 @@ class _Complete_Job_DetailsState extends State<Complete_Job_Details> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-      backgroundColor: Color(0xFF391370),
-      appBar: CustomAppBar(),
+      backgroundColor: const Color(0xFF391370),
+      appBar: const CustomAppBar(),
 
       bottomNavigationBar: BottomNav(
         onTap: _onTapTapped,
