@@ -15,20 +15,29 @@ class BottomNav extends StatelessWidget {
       color: Color(0xFF4E31AA),
       onTap: onTap,
       items: [
-        Icon(
-          Icons.favorite,
-          color: Colors.white,
-          size: 40,
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 20.0),
+          child: Icon(
+            Icons.favorite,
+            color: Colors.white,
+            size: 40,
+          ),
         ),
-        Icon(
-          Icons.home,
-          color: Colors.white,
-          size: 40,
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 20.0),
+          child: Icon(
+            Icons.home,
+            color: Colors.white,
+            size: 40,
+          ),
         ),
-        Icon(
-          Icons.settings,
-          color: Colors.white,
-          size: 40,
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 20.0),
+          child: Icon(
+            Icons.settings,
+            color: Colors.white,
+            size: 40,
+          ),
         )
       ],
     );
