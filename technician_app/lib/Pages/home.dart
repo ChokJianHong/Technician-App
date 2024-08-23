@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:technician_app/assets/components/navbartop.dart';
+import 'package:technician_app/assets/components/BottomNav.dart'; // Adjust the path as needed
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,6 +10,36 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  int _currentIndex = 1; // Default index for BottomNav
+
+  void _onTap(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+
+    // Add your navigation logic here
+    // Example: navigate to different pages based on the selected index
+    switch (index) {
+      case 0:
+        // Navigate to the "Favorites" page
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FavoritesPage()),
+        );
+        break;
+      case 1:
+        // Stay on the "Home" page
+        break;
+      case 2:
+        // Navigate to the "Settings" page
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SettingsPage()),
+        );
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,28 +51,23 @@ class HomePageState extends State<HomePage> {
         showBackButton: false,
       ),
 
-      // Text
+      // Main Content
       body: Padding(
-        padding: const EdgeInsets.all(16.0), // Add padding around the body content
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisSize: MainAxisSize
-              .max, // Ensure the Column takes up full vertical space
-          crossAxisAlignment:
-              CrossAxisAlignment.center, // Center content horizontally
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             const Center(
-              // Ensure the text is horizontally centered
-              // Current Sales Text
               child: Text(
                 'Current Sales',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 24, // Adjust font size as needed
+                  fontSize: 24,
                   color: Colors.white,
                 ),
               ),
             ),
-            // Since the 1st of the month Text
             const Center(
               child: Text(
                 "Since the 1st of the month",
@@ -53,7 +79,6 @@ class HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 8),
-            // Number of Sales for the month
             const Center(
               child: Text(
                 "RM1000.00",
@@ -74,7 +99,31 @@ class HomePageState extends State<HomePage> {
       ),
 
       // Bottom Navigation Bar
-      // Add Bottom Navigation Bar here if needed
+      bottomNavigationBar: BottomNav(
+        onTap: _onTap,
+        currentIndex: _currentIndex,
+      ),
+    );
+  }
+}
+
+// Dummy pages for navigation
+class FavoritesPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Favorites')),
+      body: Center(child: Text('Favorites Page')),
+    );
+  }
+}
+
+class SettingsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Settings')),
+      body: Center(child: Text('Settings Page')),
     );
   }
 }
