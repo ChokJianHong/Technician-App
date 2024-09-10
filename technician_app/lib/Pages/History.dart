@@ -24,6 +24,7 @@ class _HistoryState extends State<History> {
     return Scaffold(
       backgroundColor: Color(0xFF391370),
       appBar: CustomAppBar(),
+      body: ,
       bottomNavigationBar: BottomNav(
         onTap: _onTapTapped,
         currentIndex: _currentIndex,
