@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:technician_app/Pages/Completed_Job_Details.dart';
+import 'package:technician_app/Pages/History.dart';
 import 'package:technician_app/Pages/Job_Details.dart';
 import 'package:technician_app/Pages/Scheduel.dart';
 
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Schedule(),
+      home: History(),
     );
   }
 }
