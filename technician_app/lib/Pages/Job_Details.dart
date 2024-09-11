@@ -12,12 +12,64 @@ class JobDetails extends StatefulWidget {
 class _JobDetailsState extends State<JobDetails> {
 
   int _currentIndex = 1;
-
+  TextEditingController _reasonController = TextEditingController();
   void _onTapTapped(int index) {
     setState(() {
       _currentIndex = index;
     });
   }
+
+void _showCancelDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Reason for Cancel Request'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _reasonController,
+                decoration: InputDecoration(
+                  labelText: 'Enter your reason',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Close the dialog without action
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Handle the submit action
+                String reason = _reasonController.text;
+                print('Cancel Reason: $reason'); // Replace with actual action
+
+                // Clear the text field and close the dialog
+                _reasonController.clear();
+                Navigator.of(context).pop();
+              },
+              child: Text('Submit'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _reasonController.dispose(); // Clean up the controller
+    super.dispose();
+  }
+  
   
   @override
   Widget build(BuildContext context) {
@@ -95,7 +147,9 @@ class _JobDetailsState extends State<JobDetails> {
                         children: [
                           ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF42CE30)),onPressed: () {}, child: Text('Order Complete',style: TextStyle(color: Colors.white),)),
                           SizedBox(height: 10,),
-                          ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFD02B2B)),onPressed: () {}, child: Text('Cancel Request',style: TextStyle(color: Colors.white),)),
+                          ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFD02B2B)),onPressed: () {
+                            _showCancelDialog(context);
+                          }, child: Text('Cancel Request',style: TextStyle(color: Colors.white),)),
                           SizedBox(height: 10,),
                           ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF3795BD)),onPressed: () {}, child: Text('Part Request',style: TextStyle(color: Colors.white),)),
                           SizedBox(height: 10,),
