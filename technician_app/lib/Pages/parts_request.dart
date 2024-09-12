@@ -1,51 +1,22 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:technician_app/assets/components/navbartop.dart';
 import 'package:technician_app/assets/components/BottomNav.dart'; // Adjust the path as needed
-import '../assets/components/current_sales.dart';
-import '../assets/components/current_jobs.dart';
+import 'package:technician_app/assets/components/text_box.dart';
+import '../assets/components/details.dart'; // Import the ClientBox component
+import '../assets/components/button.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class Request extends StatefulWidget {
+  const Request({super.key});
 
   @override
-  State<HomePage> createState() => HomePageState();
+  State<Request> createState() => _RequestState();
 }
 
-class HomePageState extends State<HomePage> {
+final TextEditingController _searchController = TextEditingController();
+final TextEditingController _newsearchController = TextEditingController();
+
+class _RequestState extends State<Request> {
   int _currentIndex = 1; // Default index for BottomNav
-
-  // Sample job data for demonstration
-  final List<Map<String, String>> jobData = [
-    {
-      'name': 'Dylan',
-      'description': 'The gate has multiple problems and does not work',
-      'status': 'Ongoing',
-    },
-    {
-      'name': 'Alex',
-      'description': 'Need to replace the light bulb in the office',
-      'status': 'Completed',
-    },
-    {
-      'name': 'Alex',
-      'description': 'Need to replace the light bulb in the office',
-      'status': 'Completed',
-    },
-    {
-      'name': 'Alex',
-      'description': 'Need to replace the light bulb in the office',
-      'status': 'Completed',
-    },
-    {
-      'name': 'Alex',
-      'description': 'Need to replace the light bulb in the office',
-      'status': 'Completed',
-    },
-    // Add more job data here as needed
-  ];
-
   // Method to handle tap events on BottomNav
   void _onTap(int index) {
     setState(() {
@@ -76,53 +47,75 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final clientData = {
+      'name': 'Dylan Wong',
+      'brand': 'Eden Robot',
+      'model': 'eGate X1 Mini',
+      'date': '16 March 2024',
+      'time': '4:30PM',
+    };
+
     return Scaffold(
-      // Background color for the HomePage
+      // Background Color
       backgroundColor: Theme.of(context).colorScheme.primary,
 
-      // Top Navigation Bar
+      // Top Nav Bar
       appBar: const NavBar(
-        showBackButton: false, // No back button in the top navigation bar
+        showBackButton: true,
       ),
 
-      // Main content of the HomePage
+      // Client Details
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            // Centered Current Sales Section
-            CurrentSales(),
-            const SizedBox(height: 20),
-            Divider(color: Theme.of(context).colorScheme.secondary),
-            const SizedBox(height: 20),
-
-            // Left-Aligned Current Jobs Section
-            CurrentJobsSection(jobData: jobData),
-            const SizedBox(height: 20),
-
-            // Left-Aligned New Jobs Section
+          children: [
             const Text(
-              'New Jobs',
+              "Client Details: ",
               style: TextStyle(
-                fontWeight: FontWeight.w300,
-                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
                 color: Colors.white,
               ),
             ),
             const SizedBox(height: 10),
-            Container(
-              height: 150, // Height for the ListView of new job cards
-              decoration: BoxDecoration(
-                color: Colors.white
-                    .withOpacity(0.1), // Semi-transparent background
-                borderRadius: BorderRadius.circular(10), // Rounded corners
-              ),
-              child: ListView(
-                padding: const EdgeInsets.all(8.0),
-                // Add new job cards here if needed
+            ClientBox(
+              name: clientData['name']!,
+              brand: clientData['brand']!,
+              model: clientData['model']!,
+              date: clientData['date']!,
+              time: clientData['time']!,
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              'Parts Request: ',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                color: Colors.white,
               ),
             ),
+            const SizedBox(height: 5),
+            MyTextField(
+                controller: _searchController,
+                hintText: 'Search',
+                obscureText: false),
+            const SizedBox(height: 30),
+            const Text(
+              'Parts Not in the System',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 5),
+            MyTextField(
+                controller: _newsearchController,
+                hintText: 'Item Name',
+                obscureText: false),
+            const Padding(padding: const EdgeInsets.only(bottom: 150)),
+            MyButton(text: "Request Parts", onTap: () {})
           ],
         ),
       ),

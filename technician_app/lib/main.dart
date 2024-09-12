@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:technician_app/Pages/home.dart';
+import 'package:technician_app/Pages/parts_request.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const HomePage(), // Choose the home page you want
+      home: const Request(), // Choose the home page you want
       debugShowCheckedModeBanner: false, // Add if needed
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 /* 
 
@@ -16,28 +17,56 @@ To use this widget, you need:
 */
 
 class JobCard extends StatelessWidget {
-  final String title;
+  final String name;
   final String description;
+  final String status;
 
-  const JobCard({super.key, required this.title, required this.description});
+  JobCard({
+    required this.name,
+    required this.description,
+    required this.status,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
+    return Container(
+      width: 200,
+      height: 100,
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Color(0xFF4E31AA),
+        borderRadius: BorderRadius.circular(10),
       ),
-      child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16.0), // Add padding to ListTile
-        title: Text(title),
-        subtitle: Text(description),
-        trailing: const Icon(Icons.arrow_forward_ios),
-        onTap: () {
-          // Handle job tap here
-        },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AutoSizeText(
+            name,
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF3795BD)),
+            maxLines: 1,
+          ),
+          SizedBox(height: 10),
+          AutoSizeText(
+            'Description: $description',
+            style: TextStyle(fontSize: 12, color: Colors.white),
+            maxLines: 3, // Adjust based on your layout
+            overflow: TextOverflow.ellipsis,
+          ),
+          SizedBox(height: 10),
+          AutoSizeText(
+            'Status: $status',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.red,
+            ),
+          ),
+
+          
+        ],
       ),
     );
   }
