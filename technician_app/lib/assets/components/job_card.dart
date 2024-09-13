@@ -50,22 +50,20 @@ class JobCard extends StatelessWidget {
           ),
           SizedBox(height: 10),
           AutoSizeText(
-            'Description: $description',
+            '$description',
             style: TextStyle(fontSize: 12, color: Colors.white),
             maxLines: 3, // Adjust based on your layout
             overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: 10),
           AutoSizeText(
-            'Status: $status',
+            '$status',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
               color: Colors.red,
             ),
           ),
-
-          
         ],
       ),
     );
