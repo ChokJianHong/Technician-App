@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:technician_app/Pages/home.dart';
 import '../assets/components/text_box.dart'; // Import the custom text box widget
 import '../assets/components/button.dart'; // Import custom button
 
@@ -54,7 +55,12 @@ class SignInPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               //Sign in button
-              MyButton(text: "Sign In", onTap: () {})
+              MyButton(text: "Sign In", onTap: () {
+                Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
+              })
             ],
           ),
         ),

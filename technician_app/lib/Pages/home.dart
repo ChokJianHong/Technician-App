@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:technician_app/Pages/Scheduel.dart';
 import 'package:technician_app/assets/components/job_card.dart';
 import 'package:technician_app/assets/components/navbartop.dart';
 import 'package:technician_app/assets/components/BottomNav.dart'; // Adjust the path as needed
@@ -35,7 +36,7 @@ class HomePageState extends State<HomePage> {
         // Navigate to the "Settings" page
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const SettingsPage()),
+          MaterialPageRoute(builder: (context) => const Schedule()),
         );
         break;
     }
