@@ -17,12 +17,14 @@ dependencies:
   curved_navigation_bar: ^1.0.6
   table_calendar: ^3.1.2
   flutter_svg: ^2.0.10+1 # Ensure you specify the version of flutter_svg
+  auto_size_text:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^3.0.0
+
 
 flutter:
   uses-material-design: true
