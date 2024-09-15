@@ -22,8 +22,8 @@ class _HistoryState extends State<History> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF391370),
-      appBar: CustomAppBar(),
+      backgroundColor: const Color(0xFF391370),
+      appBar: const CustomAppBar(),
       body: Column(
         children: [
           Padding(
@@ -31,7 +31,7 @@ class _HistoryState extends State<History> {
             child: SearchBar(
               hintText: "Search",
               controller: controller,
-              padding: const MaterialStatePropertyAll<EdgeInsets>(
+              padding: const WidgetStatePropertyAll<EdgeInsets>(
                 EdgeInsets.symmetric(horizontal: 16.0),
               ),
               onTap: () {

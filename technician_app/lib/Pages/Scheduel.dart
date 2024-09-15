@@ -20,7 +20,7 @@ class _ScheduleState extends State<Schedule> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
 
   // Store events in a map
-  Map<DateTime, List<String>> _events = LinkedHashMap(
+  final Map<DateTime, List<String>> _events = LinkedHashMap(
     equals: isSameDay,
     hashCode: (DateTime day) => day.day * 1000000 + day.month * 10000 + day.year,
   );
@@ -147,9 +147,9 @@ class _ScheduleState extends State<Schedule> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addEventDialog,
-        child: const Icon(Icons.add),
         backgroundColor: Colors.white,
         foregroundColor: const Color(0xFF391370),
+        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomNav(
         onTap: _onTapTapped,
