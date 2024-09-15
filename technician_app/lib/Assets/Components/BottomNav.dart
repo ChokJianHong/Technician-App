@@ -17,27 +17,32 @@ class BottomNav extends StatelessWidget {
       height: 60.0, // Adjusted height for better icon size
       onTap: onTap,
       items: [
-        Icon(
-          Icons.favorite,
-          color: currentIndex == 0
-              ? Colors.yellow
-              : Colors.white, // Highlight active icon
-          size: 30, // Adjusted icon size
+
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 20.0),
+          child: Icon(
+            Icons.favorite,
+            color: Colors.white,
+            size: 40,
+          ),
         ),
-        Icon(
-          Icons.home,
-          color: currentIndex == 1
-              ? Colors.yellow
-              : Colors.white, // Highlight active icon
-          size: 30, // Adjusted icon size
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 20.0),
+          child: Icon(
+            Icons.home,
+            color: Colors.white,
+            size: 40,
+          ),
         ),
-        Icon(
-          Icons.settings,
-          color: currentIndex == 2
-              ? Colors.yellow
-              : Colors.white, // Highlight active icon
-          size: 30, // Adjusted icon size
-        ),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 20.0),
+          child: Icon(
+            Icons.settings,
+            color: Colors.white,
+            size: 40,
+          ),
+        )
+
       ],
     );
   }
