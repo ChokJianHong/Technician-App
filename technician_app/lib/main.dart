@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:technician_app/Pages/home.dart';
-import 'package:technician_app/Pages/parts_request.dart';
 
 void main() {
   runApp(const MyApp());

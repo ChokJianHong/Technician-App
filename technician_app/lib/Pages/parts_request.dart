@@ -114,7 +114,7 @@ class _RequestState extends State<Request> {
                 controller: _newsearchController,
                 hintText: 'Item Name',
                 obscureText: false),
-            const Padding(padding: const EdgeInsets.only(bottom: 150)),
+            const Padding(padding: EdgeInsets.only(bottom: 150)),
             MyButton(text: "Request Parts", onTap: () {})
           ],
         ),
