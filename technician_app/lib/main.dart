@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Themed App',
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.darkTheme,
       home: const SplashPage(), // Choose the home page you want
       debugShowCheckedModeBanner: false, // Add if needed
     );

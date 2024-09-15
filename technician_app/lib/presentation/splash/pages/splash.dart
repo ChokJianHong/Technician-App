@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:technician_app/core/configs/assets/app_vectors.dart';
-import 'package:technician_app/presentation/auth/pages/register.dart';
+import 'package:technician_app/core/configs/assets/app_images.dart';
+import 'package:technician_app/presentation/auth/pages/signin.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -21,7 +20,7 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: SvgPicture.asset(AppVectors.logo),
+        child: Image.asset(AppImages.logo),
       ),
     );
   }
@@ -30,7 +29,7 @@ class _SplashPageState extends State<SplashPage> {
     await Future.delayed(const Duration(seconds: 2));
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (BuildContext context) => const SignInPage()),
+      MaterialPageRoute(builder: (BuildContext context) => SignInPage()),
     );
   }
 }
