@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:technician_app/Pages/Job_Details.dart';
+import 'package:technician_app/Pages/Scheduel.dart';
 
 import 'package:technician_app/Pages/home.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -14,8 +14,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
-
       title: 'Themed App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -35,9 +33,8 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const HomePage(), // Choose the home page you want
+      home: const JobDetails(), // Choose the home page you want
       debugShowCheckedModeBanner: false, // Add if needed
-
     );
   }
 }

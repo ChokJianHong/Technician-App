@@ -22,21 +22,21 @@ class _Complete_Job_DetailsState extends State<Complete_Job_Details> {
   Widget build(BuildContext context) {
     return  Scaffold(
 
-      backgroundColor: Color(0xFF391370),
-      appBar: CustomAppBar(),
+      backgroundColor: const Color(0xFF391370),
+      appBar: const CustomAppBar(),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: Container(
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.white),
           child:  Padding(
-            padding: EdgeInsets.only(left: 20, top: 20, right: 20),
+            padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              Text('Address',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
-              Text('226A, Jalan Abdul Razak, 93200, Kuching Sarawak',style: TextStyle(fontSize: 15),),
-              Padding(
+              const Text('Address',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
+              const Text('226A, Jalan Abdul Razak, 93200, Kuching Sarawak',style: TextStyle(fontSize: 15),),
+              const Padding(
                 padding: EdgeInsets.only(top: 20),
                 child: Row(
                   children: [
@@ -57,7 +57,7 @@ class _Complete_Job_DetailsState extends State<Complete_Job_Details> {
                   ],
                 ),
               ),
-              Padding(
+              const Padding(
                 padding: EdgeInsets.only(top: 10),
                 child: Row(
                   children: [
@@ -78,10 +78,10 @@ class _Complete_Job_DetailsState extends State<Complete_Job_Details> {
                   ],
                 ),
               ),
-              SizedBox(height: 10,),
-              Text('Description of the Problem',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
-              SizedBox(height: 10,),
-              TextField(
+              const SizedBox(height: 10,),
+              const Text('Description of the Problem',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
+              const SizedBox(height: 10,),
+              const TextField(
                 maxLines: 3,
                 style: TextStyle(color: Colors.black, fontSize: 16),
                 decoration: InputDecoration(
@@ -89,10 +89,10 @@ class _Complete_Job_DetailsState extends State<Complete_Job_Details> {
                   hintText: 'There is no response of the autogate working',
                 ),
               ),
-              SizedBox(height: 10,),
-              Text('Parts Requested',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
+              const SizedBox(height: 10,),
+              const Text('Parts Requested',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
              Container(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 border: Border.all(
                   color: Colors.black,
@@ -100,7 +100,7 @@ class _Complete_Job_DetailsState extends State<Complete_Job_Details> {
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Column(
+              child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -115,12 +115,12 @@ class _Complete_Job_DetailsState extends State<Complete_Job_Details> {
                   ],
                 ),
              ),
-             SizedBox(height: 10,),
-             Text('Technician: Dylan'),
-             SizedBox(height: 10,),
-             Text('Payment Method: Cash'),
-             SizedBox(height: 10,),
-             Text('Amount: RM 257'),
+             const SizedBox(height: 10,),
+             const Text('Technician: Dylan'),
+             const SizedBox(height: 10,),
+             const Text('Payment Method: Cash'),
+             const SizedBox(height: 10,),
+             const Text('Amount: RM 257'),
              
             ],),
           ),

@@ -16,7 +16,7 @@ class BottomNav extends StatelessWidget {
       buttonBackgroundColor: const Color(0xFF391370), // Color of the central button
       height: 60.0, // Adjusted height for better icon size
       onTap: onTap,
-      items: [
+      items: const [
 
         Padding(
           padding: EdgeInsets.symmetric(vertical: 20.0),
