@@ -81,7 +81,7 @@ class _ScheduleState extends State<Schedule> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF391370),
-      appBar: CustomAppBar(),
+      appBar: const CustomAppBar(),
       body: Column(
         children: [
           TableCalendar(
@@ -111,11 +111,11 @@ class _ScheduleState extends State<Schedule> {
               return _getEventsForDay(day);
             },
             // Customize text style to white and add dots for events
-            calendarStyle: CalendarStyle(
-              defaultTextStyle: const TextStyle(color: Colors.white),
-              weekendTextStyle: const TextStyle(color: Colors.white),
-              selectedTextStyle: const TextStyle(color: Colors.white),
-              todayTextStyle: const TextStyle(color: Colors.white),
+            calendarStyle: const CalendarStyle(
+              defaultTextStyle: TextStyle(color: Colors.white),
+              weekendTextStyle: TextStyle(color: Colors.white),
+              selectedTextStyle: TextStyle(color: Colors.white),
+              todayTextStyle: TextStyle(color: Colors.white),
               markerDecoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,

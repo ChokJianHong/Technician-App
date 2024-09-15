@@ -74,8 +74,8 @@ void _showCancelDialog(BuildContext context) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF391370),
-      appBar: CustomAppBar(),
+      backgroundColor: const Color(0xFF391370),
+      appBar: const CustomAppBar(),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Container(
@@ -85,7 +85,7 @@ void _showCancelDialog(BuildContext context) {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Address',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
+                const Text('Address',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
                     Text('226A, Jalan Abdul Razak, 93200, Kuching Sarawak',style: TextStyle(fontSize: 15),),
                     Padding(
                       padding: EdgeInsets.only(top: 20),
