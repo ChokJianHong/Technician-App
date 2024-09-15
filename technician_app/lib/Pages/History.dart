@@ -31,7 +31,7 @@ class _HistoryState extends State<History> {
             child: SearchBar(
               hintText: "Search",
               controller: controller,
-              padding: const WidgetStatePropertyAll<EdgeInsets>(
+              padding: const MaterialStatePropertyAll<EdgeInsets>(
                 EdgeInsets.symmetric(horizontal: 16.0),
               ),
               onTap: () {
