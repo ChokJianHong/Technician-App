@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:technician_app/common/textbox/text_box.dart';
+import 'package:technician_app/common/widgets/buttons/buttons.dart';
+import 'package:technician_app/common/widgets/textbox/text_box.dart';
 import 'package:technician_app/core/configs/assets/app_images.dart';
+import 'package:technician_app/presentation/home/pages/home.dart';
 
 class SignInPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -51,6 +53,15 @@ class SignInPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               //Sign in button
+              MyButton(
+                  text: 'Sign In',
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                const HomePage()));
+                  })
             ],
           ),
         ),
