@@ -1,0 +1,34 @@
+The models in the Data Layer 
+    - Are used for receiving and sending data from the API
+    - do not contain business logic just represent the data in a structured way
+
+  - Example Below of a user model
+
+  // lib/data/models/user_model.dart
+        class UserModel {
+        final String id;
+        final String email;
+        final String name;
+
+        UserModel({required this.id, required this.email, required this.name});
+
+        // Factory method to create an instance from JSON data
+        factory UserModel.fromJson(Map<String, dynamic> json) {
+            return UserModel(
+            id: json['id'],
+            email: json['email'],
+            name: json['name'],
+            );
+        }
+
+        // Method to convert the instance to JSON format
+        Map<String, dynamic> toJson() {
+            return {
+            'id': id,
+            'email': email,
+            'name': name,
+            };
+        }
+        }
+    
+    It just makes the data readable for the API

@@ -1,0 +1,18 @@
+Use case 
+    - Specifies what the user wants to do and uses the repositories to perform the action 
+
+    - Example
+
+        // lib/domain/usecases/add_book.dart
+    import '../repositories/book_repository.dart';
+    import '../entities/book.dart';
+
+    class AddBook {
+    final BookRepository repository;
+
+    AddBook(this.repository);
+
+    Future<void> execute(Book book) async {
+        return await repository.saveBook(book);
+    }
+    }

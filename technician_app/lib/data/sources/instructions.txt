@@ -1,0 +1,36 @@
+sources
+
+    - This is where you get your data from 
+    - It will show the API and database, or locally to see all the data
+    - It does not care from where the data comes from as long as it has it
+
+    - Example
+
+    // lib/data/sources/remote_book_source.dart
+    import 'package:http/http.dart' as http;
+    import 'dart:convert';
+
+    class RemoteBookSource {
+    final http.Client client;
+
+    RemoteBookSource(this.client);
+
+    Future<Map<String, dynamic>> fetchBookDetails(String bookId) async {
+        final response = await client.get(
+        Uri.parse('https://bookapi.example.com/books/$bookId'),
+        );
+
+        if (response.statusCode == 200) {
+        return json.decode(response.body);
+        } else {
+        throw Exception('Failed to fetch book details');
+        }
+    }
+    }
+
+Job Data Sources
+    1. I have made a blueprint to fetch the job data in the API
+    2. This blueprint can be scaled by adding more functions in the abstract class
+    3. After doing so, add another override so that the function knows what to do
+    4. For now it fetches data and sees if it's successful in doing so
+

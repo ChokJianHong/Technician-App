@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:technician_app/common/widgets/appbar/appbar.dart';
 import 'package:technician_app/presentation/home/widgets/current_jobs.dart';
 import 'package:technician_app/presentation/home/widgets/current_sales.dart';
+import 'package:technician_app/presentation/home/widgets/new_jobs.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -41,6 +42,33 @@ class HomePageState extends State<HomePage> {
     // Add more job data here as needed
   ];
 
+  final List<Map<String, String>> newjobData = [
+    {
+      'name': 'Fix Air Conditioner',
+      'location': 'Office Building A',
+      'jobtype': 'Alarm',
+      'status': 'Emergency'
+    },
+    {
+      'name': 'Install Security Camera',
+      'location': 'Parking Lot B',
+      'jobtype': 'Autogate',
+      'status': 'Urgent'
+    },
+    {
+      'name': 'Replace Light Bulbs',
+      'location': 'Conference Room 3',
+      'jobtype': 'Alarm',
+      'status': 'Normal'
+    },
+    {
+      'name': 'Upgrade Network Switch',
+      'location': 'Server Room',
+      'jobtype': 'Autogate',
+      'status': 'Normal'
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -64,7 +92,6 @@ class HomePageState extends State<HomePage> {
             // Centered Current Sales Section
             const CurrentSales(),
             const SizedBox(height: 20),
-            Divider(color: Theme.of(context).colorScheme.secondary),
             const SizedBox(height: 20),
 
             // Left-Aligned Current Jobs Section
@@ -72,24 +99,9 @@ class HomePageState extends State<HomePage> {
             const SizedBox(height: 10),
 
             // Left-Aligned New Jobs Section
-            const Text(
-              'New Jobs',
-              style: TextStyle(
-                fontWeight: FontWeight.w300,
-                fontSize: 16,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Container(
-              height: screenHeight * 0.2, // Responsive height for new job cards
-              child: ListView(
-                padding: const EdgeInsets.all(8.0),
-                children: [
-                  
-                ],
-              ),
-            ),
+            NewJobsSection(newjobData: newjobData)
+
+            // Bottom Navigation Bar
           ],
         ),
       ),

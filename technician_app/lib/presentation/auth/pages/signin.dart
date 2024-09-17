@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:technician_app/common/widgets/botnavbar/behaviour.dart';
 import 'package:technician_app/common/widgets/buttons/buttons.dart';
 import 'package:technician_app/common/widgets/textbox/text_box.dart';
 import 'package:technician_app/core/configs/assets/app_images.dart';
@@ -60,7 +61,7 @@ class SignInPage extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (BuildContext context) =>
-                                const HomePage()));
+                                const MainPage()));
                   })
             ],
           ),

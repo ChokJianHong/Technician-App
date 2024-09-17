@@ -1,0 +1,13 @@
+Domain Repository
+
+    - Acts as a catalogue for us to access the operations such as fetching data
+    - It provides structure and makes it easier for reusal
+
+    - Example
+        // lib/domain/repositories/book_repository.dart
+    import '../entities/book.dart';
+
+    abstract class BookRepository {
+    Future<Book> getBookDetails(String bookId);
+    Future<void> saveBook(Book book);
+    }

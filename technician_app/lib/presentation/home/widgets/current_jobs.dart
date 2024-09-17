@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:technician_app/common/widgets/currentjobCard/current_jobcard_dart';
+import 'package:technician_app/common/widgets/currentjobCard/current_jobcard.dart';
+
 
 /* 
 
@@ -53,7 +54,7 @@ class CurrentJobsSection extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            Container(
+            SizedBox(
               height:
                   cardHeight, // Height for the horizontal ListView of JobCard widgets
               child: ListView(

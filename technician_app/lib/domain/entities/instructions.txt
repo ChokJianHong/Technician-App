@@ -1,0 +1,24 @@
+Entities
+
+    - Entities are needed when there will be changes in identity or behavior like a user changing the email or password
+    - Example
+
+        // lib/domain/entities/user.dart
+    class User {
+    final String id; // Unique identifier for the user
+    final String email;
+    final String name;
+
+    User({required this.id, required this.email, required this.name});
+
+    // Example of a method that could be in a user entity
+    void updateEmail(String newEmail) {
+        // Perform some business logic here, e.g., validate the email
+    }
+    }
+
+
+1. I have added the Job Entity. 
+    - This is used to hold the properties of Job
+    - It is also used to make to create Job object using Json data
+

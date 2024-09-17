@@ -18,6 +18,9 @@ dependencies:
   table_calendar: ^3.1.2
   flutter_svg: ^2.0.10+1 # Ensure you specify the version of flutter_svg
   auto_size_text:
+  flutter_bloc: 
+  equatable:
+  http:
 
 dev_dependencies:
   flutter_test:
