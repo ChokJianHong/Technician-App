@@ -43,8 +43,8 @@ class _SchedulePageState extends State<Schedule> {
       final newEvent = ScheduleModel(
         id: _generateUniqueId(), // Generate a unique ID
         description: 'New Event', // Example description
-        startTime: _selectedDay!.add(Duration(hours: 1)), // Example start time
-        endTime: _selectedDay!.add(Duration(hours: 2)), // Example end time
+        startTime: _selectedDay!.add(const Duration(hours: 1)), // Example start time
+        endTime: _selectedDay!.add(const Duration(hours: 2)), // Example end time
       );
 
       // Add the new event using the repository
@@ -109,7 +109,7 @@ class _SchedulePageState extends State<Schedule> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _newEvents, // Trigger adding new events
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -117,8 +117,8 @@ class _SchedulePageState extends State<Schedule> {
 
 extension DateTimeX on DateTime {
   bool isSameDay(DateTime other) {
-    return this.year == other.year &&
-        this.month == other.month &&
-        this.day == other.day;
+    return year == other.year &&
+        month == other.month &&
+        day == other.day;
   }
 }

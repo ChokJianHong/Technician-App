@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/common/widgets/botnavbar/behaviour.dart';
 import 'package:technician_app/core/configs/theme/app_colors.dart';
-import 'package:technician_app/presentation/home/pages/home.dart';
 
 class NavBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget> additionalActions;

@@ -6,10 +6,10 @@ class BottomNavbar extends StatelessWidget {
   final ValueChanged<int> onItemTapped;
 
   const BottomNavbar({
-    Key? key,
+    super.key,
     required this.currentIndex,
     required this.onItemTapped,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

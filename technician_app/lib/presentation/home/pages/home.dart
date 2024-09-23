@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:technician_app/common/widgets/appbar/appbar.dart';
-import 'package:technician_app/common/widgets/botnavbar/behaviour.dart';
 import 'package:technician_app/presentation/home/widgets/current_jobs.dart';
 import 'package:technician_app/presentation/home/widgets/current_sales.dart';
 import 'package:technician_app/presentation/home/widgets/new_jobs.dart';

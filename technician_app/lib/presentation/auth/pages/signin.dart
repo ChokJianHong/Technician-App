@@ -4,7 +4,6 @@ import 'package:technician_app/common/widgets/botnavbar/behaviour.dart';
 import 'package:technician_app/common/widgets/buttons/buttons.dart';
 import 'package:technician_app/common/widgets/textbox/text_box.dart';
 import 'package:technician_app/core/configs/assets/app_images.dart';
-import 'package:technician_app/presentation/home/pages/home.dart';
 
 class SignInPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
