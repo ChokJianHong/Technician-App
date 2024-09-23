@@ -40,39 +40,37 @@ const auth = new google.auth.JWT(
 
 // Function to insert event to Google Calendar
 const insertEvent = async (event, orderId) => {
-  try {
-      let response = await calendar.events.insert({
-          auth: auth,
-          calendarId: calendarId,
-          resource: event
-      });
+    try {
+        let response = await calendar.events.insert({
+            auth: auth,
+            calendarId: calendarId,
+            resource: event
+        });
 
-      if (response.status == 200 && response.statusText === 'OK') {
-          const eventId = response.data.id;
-          console.log(eventId);
+        if (response.status == 200 && response.statusText === 'OK') {
+            const eventId = response.data.id;
+            console.log(eventId);
 
-          
-          
-           // Insert eventId into the database
-           const query = `UPDATE ordertable SET event_id = '${eventId}' WHERE order_id = ${orderId}`;
-           
+            // Insert eventId into the database
+            const query = `UPDATE ordertable SET event_id = '${eventId}' WHERE order_id = ${orderId}`;
 
-           db.query(query, (err, results) => {
-               if (err) {
-                   console.error('Error inserting event ID into database:', err);
-                   return;
-               }
-               console.log('Event ID inserted into database:', results.insertId);
-           });
 
-          return eventId;
-      } else {
-          return 0;
-      }
-  } catch (error) {
-      console.log(`Error at insertEvent --> ${error}`);
-      return 0; 
-  }
+            db.query(query, (err, results) => {
+                if (err) {
+                    console.error('Error inserting event ID into database:', err);
+                    return;
+                }
+                console.log('Event ID inserted into database:', results.insertId);
+            });
+
+            return eventId;
+        } else {
+            return 0;
+        }
+    } catch (error) {
+        console.log(`Error at insertEvent --> ${error}`);
+        return 0;
+    }
 };
 
 
@@ -99,30 +97,31 @@ const deleteEvent = async (eventId) => {
 
 // Route to handle form submission
 app.post('/submit-eta', async (req, res) => {
-  const { eta, arrivalTimeStart, arrivalTimeEnd, summary, description ,orderId} = req.body;
+    const { eta, arrivalTimeStart, arrivalTimeEnd, summary, description, orderId, technicianId } = req.body;
 
-  const event = {
-      summary: summary || 'No Summary',
-      description: description || 'No Description',
-      start: {
-          dateTime: `${eta}T${arrivalTimeStart}:00`,
-          timeZone: 'Asia/Kuala_Lumpur'
-      },
-      end: {
-          dateTime: `${eta}T${arrivalTimeEnd}:00`,
-          timeZone: 'Asia/Kuala_Lumpur'
-      }
-  };
+    const event = {
+        summary: summary || 'No Summary',
+        description: description || 'No Description',
+        technician: `Technician ID: ${technicianId}`,
+        start: {
+            dateTime: `${eta}T${arrivalTimeStart}:00`,
+            timeZone: 'Asia/Kuala_Lumpur'
+        },
+        end: {
+            dateTime: `${eta}T${arrivalTimeEnd}:00`,
+            timeZone: 'Asia/Kuala_Lumpur'
+        }
+    };
 
-  
-  console.log('URL: ', orderId);
-  const result = await insertEvent(event, orderId);
 
-  if (result) {
-      res.send('Event successfully added to Google Calendar!');
-  } else {
-      res.send('There was an error adding the event to Google Calendar.');
-  }
+    console.log('URL: ', orderId);
+    const result = await insertEvent(event, orderId);
+
+    if (result) {
+        res.send('Event successfully added to Google Calendar!');
+    } else {
+        res.send('There was an error adding the event to Google Calendar.');
+    }
 });
 
 // Route to handle delete request
@@ -139,8 +138,40 @@ app.post('/delete-event', async (req, res) => {
     }
 });
 
+app.get('/get-events/:day/:technicianId', async (req, res) => {
+    const day = req.params.day;
+    const technicianId = req.params.technicianId;
+
+    try {
+        const response = await calendar.events.list({
+            auth: auth,
+            calendarId: calendarId,
+            timeMin: new Date(day).toISOString(),
+            timeMax: new Date(new Date(day).setDate(new Date(day).getDate() + 1)).toISOString(),
+            timeZone: 'Asia/Kuala_Lumpur',
+        });
+
+        // Filter events by technicianId in the description or extendedProperties
+        const events = response.data.items.filter(event => {
+            // Check if technicianId is stored in description or extendedProperties
+            if (event.extendedProperties && event.extendedProperties.private) {
+                return event.extendedProperties.private.technicianId === technicianId;
+            } else if (event.description) {
+                return event.description.includes(`Technician ID: ${technicianId}`);
+            }
+            return false;
+        });
+
+        res.status(200).json(events);
+    } catch (error) {
+        console.log('Error fetching events: ', error);
+        res.status(500).send('Error fetching events');
+    }
+});
+
+
 
 // Starting the server
 app.listen(port, () => {
-  console.log(`Server successful, listening on port ${port}`);
+    console.log(`Server successful, listening on port ${port}`);
 });

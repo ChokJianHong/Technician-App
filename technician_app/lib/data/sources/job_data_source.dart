@@ -16,8 +16,7 @@ class JobDataSourceImpl implements JobDataSource {
 
   @override
   Future<List<JobEntity>> getJobs() async {
-    final response =
-        await client.get(Uri.parse('http://your-backend-url/jobs'));
+    final response = await client.get(Uri.parse('http://10.0.2.2:5005/orders'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -29,8 +28,7 @@ class JobDataSourceImpl implements JobDataSource {
 
   @override
   Future<List<JobEntity>> getNewJobs() async {
-    final response =
-        await client.get(Uri.parse('http://your-backend-url/jobs'));
+    final response = await client.get(Uri.parse('http://10.0.2.2:5005/orders'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);

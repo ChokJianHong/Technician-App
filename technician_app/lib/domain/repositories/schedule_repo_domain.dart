@@ -8,19 +8,6 @@ class ScheduleRepoImpl implements ScheduleRepo {
   ScheduleRepoImpl(this.remoteDataSource);
 
   @override
-  Future<List<ScheduleModel>> getSchedule(DateTime day) async {
-    final eventsMap = await remoteDataSource.getEventsForDay(day);
-    return eventsMap.map((event) {
-      return ScheduleModel(
-        id: event['id'],
-        description: event['description'],
-        startTime: DateTime.parse(event['start']['dateTime']),
-        endTime: DateTime.parse(event['end']['dateTime']),
-      );
-    }).toList();
-  }
-
-  @override
   Future<void> addSchedule(ScheduleModel event) async {
     await remoteDataSource.createEvent({
       'id': event.id,
@@ -37,5 +24,18 @@ class ScheduleRepoImpl implements ScheduleRepo {
   @override
   Future<void> deleteSchedule(ScheduleModel event) async {
     await remoteDataSource.deleteEvent(event.id);
+  }
+
+  @override
+  Future<List<ScheduleModel>> fetchTechnicianEvents(
+      DateTime day, String technicianId) async {
+    try {
+      final events = await remoteDataSource.getEventsForDay(
+          day, technicianId); // Ensure this returns a valid list
+      return events.map((event) => ScheduleModel.fromMap(event)).toList();
+    } catch (e) {
+      print('Error fetching events for technician: $e');
+      return []; // Return an empty list on error or if no events are found
+    }
   }
 }

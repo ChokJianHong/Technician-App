@@ -21,6 +21,7 @@ class _SchedulePageState extends State<Schedule> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay = DateTime.now(); // Initialize to today
   List<ScheduleModel> _events = [];
+  final String technicianId = '21'; // Example technician ID
 
   @override
   void initState() {
@@ -30,7 +31,9 @@ class _SchedulePageState extends State<Schedule> {
 
   Future<void> _loadEvents() async {
     if (_selectedDay != null) {
-      final events = await _calendarRepository.getSchedule(_selectedDay!);
+      // Fetch events for the selected technician and day
+      final events = await _calendarRepository.fetchTechnicianEvents(
+          _selectedDay!, technicianId);
       setState(() {
         _events = events;
       });
@@ -43,15 +46,18 @@ class _SchedulePageState extends State<Schedule> {
       final newEvent = ScheduleModel(
         id: _generateUniqueId(), // Generate a unique ID
         description: 'New Event', // Example description
-        startTime: _selectedDay!.add(const Duration(hours: 1)), // Example start time
-        endTime: _selectedDay!.add(const Duration(hours: 2)), // Example end time
+        startTime:
+            _selectedDay!.add(const Duration(hours: 1)), // Example start time
+        endTime:
+            _selectedDay!.add(const Duration(hours: 2)), // Example end time
       );
 
       // Add the new event using the repository
       await _calendarRepository.addSchedule(newEvent);
 
       // Fetch the updated list of events for the selected day
-      final events = await _calendarRepository.getSchedule(_selectedDay!);
+      final events = await _calendarRepository.fetchTechnicianEvents(
+          _selectedDay!, technicianId);
 
       // Update the state to reflect the new events
       setState(() {
@@ -117,8 +123,6 @@ class _SchedulePageState extends State<Schedule> {
 
 extension DateTimeX on DateTime {
   bool isSameDay(DateTime other) {
-    return year == other.year &&
-        month == other.month &&
-        day == other.day;
+    return year == other.year && month == other.month && day == other.day;
   }
 }
