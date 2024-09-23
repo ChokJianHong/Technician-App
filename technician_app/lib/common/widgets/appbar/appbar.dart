@@ -1,20 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:technician_app/common/widgets/botnavbar/behaviour.dart';
 import 'package:technician_app/core/configs/theme/app_colors.dart';
-
-/*
-NAVIGATION BAR
-
-The top navigation bar of the application with fixed settings and notifications icons.
-----------------------------------------------------
-
-To use this widget, you need:
-
-- additionalActions (List<Widget>): A list of additional widgets to display on the right side of the AppBar, 
-  such as custom icons or buttons. The notifications icon is always included on the right side.
-- leading (Widget?): A widget to display on the left side of the AppBar, such as the settings icon.
-- showBackButton (bool): A flag to determine whether to show a default back button 
-  on the left side. Set to true to display a back arrow that navigates to the previous screen.
-*/
+import 'package:technician_app/presentation/home/pages/home.dart';
 
 class NavBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget> additionalActions;
@@ -35,7 +23,12 @@ class NavBar extends StatelessWidget implements PreferredSizeWidget {
           ? IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pushAndRemoveUntil(
+                  CupertinoPageRoute(
+                    builder: (context) => const MainPage(),
+                  ),
+                  (route) => false, // Remove all previous routes
+                );
               },
             )
           : leading ??
@@ -64,7 +57,6 @@ class NavBar extends StatelessWidget implements PreferredSizeWidget {
       ],
       backgroundColor: AppColors.primary,
       elevation: 0, // Flat look without shadow
-      // Optional: Add flexibleSpace if you need more customizations
       flexibleSpace: Container(
         decoration: const BoxDecoration(color: AppColors.primary),
       ),

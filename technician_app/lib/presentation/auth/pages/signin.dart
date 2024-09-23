@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/common/widgets/botnavbar/behaviour.dart';
 import 'package:technician_app/common/widgets/buttons/buttons.dart';
@@ -58,10 +59,10 @@ class SignInPage extends StatelessWidget {
                   text: 'Sign In',
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                const MainPage()));
+                      context,
+                      CupertinoPageRoute(
+                          builder: (BuildContext context) => const MainPage()),
+                    );
                   })
             ],
           ),
