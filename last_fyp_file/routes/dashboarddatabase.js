@@ -56,6 +56,7 @@ const {
   getTechnicianById,
   updateTechnician,
   deleteTechnician,
+  getTechnicianByToken,
 } = require("../controllers/technicianController");
 const {
   createBanner,
@@ -74,6 +75,8 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
 // customer routes
 router.post("/customer/register", customerRegister);
+//technician routes
+router.get("/technician/:token", getTechnicianByToken);
 
 // order routes
 router.get("/orders", decodeToken, viewAllOrders);

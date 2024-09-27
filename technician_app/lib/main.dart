@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 
 import 'package:technician_app/Pages/home.dart';
+import 'package:technician_app/Pages/sign_in.dart';
 
 
 void main() {
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const HomePage(), // Choose the home page you want
+      home: SignInPage(), // Choose the home page you want
       debugShowCheckedModeBanner: false, // Add if needed
 
     );

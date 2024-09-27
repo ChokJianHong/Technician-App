@@ -4,7 +4,8 @@ import 'package:technician_app/assets/components/navbartop.dart';
 import 'package:technician_app/assets/components/BottomNav.dart'; // Adjust the path as needed
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String token;
+  const HomePage({super.key, required this.token});
 
   @override
   State<HomePage> createState() => HomePageState();
