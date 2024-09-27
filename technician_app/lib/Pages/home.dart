@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:technician_app/Assets/Components/current_job.dart';
 import 'package:technician_app/assets/components/job_card.dart';
 import 'package:technician_app/assets/components/navbartop.dart';
 import 'package:technician_app/assets/components/BottomNav.dart'; // Adjust the path as needed
@@ -108,23 +109,7 @@ class HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 10),
-            Container(
-              height: 150, // Adjust the height based on content
-              decoration: BoxDecoration(
-                color: Colors.white
-                    .withOpacity(0.1), // Semi-transparent background
-                borderRadius: BorderRadius.circular(10), // Rounded corners
-              ),
-              child: ListView(
-                padding: const EdgeInsets.all(8.0),
-                children: const [
-                  JobCard(title: 'Job 1', description: 'Description of Job 1'),
-                  JobCard(title: 'Job 2', description: 'Description of Job 2'),
-                  JobCard(title: 'Job 3', description: 'Description of Job 3'),
-                  // Add more JobCards here
-                ],
-              ),
-            ),
+            CurrentJobs(token: widget.token),
             const SizedBox(height: 20),
 
             // Left-Aligned New Jobs Section

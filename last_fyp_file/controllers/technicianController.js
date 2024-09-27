@@ -169,6 +169,67 @@ function getTechnicianByToken(req, res) {
   });
 }
 
+function viewTechOrdersDetail(req, res) {
+  const technicianId = req.params.id; // Assuming you're passing technician ID in the request parameters
+
+  const dbQuery = `
+    SELECT 
+      ordertable.*,
+      c.name AS customer_name,
+      c.location AS customer_address,
+      c.phone_number AS customer_phone_number,
+      c.email AS customer_email,
+      c.auto_gate_brand AS customer_auto_gate_brand,
+      c.alarm_brand AS customer_alarm_brand,
+      c.warranty AS customer_warranty
+    FROM 
+      ordertable
+    JOIN 
+      customer c ON ordertable.customer_id = c.customer_id
+    WHERE 
+      ordertable.technician_id = ${technicianId}  -- Retrieve by technician ID
+  `;
+
+  db.query(dbQuery, (error, results) => {
+    if (error) {
+      console.error("Error executing database query:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+      return;
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: "No orders found for this technician", status: 404 });
+    }
+
+    // Map the results if there are multiple orders
+    const orders = results.map((order) => ({
+      orderId: order.order_id,
+      orderDate: order.order_date,
+      orderDoneDate: order.order_done_date,
+      orderStatus: order.order_status,
+      orderImage: order.order_img,
+      orderDoneImage: order.order_done_img,
+      orderDetail: order.order_detail,
+      priority: order.urgency_level,
+      locationDetail: order.location_detail,
+      priceStatus: order.price_status,
+      totalPrice: order.total_price,
+      ProblemType: order.problem_type,
+      customer: {
+        name: order.customer_name,
+        address: order.customer_address,
+        email: order.customer_email,
+        phone: order.customer_phone_number,
+        autogateBrand: order.customer_auto_gate_brand,
+        alarmBrand: order.customer_alarm_brand,
+        warranty: order.customer_warranty,
+      },
+    }));
+
+    return res.status(200).json({ status: 200, result: orders });
+  });
+}
+
 
 module.exports = {
   createTechnician,
@@ -177,4 +238,5 @@ module.exports = {
   updateTechnician,
   deleteTechnician,
   getTechnicianByToken,
+  viewTechOrdersDetail,
 };

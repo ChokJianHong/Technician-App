@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -23,11 +25,11 @@ class TechnicianToken{
         return jsonDecode(response.body);
       } else {
         throw Exception(
-            'Failed to get customer details: ${response.statusCode} ${response.reasonPhrase}');
+            'Failed to get technician details: ${response.statusCode} ${response.reasonPhrase}');
       }
     } catch (error, stackTrace) {
-      print('Error getting customer details: $error\n$stackTrace');
-      throw Exception('Error getting customer details: $error');
+      print('Error getting technician details: $error\n$stackTrace');
+      throw Exception('Error getting technician details: $error');
     }
   }
 }

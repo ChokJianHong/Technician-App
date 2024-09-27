@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-
-
-import 'package:technician_app/Pages/home.dart';
 import 'package:technician_app/Pages/sign_in.dart';
 
 
@@ -36,7 +33,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: SignInPage(), // Choose the home page you want
+      home: const SignInPage(), // Choose the home page you want
       debugShowCheckedModeBanner: false, // Add if needed
 
     );
