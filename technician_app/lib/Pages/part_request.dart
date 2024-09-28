@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:technician_app/Assets/Components/detail.dart';
 import 'package:technician_app/assets/components/navbartop.dart';
 import 'package:technician_app/assets/components/BottomNav.dart'; // Adjust the path as needed
 import 'package:technician_app/assets/components/text_box.dart';
