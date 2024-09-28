@@ -15,7 +15,8 @@ class CurrentJobs extends StatefulWidget {
 class _CurrentJobsState extends State<CurrentJobs> {
   late Future<List<OrderModel>> _latestOrderFuture;
   late String technicianId;
-  final TechnicianJobOrder technicianJobOrder = TechnicianJobOrder(); // Create an instance of TechnicianJobOrder
+  final TechnicianJobOrder technicianJobOrder =
+      TechnicianJobOrder(); // Create an instance of TechnicianJobOrder
 
   @override
   void initState() {
@@ -31,7 +32,8 @@ class _CurrentJobsState extends State<CurrentJobs> {
 
     // Fetch orders using the technician ID
     _latestOrderFuture = technicianId.isNotEmpty
-        ? technicianJobOrder.getTechnicianJobs(widget.token, technicianId) // Correct method call
+        ? technicianJobOrder.getTechnicianJobs(
+            widget.token, technicianId) // Correct method call
         : Future.value([]); // Initialize with an empty list if no technician ID
   }
 
@@ -59,32 +61,36 @@ class _CurrentJobsState extends State<CurrentJobs> {
             );
           }
 
-          // Using PageView.builder for horizontal slide scroll (slide scroll effect)
-          return PageView.builder(
-            controller: PageController(viewportFraction: 0.8), // Controls the amount of overlap between pages
-            itemCount: ongoingOrders.length,
-            itemBuilder: (context, index) {
-              final OrderModel order = ongoingOrders[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0), // Space between the slides
-                child: GestureDetector(
-                  onTap: () {
-                    // Add your onTap functionality here
-                  },
-                  child: Transform.scale(
-                    scale: 0.9, // Adjust the scale for a card-like effect
-                    child: JobCard(
-                      name: order.problemType,
-                      description: order.orderDetail,
-                      status: order.orderStatus,
+          return SizedBox(
+            height: 150, // Set a smaller height to control the side scroll view
+            child: PageView.builder(
+              scrollDirection: Axis.horizontal, // Horizontal side scroll
+              controller: PageController(viewportFraction: 0.8),
+              itemCount: ongoingOrders.length,
+              itemBuilder: (context, index) {
+                final OrderModel order = ongoingOrders[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      // Add your onTap functionality here
+                    },
+                    child: Transform.scale(
+                      scale:
+                          0.9, // Slight scale effect to create card-like appearance
+                      child: JobCard(
+                        name: order.problemType,
+                        description: order.orderDetail,
+                        status: order.orderStatus,
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           );
         }
-        return const SizedBox(); // Return an empty box if no data
+        return const SizedBox();
       },
     );
   }
