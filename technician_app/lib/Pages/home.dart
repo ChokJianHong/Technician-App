@@ -9,38 +9,17 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.token});
 
   @override
-  State<HomePage> createState() => HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> {
   int _currentIndex = 1; // Default index for BottomNav
 
+  // Method to handle BottomNav item taps
   void _onTap(int index) {
     setState(() {
       _currentIndex = index;
     });
-
-    // Add your navigation logic here
-    // Example: navigate to different pages based on the selected index
-    switch (index) {
-      case 0:
-        // Navigate to the "Favorites" page
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const FavoritesPage()),
-        );
-        break;
-      case 1:
-        // Stay on the "Home" page
-        break;
-      case 2:
-        // Navigate to the "Settings" page
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const SettingsPage()),
-        );
-        break;
-    }
   }
 
   @override
@@ -130,33 +109,9 @@ class HomePageState extends State<HomePage> {
       // Bottom Navigation Bar
       bottomNavigationBar: BottomNav(
         onTap: _onTap,
-        currentIndex: _currentIndex, token: '',
+        currentIndex: _currentIndex,
+        token: widget.token, // Pass the token here correctly
       ),
-    );
-  }
-}
-
-// Dummy pages for navigation
-class FavoritesPage extends StatelessWidget {
-  const FavoritesPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Favorites')),
-      body: const Center(child: Text('Favorites Page')),
-    );
-  }
-}
-
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
-      body: const Center(child: Text('Settings Page')),
     );
   }
 }
