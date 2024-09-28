@@ -112,10 +112,10 @@ class _SignInPageState extends State<SignInPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Image.asset('lib/Assets/photos/signinlock.png'),
+                Image.asset('lib/Assets/Images/signinlock.png'),
                 const SizedBox(height: 20),
                 const Text('Welcome Back!',
-                    style: TextStyle(fontWeight: FontWeight.w500)),
+                    style: TextStyle(fontWeight: FontWeight.w500,color: Colors.white)),
                 const SizedBox(height: 20),
                 MyTextField(
                   controller: emailController,

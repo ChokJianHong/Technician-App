@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:technician_app/Assets/Components/BottomNav.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
 
+// ignore: camel_case_types
 class Complete_Job_Details extends StatefulWidget {
-  const Complete_Job_Details({super.key});
+  final String token;
+  const Complete_Job_Details({super.key,required this.token});
 
   @override
   State<Complete_Job_Details> createState() => _Complete_Job_DetailsState();
 }
 
+// ignore: camel_case_types
 class _Complete_Job_DetailsState extends State<Complete_Job_Details> {
   int _currentIndex = 1;
 
@@ -23,7 +26,7 @@ class _Complete_Job_DetailsState extends State<Complete_Job_Details> {
     return  Scaffold(
 
       backgroundColor: Color(0xFF391370),
-      appBar: CustomAppBar(),
+      appBar: const CustomAppBar(),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
@@ -130,7 +133,7 @@ class _Complete_Job_DetailsState extends State<Complete_Job_Details> {
 
       bottomNavigationBar: BottomNav(
         onTap: _onTapTapped,
-        currentIndex: _currentIndex,
+        currentIndex: _currentIndex, token: widget.token,
       ),
     );
   }

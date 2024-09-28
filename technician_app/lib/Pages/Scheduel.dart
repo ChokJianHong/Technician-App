@@ -5,7 +5,8 @@ import 'package:technician_app/Assets/Components/BottomNav.dart';
 import 'dart:collection';
 
 class Schedule extends StatefulWidget {
-  const Schedule({super.key});
+  final String token;
+  const Schedule({super.key, required this.token});
 
   @override
   State<Schedule> createState() => _ScheduleState();
@@ -22,7 +23,8 @@ class _ScheduleState extends State<Schedule> {
   // Store events in a map
   Map<DateTime, List<String>> _events = LinkedHashMap(
     equals: isSameDay,
-    hashCode: (DateTime day) => day.day * 1000000 + day.month * 10000 + day.year,
+    hashCode: (DateTime day) =>
+        day.day * 1000000 + day.month * 10000 + day.year,
   );
 
   // Handle bottom navigation bar tap
@@ -138,7 +140,8 @@ class _ScheduleState extends State<Schedule> {
             child: ListView(
               children: _getEventsForDay(_selectedDay ?? _focusedDay)
                   .map((event) => ListTile(
-                        title: Text(event, style: const TextStyle(color: Colors.white)),
+                        title: Text(event,
+                            style: const TextStyle(color: Colors.white)),
                       ))
                   .toList(),
             ),
@@ -153,7 +156,7 @@ class _ScheduleState extends State<Schedule> {
       ),
       bottomNavigationBar: BottomNav(
         onTap: _onTapTapped,
-        currentIndex: _currentIndex,
+        currentIndex: _currentIndex, token: widget.token,
       ),
     );
   }

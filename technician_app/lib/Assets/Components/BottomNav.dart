@@ -1,23 +1,33 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:technician_app/Pages/Scheduel.dart';
+import 'package:technician_app/Pages/home.dart';
+import 'package:technician_app/core/configs/theme/appColors.dart';
 
 class BottomNav extends StatelessWidget {
   final Function(int) onTap;
   final int currentIndex;
+  final String token;
 
-  const BottomNav({super.key, required this.onTap, required this.currentIndex});
+  const BottomNav({
+    super.key,
+    required this.onTap,
+    required this.currentIndex,
+    required this.token,
+  });
 
   @override
   Widget build(BuildContext context) {
     return CurvedNavigationBar(
       index: currentIndex,
-      backgroundColor: Colors.transparent, // Transparent background
-      color: const Color(0xFF4E31AA), // Background color of the bar
-      buttonBackgroundColor: const Color(0xFF391370), // Color of the central button
-      height: 60.0, // Adjusted height for better icon size
-      onTap: onTap,
-      items: [
-
+      backgroundColor: Colors.transparent,
+      color: AppColors.secondary,
+      buttonBackgroundColor: AppColors.primary,
+      height: 60.0,
+      onTap: (index) {
+        _navigateToPage(context, index, token); // Pass token here
+      },
+      items: const [
         Padding(
           padding: EdgeInsets.symmetric(vertical: 20.0),
           child: Icon(
@@ -41,9 +51,34 @@ class BottomNav extends StatelessWidget {
             color: Colors.white,
             size: 40,
           ),
-        )
-
+        ),
       ],
     );
+  }
+}
+
+// Update the navigation function to accept the token
+void _navigateToPage(BuildContext context, int index, String token) {
+  switch (index) {
+    case 0:
+      
+      break;
+    case 1:
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage(token: token,)),
+      );
+      break;
+    case 2:
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>  Schedule(token: token,), // Pass token correctly
+        ),
+      );
+      break;
+    default:
+      // Handle default case if necessary
+      break;
   }
 }

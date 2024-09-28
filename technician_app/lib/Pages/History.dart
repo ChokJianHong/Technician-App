@@ -3,14 +3,14 @@ import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Assets/Components/BottomNav.dart';
 
 class History extends StatefulWidget {
-  const History({super.key});
+  final String token;
+  const History({super.key, required this.token});
 
   @override
   State<History> createState() => _HistoryState();
 }
 
 class _HistoryState extends State<History> {
-
   int _currentIndex = 1;
   final SearchController controller = SearchController();
   void _onTapTapped(int index) {
@@ -67,7 +67,7 @@ class _HistoryState extends State<History> {
       ),
       bottomNavigationBar: BottomNav(
         onTap: _onTapTapped,
-        currentIndex: _currentIndex,
+        currentIndex: _currentIndex, token: widget.token,
       ),
     );
   }
