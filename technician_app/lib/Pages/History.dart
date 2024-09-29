@@ -23,7 +23,7 @@ class _HistoryState extends State<History> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF391370),
-      appBar: CustomAppBar(),
+      appBar: CustomAppBar(token: widget.token,),
       body: Column(
         children: [
           Padding(

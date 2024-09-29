@@ -1,7 +1,9 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:technician_app/Pages/History.dart';
 import 'package:technician_app/Pages/Scheduel.dart';
 import 'package:technician_app/Pages/home.dart';
+import 'package:technician_app/Pages/part_request.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
 
 class BottomNav extends StatelessWidget {
@@ -61,7 +63,10 @@ class BottomNav extends StatelessWidget {
 void _navigateToPage(BuildContext context, int index, String token) {
   switch (index) {
     case 0:
-      
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => History(token: token,)),
+      );
       break;
     case 1:
       Navigator.pushReplacement(

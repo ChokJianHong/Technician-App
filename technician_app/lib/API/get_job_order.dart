@@ -8,7 +8,7 @@ class TechnicianJobOrder{
   Future<List<OrderModel>> getTechnicianJobs(
       String token, String technicianId, {String? status}) async {
     try {
-      print('Fetching orders for customer ID: $technicianId with token: $token');
+      print('Fetching orders for technician ID: $technicianId with token: $token');
 
       // Build the URL correctly
       String url = '$baseUrl/dashboarddatabase/orders?technicianId=$technicianId';

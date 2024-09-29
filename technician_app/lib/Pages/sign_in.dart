@@ -1,8 +1,10 @@
 
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:technician_app/API/getTechnicianToken.dart';
+import 'package:technician_app/API/getToken.dart';
 import 'package:technician_app/API/signInAPI.dart';
 import 'package:technician_app/Assets/Components/button.dart';
 import 'package:technician_app/Assets/Components/text_box.dart';
@@ -65,7 +67,7 @@ class _SignInPageState extends State<SignInPage> {
       print('Token: $token');
 
       // Store the token securely
-      final storage = const FlutterSecureStorage();
+      const storage = FlutterSecureStorage();
       await storage.write(key: 'userToken', value: token);
 
       // Fetch customer details using the token
@@ -89,8 +91,9 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<void> _getTechnicianDetails(String token) async {
     try {
-      final TechnicianTokenApi = TechnicianToken();
-      final technicinaData = await TechnicianTokenApi.getTechnicianByToken(token);
+      // ignore: non_constant_identifier_names
+      final TechnicianTokenApi = GetToken();
+      final technicinaData = await TechnicianTokenApi.getUserToken(token);
       print('Technician Data: $technicinaData');
       // Handle customer data (e.g., store it, display it, etc.)
     } catch (e) {

@@ -110,7 +110,7 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNav(
         onTap: _onTap,
         currentIndex: _currentIndex,
-        token: widget.token, // Pass the token here correctly
+        token: widget.token,
       ),
     );
   }

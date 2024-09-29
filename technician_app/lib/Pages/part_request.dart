@@ -66,58 +66,60 @@ class _RequestState extends State<Request> {
       ),
 
       // Client Details
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Client Details: ",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                color: Colors.white,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Client Details: ",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            ClientBox(
-              name: clientData['name']!,
-              brand: clientData['brand']!,
-              model: clientData['model']!,
-              date: clientData['date']!,
-              time: clientData['time']!,
-            ),
-            const SizedBox(height: 30),
-            const Text(
-              'Parts Request: ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                color: Colors.white,
+              const SizedBox(height: 10),
+              ClientBox(
+                name: clientData['name']!,
+                brand: clientData['brand']!,
+                model: clientData['model']!,
+                date: clientData['date']!,
+                time: clientData['time']!,
               ),
-            ),
-            const SizedBox(height: 5),
-            MyTextField(
-                controller: _searchController,
-                hintText: 'Search',
-                obscureText: false),
-            const SizedBox(height: 30),
-            const Text(
-              'Parts Not in the System',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                color: Colors.white,
+              const SizedBox(height: 30),
+              const Text(
+                'Parts Request: ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            const SizedBox(height: 5),
-            MyTextField(
-                controller: _newsearchController,
-                hintText: 'Item Name',
-                obscureText: false),
-            const Padding(padding: EdgeInsets.only(bottom: 150)),
-            MyButton(text: "Request Parts", onTap: () {})
-          ],
+              const SizedBox(height: 5),
+              MyTextField(
+                  controller: _searchController,
+                  hintText: 'Search',
+                  obscureText: false),
+              const SizedBox(height: 30),
+              const Text(
+                'Parts Not in the System',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 5),
+              MyTextField(
+                  controller: _newsearchController,
+                  hintText: 'Item Name',
+                  obscureText: false),
+              const Padding(padding: EdgeInsets.only(bottom: 150)),
+              MyButton(text: "Request Parts", onTap: () {})
+            ],
+          ),
         ),
       ),
 

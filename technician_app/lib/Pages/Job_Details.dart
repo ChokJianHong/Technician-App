@@ -1,254 +1,201 @@
 import 'package:flutter/material.dart';
+import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
-import 'package:technician_app/Assets/Components/BottomNav.dart';
+import 'package:technician_app/Pages/part_request.dart';
+import 'package:technician_app/assets/components/BottomNav.dart';
+import 'package:technician_app/assets/components/button.dart';
+import 'package:technician_app/core/configs/theme/appColors.dart';
 
-class JobDetails extends StatefulWidget {
+class RequestDetails extends StatefulWidget {
   final String token;
-  const JobDetails({super.key,required this.token});
+  final String orderId;
+
+  const RequestDetails({super.key, required this.token, required this.orderId});
 
   @override
-  State<JobDetails> createState() => _JobDetailsState();
+  State<RequestDetails> createState() => _RequestDetailsState();
 }
 
-class _JobDetailsState extends State<JobDetails> {
-  int _currentIndex = 1;
-  final TextEditingController _reasonController = TextEditingController();
+class _RequestDetailsState extends State<RequestDetails> {
+  int _currentIndex = 2;
+  late Future<Map<String, dynamic>> _orderDetailFuture;
+
   void _onTapTapped(int index) {
     setState(() {
       _currentIndex = index;
     });
   }
 
-  void _showCancelDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Reason for Cancel Request'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _reasonController,
-                decoration: InputDecoration(
-                  labelText: 'Enter your reason',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                // Close the dialog without action
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Handle the submit action
-                String reason = _reasonController.text;
-                print('Cancel Reason: $reason'); // Replace with actual action
-
-                // Clear the text field and close the dialog
-                _reasonController.clear();
-                Navigator.of(context).pop();
-              },
-              child: Text('Submit'),
-            ),
-          ],
-        );
-      },
-    );
+  @override
+  void initState() {
+    super.initState();
+    _orderDetailFuture =
+        _fetchOrderDetails(widget.token, widget.orderId); // Fetch data on init
   }
 
-  @override
-  void dispose() {
-    _reasonController.dispose(); // Clean up the controller
-    super.dispose();
+  Future<Map<String, dynamic>> _fetchOrderDetails(
+      String token, String orderId) async {
+    try {
+      final orderDetails = await OrderDetails().getOrderDetail(token, orderId);
+      if (orderDetails['success']) {
+        return orderDetails; // Return the entire response
+      } else {
+        if (mounted) {
+          _showErrorDialog(orderDetails['error']);
+        }
+        throw Exception('Failed to fetch order details');
+      }
+    } catch (error) {
+      if (mounted) {
+        _showErrorDialog('Error fetching order details: $error');
+      }
+      throw Exception('Failed to fetch order details');
+    }
+  }
+
+  void _showErrorDialog(String errorMessage) {
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void _showSuccessDialog(String message) {
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Success'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(); // Go back to the previous screen
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF391370),
-      appBar: const CustomAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20), color: Colors.white),
-          child: Padding(
-            padding: EdgeInsets.only(left: 20, top: 20, right: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Address',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                ),
-                Text(
-                  '226A, Jalan Abdul Razak, 93200, Kuching Sarawak',
-                  style: TextStyle(fontSize: 15),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Brand',
-                            style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            'Eden Robot',
-                            style: TextStyle(fontSize: 15),
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        width: 115,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Model',
-                            style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            'eGate X1 Mini',
-                            style: TextStyle(fontSize: 15),
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 10),
-                  child: Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Date',
-                            style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            '16 March 2024',
-                            style: TextStyle(fontSize: 15),
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        width: 90,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Time',
-                            style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            '4:30PM',
-                            style: TextStyle(fontSize: 15),
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  'Description of the Problem',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                TextField(
-                  maxLines: 3,
-                  style: TextStyle(color: Colors.black, fontSize: 16),
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20))),
-                    hintText: 'There is no response of the autogate working',
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Center(
+      backgroundColor: AppColors.primary,
+      appBar: CustomAppBar(
+        token: widget.token,
+      ),
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: _orderDetailFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+                child: CircularProgressIndicator()); // Show a loading indicator
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            final orderDetails =
+                snapshot.data!['result']; // Access the result map
+
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Card(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF42CE30)),
-                          onPressed: () {},
-                          child: Text(
-                            'Order Complete',
-                            style: TextStyle(color: Colors.white),
-                          )),
-                      const SizedBox(
-                        height: 10,
+                      Text(
+                          "Problem Type: ${orderDetails['ProblemType'] ?? 'Not provided'}"),
+                      const SizedBox(height: 20),
+                      Text("Date and Time: ${orderDetails['orderDate']}"),
+                      const SizedBox(height: 20),
+                      Text("Priority: ${orderDetails['priority']}"),
+                      const SizedBox(height: 20),
+                      const Text("Problem Description"),
+                      const SizedBox(height: 10),
+                      Container(
+                        width: double.infinity,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextField(
+                            maxLines: null, // Allow multiple lines
+                            decoration: InputDecoration(
+                              hintText: '${orderDetails['orderDetail']}',
+                              border: InputBorder.none, // Remove border
+                            ),
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                        ),
                       ),
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFD02B2B)),
-                          onPressed: () {
-                            _showCancelDialog(context);
-                          },
-                          child: Text(
-                            'Cancel Request',
-                            style: TextStyle(color: Colors.white),
-                          )),
-                      const SizedBox(
-                        height: 10,
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                              child: Text(
+                                  "Picture: ${orderDetails['orderImage']}")),
+                          const Text("View"),
+                        ],
                       ),
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF3795BD)),
-                          onPressed: () {},
-                          child: Text(
-                            'Part Request',
-                            style: TextStyle(color: Colors.white),
-                          )),
-                      const SizedBox(
-                        height: 10,
+                      Column(
+                        children: [
+                          MyButton(text: 'Order Complete', onTap: () {}),
+                          MyButton(text: 'Cancel Request', onTap: () {}),
+                          MyButton(
+                              text: 'Part Request',
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Request(
+                                            token: widget.token,
+                                          )),
+                                );
+                              }),
+                          MyButton(text: 'Start Request', onTap: () {}),
+                        ],
                       ),
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF4E31AA)),
-                          onPressed: () {},
-                          child: Text(
-                            'Start Request',
-                            style: TextStyle(color: Colors.white),
-                          )),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
+              ),
+            );
+          } else {
+            return const Center(child: Text('No data available'));
+          }
+        },
       ),
       bottomNavigationBar: BottomNav(
         onTap: _onTapTapped,
-        currentIndex: _currentIndex, token: widget.token,
+        currentIndex: _currentIndex,
+        token: widget.token,
       ),
     );
   }

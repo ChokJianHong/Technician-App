@@ -3,6 +3,7 @@ import 'package:technician_app/API/get_job_order.dart';
 import 'package:technician_app/Assets/Components/currentJobCard.dart';
 import 'package:technician_app/Assets/Model/order_model.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:technician_app/Pages/Job_Details.dart';
 
 class CurrentJobs extends StatefulWidget {
   final String token;
@@ -73,7 +74,14 @@ class _CurrentJobsState extends State<CurrentJobs> {
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: GestureDetector(
                     onTap: () {
-                      // Add your onTap functionality here
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RequestDetails(
+                          token: widget.token, orderId: order.orderId.toString(),
+                        ),
+                      ),
+                    );
                     },
                     child: Transform.scale(
                       scale:

@@ -30,7 +30,7 @@ const {
   completedOrdersCount,
   ongoingOrdersCount,
   viewCompletedOrderHistory,
-  
+  viewOrdersDetail,
   viewRequestDetail,
   assignTechnician,
   getOrderDetail,
@@ -57,7 +57,7 @@ const {
   updateTechnician,
   deleteTechnician,
   getTechnicianByToken,
-  viewTechOrdersDetail,
+
 } = require("../controllers/technicianController");
 const {
   createBanner,
@@ -78,8 +78,9 @@ router.post("/reset-password", resetPassword);
 router.post("/customer/register", customerRegister);
 //technician routes
 router.get("/technician/:token", getTechnicianByToken);
-router.get( "/orders/details/:id",decodeToken,viewTechOrdersDetail);
+
 // order routes
+router.get( "/orders/details/:id",decodeToken,viewOrdersDetail);
 router.get("/orders", decodeToken, viewAllOrders);
 router.post("/orders", decodeToken, upload.single("image"), createOrder);
 router.get("/orders/history", decodeToken, viewCompletedOrderHistory);

@@ -13,7 +13,7 @@ class Schedule extends StatefulWidget {
 }
 
 class _ScheduleState extends State<Schedule> {
-  int _currentIndex = 1;
+  int _currentIndex = 2;
 
   // Add calendar-related states
   DateTime _focusedDay = DateTime.now();
@@ -21,7 +21,7 @@ class _ScheduleState extends State<Schedule> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
 
   // Store events in a map
-  Map<DateTime, List<String>> _events = LinkedHashMap(
+  final Map<DateTime, List<String>> _events = LinkedHashMap(
     equals: isSameDay,
     hashCode: (DateTime day) =>
         day.day * 1000000 + day.month * 10000 + day.year,
@@ -83,7 +83,7 @@ class _ScheduleState extends State<Schedule> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF391370),
-      appBar: const CustomAppBar(),
+      appBar: CustomAppBar(token: widget.token,),
       body: Column(
         children: [
           TableCalendar(
