@@ -33,6 +33,7 @@ flutter:
 
   assets:
     - lib/Assets/Images/signinlock.png
+    - lib/Assets/Images/problem.png
 
   fonts:
     - family: SF Pro
