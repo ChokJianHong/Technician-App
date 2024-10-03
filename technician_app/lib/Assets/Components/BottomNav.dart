@@ -1,9 +1,10 @@
+// ignore_for_file: file_names
+
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/Pages/History.dart';
 import 'package:technician_app/Pages/Scheduel.dart';
 import 'package:technician_app/Pages/home.dart';
-import 'package:technician_app/Pages/part_request.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
 
 class BottomNav extends StatelessWidget {
