@@ -117,72 +117,103 @@ class _RequestDetailsState extends State<RequestDetails> {
             final orderDetails =
                 snapshot.data!['result']; // Access the result map
 
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: Card(
-                color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                          "Problem Type: ${orderDetails['ProblemType'] ?? 'Not provided'}"),
-                      const SizedBox(height: 20),
-                      Text("Date and Time: ${orderDetails['orderDate']}"),
-                      const SizedBox(height: 20),
-                      Text("Priority: ${orderDetails['priority']}"),
-                      const SizedBox(height: 20),
-                      const Text("Problem Description"),
-                      const SizedBox(height: 10),
-                      Container(
-                        width: double.infinity,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextField(
-                            maxLines: null, // Allow multiple lines
-                            decoration: InputDecoration(
-                              hintText: '${orderDetails['orderDetail']}',
-                              border: InputBorder.none, // Remove border
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Card(
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                            "Problem Type: ${orderDetails['ProblemType'] ?? 'Not provided'}"),
+                        const SizedBox(height: 20),
+                        Text("Date and Time: ${orderDetails['orderDate']}"),
+                        const SizedBox(height: 20),
+                        Text("Priority: ${orderDetails['priority']}"),
+                        const SizedBox(height: 20),
+                        const Text("Problem Description"),
+                        const SizedBox(height: 10),
+                        Container(
+                          width: double.infinity,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              maxLines: null, // Allow multiple lines
+                              decoration: InputDecoration(
+                                hintText: '${orderDetails['orderDetail']}',
+                                border: OutlineInputBorder(
+                                  // Add border line
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Colors
+                                        .grey, // You can change the color here
+                                    width: 1.0,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  // Add border when the field is focused
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Colors
+                                        .blue, // Change the color for focused state
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
+                              style: const TextStyle(fontSize: 18),
                             ),
-                            style: const TextStyle(fontSize: 18),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                              child: Text(
-                                  "Picture: ${orderDetails['orderImage']}")),
-                          const Text("View"),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          MyButton(text: 'Order Complete', onTap: () {}),
-                          MyButton(text: 'Cancel Request', onTap: () {}),
-                          MyButton(
-                              text: 'Part Request',
-                              onTap: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Request(
-                                            token: widget.token,
-                                          )),
-                                );
-                              }),
-                          MyButton(text: 'Start Request', onTap: () {}),
-                        ],
-                      ),
-                    ],
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                child: Text(
+                                    "Picture: ${orderDetails['orderImage']}")),
+                            const Text("View"),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Column(
+                          children: [
+                            MyButton(text: 'Order Complete', onTap: () {}),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            MyButton(text: 'Cancel Request', onTap: () {}),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            MyButton(
+                                text: 'Part Request',
+                                onTap: () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Request(
+                                              token: widget.token,
+                                            )),
+                                  );
+                                }),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            MyButton(text: 'Start Request', onTap: () {}),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
