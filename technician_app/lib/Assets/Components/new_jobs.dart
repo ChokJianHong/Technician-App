@@ -3,6 +3,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:technician_app/API/get_job_order.dart';
 import 'package:technician_app/Assets/Components/currentJobCard.dart';
 import 'package:technician_app/Assets/Model/order_model.dart';
+import 'package:technician_app/Pages/pending.dart';
 
 class NewJobs extends StatefulWidget {
   final String token;
@@ -70,7 +71,12 @@ class _NewJobsState extends State<NewJobs> {
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: GestureDetector(
                   onTap: () {
-                    // Add your onTap functionality here
+                    Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Pending(token: widget.token),
+                  ),
+                );
                   },
                   child: JobCard(
                     name: order.problemType,

@@ -187,11 +187,11 @@ class _RequestDetailsState extends State<RequestDetails> {
                         ),
                         Column(
                           children: [
-                            MyButton(text: 'Order Complete', onTap: () {}),
+                            MyButton(text: 'Order Complete', onTap: () {} , color: Colors.green,),
                             const SizedBox(
                               height: 20,
                             ),
-                            MyButton(text: 'Cancel Request', onTap: () {}),
+                            MyButton(text: 'Cancel Request', onTap: () {},color: Colors.red,),
                             const SizedBox(
                               height: 20,
                             ),
@@ -209,7 +209,7 @@ class _RequestDetailsState extends State<RequestDetails> {
                             const SizedBox(
                               height: 20,
                             ),
-                            MyButton(text: 'Start Request', onTap: () {}),
+                            MyButton(text: 'Start Request', onTap: () {},color: AppColors.secondary,),
                           ],
                         ),
                       ],

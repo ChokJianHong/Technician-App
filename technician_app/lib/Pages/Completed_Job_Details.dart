@@ -126,7 +126,8 @@ class _Complete_Job_DetailsState extends State<Complete_Job_Details> {
              const SizedBox(height: 10,),
              const Text('Amount: RM 257'),
              
-            ],),
+            ],
+            ),
           ),
           ),
         ),

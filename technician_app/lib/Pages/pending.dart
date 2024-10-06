@@ -25,73 +25,151 @@ class _PendingState extends State<Pending> {
     return Scaffold(
       backgroundColor: AppColors.primary,
       appBar: CustomAppBar(token: widget.token),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Center(
-              child: Text(
-                'Auto Gate',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            Image.asset('lib/Assets/Images/problem.png'),
-            const Text("Address"),
-            const Text("226A, Jalan Abdul Razak, 93200, Kuching Sarawak"),
-            const Row(
-              children: [
-                Column(
-                  children: [
-                    Text('Brand'),
-                    Text('Eden Robot'),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text('Model'),
-                    Text('eGate X1 Mini'),
-                  ],
-                ),
-              ],
-            ),
-            const Row(
-              children: [
-                Column(
-                  children: [
-                    Text('Date'),
-                    Text('16 March 2024'),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text('Time'),
-                    Text('4:30PM'),
-                  ],
-                ),
-              ],
-            ),
-            Container(
-              width: double.infinity,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: TextField(
-                  maxLines: null, // Allow multiple lines
-                  decoration: InputDecoration(
-                    hintText: " ",
-                    border: InputBorder.none, // Remove border
-                  ),
-                  style: TextStyle(fontSize: 18),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Center(
+                child: Text(
+                  'Auto Gate',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(
+                height: 10,
+              ),
+              Center(
+                child: Image.asset('lib/Assets/Images/problem.png'),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              const Text(
+                'Address',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: Colors.white),
+              ),
+              const Text(
+                '226A, Jalan Abdul Razak, 93200, Kuching Sarawak',
+                style: TextStyle(fontSize: 15, color: Colors.white),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Brand',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                        Text(
+                          'Eden Robot',
+                          style: TextStyle(fontSize: 15, color: Colors.white),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      width: 115,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Model',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                        Text(
+                          'eGate X1 Mini',
+                          style: TextStyle(fontSize: 15, color: Colors.white),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 10),
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Date',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                        Text(
+                          '16 March 2024',
+                          style: TextStyle(fontSize: 15, color: Colors.white),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      width: 90,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Time',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                        Text(
+                          '4:30PM',
+                          style: TextStyle(fontSize: 15, color: Colors.white),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              const Text(
+                'Description of the Problem',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: Colors.white),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              const TextField(
+                maxLines: 3,
+                style: TextStyle(color: Colors.black, fontSize: 16),
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20))),
+                  hintText: 'There is no response of the autogate working',
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNav(
