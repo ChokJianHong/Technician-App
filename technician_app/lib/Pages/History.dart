@@ -9,6 +9,7 @@ import 'package:technician_app/Assets/Components/newJobCard.dart';
 import 'package:technician_app/Assets/Model/order_model.dart';
 import 'package:technician_app/Pages/Job_Details.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
+import 'package:collection/collection.dart';
 
 class History extends StatefulWidget {
   final String token;
@@ -20,11 +21,10 @@ class History extends StatefulWidget {
 }
 
 class _HistoryState extends State<History> {
-  late Future<List<OrderModel>> _ordersFuture;
+  late Future<Map<String, List<OrderModel>>> _ordersFuture;
   late String customerId;
   int _currentIndex = 0;
 
-  // Added variable for dropdown filter
   String? _selectedStatus;
   final List<String> _statusOptions = [
     'All',
@@ -32,7 +32,7 @@ class _HistoryState extends State<History> {
     'OnGoing',
     'Completed',
     'Cancelled'
-  ]; // Add more statuses as needed
+  ];
 
   void _onTapTapped(int index) {
     setState(() {
@@ -43,7 +43,6 @@ class _HistoryState extends State<History> {
   @override
   void initState() {
     super.initState();
-    // Decode the token to extract customer ID
     try {
       Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
       customerId = decodedToken['technician_id'];
@@ -51,27 +50,25 @@ class _HistoryState extends State<History> {
       print('Error decoding token: $error');
       customerId = 'default';
     }
-
-    // Load orders initially without filter
     _ordersFuture = _fetchOrders();
   }
 
-  // Function to fetch orders based on the selected filter
-  Future<List<OrderModel>> _fetchOrders() {
-    return TechnicianJobOrder()
+  Future<Map<String, List<OrderModel>>> _fetchOrders() async {
+    final orders = await TechnicianJobOrder()
         .getTechnicianJobs(widget.token, customerId, status: _selectedStatus);
+    final groupedOrders = groupBy(orders, (OrderModel order) => order.orderDate);
+    return groupedOrders;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:  CustomAppBar(token: widget.token,),
+      appBar: CustomAppBar(token: widget.token),
       backgroundColor: AppColors.primary,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Dropdown Filter
             DropdownButton<String>(
               hint: const Text(
                 'Select Order Status',
@@ -90,16 +87,14 @@ class _HistoryState extends State<History> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedStatus = newValue;
-                  _ordersFuture =
-                      _fetchOrders(); // Re-fetch orders based on selected filter
+                  _ordersFuture = _fetchOrders();
                 });
               },
               dropdownColor: AppColors.secondary,
             ),
-            const SizedBox(
-                height: 16), // Add some space between dropdown and list
+            const SizedBox(height: 16),
             Expanded(
-              child: FutureBuilder<List<OrderModel>>(
+              child: FutureBuilder<Map<String, List<OrderModel>>>(
                 future: _ordersFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -109,38 +104,54 @@ class _HistoryState extends State<History> {
                       child: Text('Error: ${snapshot.error}'),
                     );
                   } else if (snapshot.hasData) {
-                    final orders = snapshot.data!;
+                    final groupedOrders = snapshot.data!;
                     return ListView.builder(
-                      itemCount: orders.length,
+                      itemCount: groupedOrders.keys.length,
                       itemBuilder: (context, index) {
-                        final order = orders[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RequestDetails(
-                          orderId: order.orderId.toString(),
-                          token: widget.token,
-                        ),
-                      ),
-                    );
-                          },
-                          child: NewJobcard(
-                              name: order.problemType,
-                              location: order.locationDetails,
-                              jobType: order.urgencyLevel,
-                              status: order.orderStatus),
+                        final date = groupedOrders.keys.elementAt(index);
+                        final orders = groupedOrders[date]!;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(
+                                date,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            ...orders.map((order) => GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => RequestDetails(
+                                          orderId: order.orderId.toString(),
+                                          token: widget.token,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: NewJobcard(
+                                    name: order.problemType,
+                                    location: order.locationDetails,
+                                    jobType: order.urgencyLevel,
+                                    status: order.orderStatus,
+                                  ),
+                                )),
+                          ],
                         );
-                          
                       },
                     );
                   } else {
                     return const Center(child: Text('No orders available'));
                   }
-                  
                 },
-                
               ),
             ),
           ],
