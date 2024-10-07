@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 class OrderModel {
   final int orderId;
   final int customerId;
@@ -19,6 +21,12 @@ class OrderModel {
   final int? totalPrice;
   final int accept;
 
+  // New fields for customer information
+  final String? customerName; // Add any other customer fields if necessary
+  final String? customerLocation;
+  final String? autoGateBrand; // Added for auto gate brand if needed
+  final String? alarmBrand; // Added for alarm brand if needed
+
   OrderModel({
     required this.orderId,
     required this.customerId,
@@ -39,11 +47,15 @@ class OrderModel {
     required this.priceStatus,
     required this.totalPrice,
     required this.accept,
+    this.customerName,
+    this.customerLocation,
+    this.autoGateBrand,
+    this.alarmBrand,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
-      orderId: json['order_id'] ?? 0, // Provide a default value if necessary
+      orderId: json['order_id'] ?? 0,
       customerId: json['customer_id'] ?? 0,
       orderDate: json['order_date'] ?? '',
       orderDoneDate: json['order_done_date'],
@@ -62,9 +74,12 @@ class OrderModel {
       locationDetails: json['location_details'] ?? '',
       priceDetails: json['price_details'] ?? '',
       priceStatus: json['price_status'] ?? '',
-      totalPrice:
-          json['total_price'] ?? 0, // Provide a default value if necessary
+      totalPrice: json['total_price'] ?? 0,
       accept: json['accept'] ?? 0,
+      customerName: json['customer_name'], // Assuming you get this from API
+      customerLocation: json['customer_location'], // Assuming you get this from API
+      autoGateBrand: json['auto_gate_brand'], // Assuming you get this from API
+      alarmBrand: json['alarm_brand'], // Assuming you get this from API
     );
   }
 }

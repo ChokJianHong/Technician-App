@@ -1,3 +1,4 @@
+// ignore_for_file: library_private_types_in_public_api
 import 'package:flutter/material.dart';
 import 'package:technician_app/API/get_job_order.dart';
 import 'package:technician_app/Assets/Components/currentJobCard.dart';
@@ -17,7 +18,7 @@ class _CurrentJobsState extends State<CurrentJobs> {
   late Future<List<OrderModel>> _latestOrderFuture;
   late String technicianId;
   final TechnicianJobOrder technicianJobOrder =
-      TechnicianJobOrder(); // Create an instance of TechnicianJobOrder
+      TechnicianJobOrder();
 
   @override
   void initState() {

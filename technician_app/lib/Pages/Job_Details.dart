@@ -1,3 +1,4 @@
+// ignore_for_file: file_names
 import 'package:flutter/material.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
@@ -19,6 +20,7 @@ class RequestDetails extends StatefulWidget {
 class _RequestDetailsState extends State<RequestDetails> {
   int _currentIndex = 2;
   late Future<Map<String, dynamic>> _orderDetailFuture;
+  
 
   void _onTapTapped(int index) {
     setState(() {
@@ -66,7 +68,7 @@ class _RequestDetailsState extends State<RequestDetails> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -81,7 +83,7 @@ class _RequestDetailsState extends State<RequestDetails> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Success'),
+            title: const Text('Success'),
             content: Text(message),
             actions: [
               TextButton(
@@ -89,7 +91,7 @@ class _RequestDetailsState extends State<RequestDetails> {
                   Navigator.of(context).pop();
                   Navigator.of(context).pop(); // Go back to the previous screen
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );

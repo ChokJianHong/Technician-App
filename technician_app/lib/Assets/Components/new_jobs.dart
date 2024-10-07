@@ -74,7 +74,7 @@ class _NewJobsState extends State<NewJobs> {
                     Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Pending(token: widget.token),
+                    builder: (context) => Pending(token: widget.token, orderId: order.orderId.toString(),),
                   ),
                 );
                   },
