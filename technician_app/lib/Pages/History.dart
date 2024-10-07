@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Import for date formatting
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:technician_app/API/get_job_order.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
@@ -53,10 +54,38 @@ class _HistoryState extends State<History> {
     _ordersFuture = _fetchOrders();
   }
 
+  String formatDateTime(String utcDateTime) {
+  try {
+    DateTime parsedDate = DateTime.parse(utcDateTime);
+    DateTime localDate = parsedDate.toLocal();
+    DateTime now = DateTime.now();
+    
+    // Calculate the difference in days between the current date and the local date
+    int differenceInDays = now.difference(localDate).inDays;
+    
+    if (differenceInDays == 0) {
+      return 'Today';
+    } else if (differenceInDays == 1) {
+      return 'Yesterday';
+    } else if (differenceInDays <= 7) {
+      return 'Last Week';
+    } else {
+      return DateFormat('yyyy-MM-dd').format(localDate); // Format date for older entries
+    }
+  } catch (e) {
+    print('Error parsing date: $e');
+    return 'Invalid date';
+  }
+}
+
+
   Future<Map<String, List<OrderModel>>> _fetchOrders() async {
     final orders = await TechnicianJobOrder()
         .getTechnicianJobs(widget.token, customerId, status: _selectedStatus);
-    final groupedOrders = groupBy(orders, (OrderModel order) => order.orderDate);
+
+    // Group orders by formatted date
+    final groupedOrders =
+        groupBy(orders, (OrderModel order) => formatDateTime(order.orderDate));
     return groupedOrders;
   }
 
@@ -115,7 +144,8 @@ class _HistoryState extends State<History> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
                               child: Text(
                                 date,
                                 style: const TextStyle(

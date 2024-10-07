@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:technician_app/API/get_job_order.dart';
-import 'package:technician_app/Assets/Components/currentJobCard.dart';
+import 'package:technician_app/Assets/Components/newJobCard.dart';
 import 'package:technician_app/Assets/Model/order_model.dart';
 import 'package:technician_app/Pages/pending.dart';
 
@@ -72,15 +72,19 @@ class _NewJobsState extends State<NewJobs> {
                 child: GestureDetector(
                   onTap: () {
                     Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Pending(token: widget.token, orderId: order.orderId.toString(),),
-                  ),
-                );
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Pending(
+                          token: widget.token,
+                          orderId: order.orderId.toString(),
+                        ),
+                      ),
+                    );
                   },
-                  child: JobCard(
+                  child: NewJobcard(
                     name: order.problemType,
-                    description: order.locationDetails,
+                    location: order.locationDetails,
+                    jobType: order.urgencyLevel,
                     status: order.orderStatus,
                   ),
                 ),
