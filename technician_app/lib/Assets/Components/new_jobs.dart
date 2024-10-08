@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:technician_app/API/get_job_order.dart';
+import 'package:technician_app/API/view_order.dart';
 import 'package:technician_app/Assets/Components/newJobCard.dart';
 import 'package:technician_app/Assets/Model/order_model.dart';
 import 'package:technician_app/Pages/pending.dart';
 
 class NewJobs extends StatefulWidget {
   final String token;
+
   const NewJobs({super.key, required this.token});
 
   @override
@@ -14,85 +14,114 @@ class NewJobs extends StatefulWidget {
 }
 
 class _NewJobsState extends State<NewJobs> {
-  late Future<List<OrderModel>> _latestOrderFuture;
-  late String technicianId;
-  final TechnicianJobOrder technicianJobOrder = TechnicianJobOrder(); // Create an instance of TechnicianJobOrder
+  late Future<List<OrderModel>> _pendingOrdersFuture;
 
   @override
   void initState() {
     super.initState();
-    try {
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
-      technicianId = decodedToken['userId'].toString(); // Adjust key as needed
-      print('Technician ID: $technicianId');
-    } catch (error) {
-      print('Error decoding token: $error');
-      technicianId = 'default'; // Set a default value if decoding fails
-    }
+    // Fetch pending orders from the API
+    _pendingOrdersFuture = _fetchPendingOrders();
+  }
 
-    // Fetch orders using the technician ID
-    _latestOrderFuture = technicianId.isNotEmpty
-        ? technicianJobOrder.getTechnicianJobs(widget.token, technicianId)
-        : Future.value([]); // Initialize with an empty list if no technician ID
+  Future<List<OrderModel>> _fetchPendingOrders() {
+    return OrderService().getPendingOrders(widget.token);
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<OrderModel>>(
-      future: _latestOrderFuture,
+      future: _pendingOrdersFuture,
       builder: (context, snapshot) {
+        // Check if the request is still in progress
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
             child: CircularProgressIndicator(),
           );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else if (snapshot.hasData) {
-          final List<OrderModel> latestOrders = snapshot.data!;
-          final ongoingOrders = latestOrders
-              .where((order) => order.orderStatus == 'pending')
-              .toList();
+        }
+        // Check if there was an error in the request
+        else if (snapshot.hasError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Error fetching orders: ${snapshot.error}',
+                    style: const TextStyle(color: Colors.red)),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _pendingOrdersFuture = _fetchPendingOrders(); // Retry fetching orders
+                    });
+                  },
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+        // Check if data was received successfully
+        else if (snapshot.hasData) {
+          final List<OrderModel> pendingOrders = snapshot.data!;
 
-          if (ongoingOrders.isEmpty) {
-            return const Text(
-              'No ongoing orders.',
-              style: TextStyle(color: Colors.white),
+          // If there are no pending orders, show a message
+          if (pendingOrders.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'No ongoing orders.',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _pendingOrdersFuture = _fetchPendingOrders(); // Reload orders
+                      });
+                    },
+                    child: const Text('Refresh'),
+                  ),
+                ],
+              ),
             );
           }
 
-          // Use ListView.builder for vertical scroll
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: const ClampingScrollPhysics(), // Prevent unbounded height issues
-            itemCount: ongoingOrders.length,
-            itemBuilder: (context, index) {
-              final OrderModel order = ongoingOrders[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Pending(
-                          token: widget.token,
-                          orderId: order.orderId.toString(),
+          // Use a fixed-height container for the ListView
+          return Container(
+            height: 300, // Set a specific height for the ListView
+            child: ListView.builder(
+              itemCount: pendingOrders.length,
+              itemBuilder: (context, index) {
+                final OrderModel order = pendingOrders[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      // Navigate to the Pending page when an order is tapped
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Pending(
+                            token: widget.token,
+                            orderId: order.orderId.toString(),
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  child: NewJobcard(
-                    name: order.problemType,
-                    location: order.locationDetails,
-                    jobType: order.urgencyLevel,
-                    status: order.orderStatus,
+                      );
+                    },
+                    child: NewJobcard(
+                      name: order.problemType,
+                      location: order.locationDetails,
+                      jobType: order.urgencyLevel,
+                      status: order.orderStatus,
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           );
         }
-        return const SizedBox();
+        return const SizedBox(); // Fallback in case of unexpected state
       },
     );
   }

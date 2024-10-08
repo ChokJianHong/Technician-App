@@ -33,80 +33,75 @@ class _HomePageState extends State<HomePage> {
         showBackButton: false,
       ),
 
-      // Main Content
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              // Centered Current Sales Section
-              const Center(
-                child: Column(
-                  children: [
-                    Text(
-                      'Current Sales',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      "Since the 1st of the month",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      "RM1000.00",
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+      // Main Content using ListView for scrollable content
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: <Widget>[
+          // Centered Current Sales Section
+          const Center(
+            child: Column(
+              children: [
+                Text(
+                  'Current Sales',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                height: 2.0,
-                color: Theme.of(context).colorScheme.secondary,
-              ),
-              const SizedBox(height: 20),
-
-              // Left-Aligned Current Jobs Section
-              const Text(
-                'Current Jobs',
-                style: TextStyle(
-                  fontWeight: FontWeight.w300,
-                  fontSize: 16,
-                  color: Colors.white,
+                Text(
+                  "Since the 1st of the month",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              CurrentJobs(token: widget.token),
-              const SizedBox(height: 20),
-
-              // Left-Aligned New Jobs Section
-              const Text(
-                'New Jobs',
-                style: TextStyle(
-                  fontWeight: FontWeight.w300,
-                  fontSize: 16,
-                  color: Colors.white,
+                SizedBox(height: 8),
+                Text(
+                  "RM1000.00",
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-
-              NewJobs(token: widget.token),
-            ],
+              ],
+            ),
           ),
-        ),
+          const SizedBox(height: 20),
+          Container(
+            height: 2.0,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+          const SizedBox(height: 20),
+
+          // Left-Aligned Current Jobs Section
+          const Text(
+            'Current Jobs',
+            style: TextStyle(
+              fontWeight: FontWeight.w300,
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 10),
+          CurrentJobs(token: widget.token),
+          const SizedBox(height: 20),
+
+          // Left-Aligned New Jobs Section
+          const Text(
+            'New Jobs',
+            style: TextStyle(
+              fontWeight: FontWeight.w300,
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          NewJobs(token: widget.token),
+        ],
       ),
 
       // Bottom Navigation Bar
