@@ -6,7 +6,7 @@ const baseUrl = "http://10.0.2.2:5005";
 
 class OrderService {
   Future<List<OrderModel>> getPendingOrders(String token) async {
-    final url = Uri.parse('$baseUrl/dashboarddatabase/orders?status=pending');
+    final url = Uri.parse('$baseUrl/dashboarddatabase/orders/pending?status=pending');
 
     try {
       final response = await http.get(

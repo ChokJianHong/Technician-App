@@ -26,11 +26,9 @@ class _HistoryState extends State<History> {
   late String customerId;
   int _currentIndex = 0;
 
+  // Update status options to include only Completed and Cancelled
   String? _selectedStatus;
   final List<String> _statusOptions = [
-    'All',
-    'Pending',
-    'OnGoing',
     'Completed',
     'Cancelled'
   ];
@@ -51,33 +49,34 @@ class _HistoryState extends State<History> {
       print('Error decoding token: $error');
       customerId = 'default';
     }
+    // Set the default selected status
+    _selectedStatus = _statusOptions.first;
     _ordersFuture = _fetchOrders();
   }
 
   String formatDateTime(String utcDateTime) {
-  try {
-    DateTime parsedDate = DateTime.parse(utcDateTime);
-    DateTime localDate = parsedDate.toLocal();
-    DateTime now = DateTime.now();
-    
-    // Calculate the difference in days between the current date and the local date
-    int differenceInDays = now.difference(localDate).inDays;
-    
-    if (differenceInDays == 0) {
-      return 'Today';
-    } else if (differenceInDays == 1) {
-      return 'Yesterday';
-    } else if (differenceInDays <= 7) {
-      return 'Last Week';
-    } else {
-      return DateFormat('yyyy-MM-dd').format(localDate); // Format date for older entries
-    }
-  } catch (e) {
-    print('Error parsing date: $e');
-    return 'Invalid date';
-  }
-}
+    try {
+      DateTime parsedDate = DateTime.parse(utcDateTime);
+      DateTime localDate = parsedDate.toLocal();
+      DateTime now = DateTime.now();
 
+      // Calculate the difference in days between the current date and the local date
+      int differenceInDays = now.difference(localDate).inDays;
+
+      if (differenceInDays == 0) {
+        return 'Today';
+      } else if (differenceInDays == 1) {
+        return 'Yesterday';
+      } else if (differenceInDays <= 7) {
+        return 'Last Week';
+      } else {
+        return DateFormat('yyyy-MM-dd').format(localDate); // Format date for older entries
+      }
+    } catch (e) {
+      print('Error parsing date: $e');
+      return 'Invalid date';
+    }
+  }
 
   Future<Map<String, List<OrderModel>>> _fetchOrders() async {
     final orders = await TechnicianJobOrder()
@@ -98,28 +97,10 @@ class _HistoryState extends State<History> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            DropdownButton<String>(
-              hint: const Text(
-                'Select Order Status',
-                style: TextStyle(color: Colors.white),
-              ),
-              value: _selectedStatus,
-              items: _statusOptions.map((String status) {
-                return DropdownMenuItem<String>(
-                  value: status,
-                  child: Text(
-                    status,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedStatus = newValue;
-                  _ordersFuture = _fetchOrders();
-                });
-              },
-              dropdownColor: AppColors.secondary,
+            // Remove DropdownButton for filtering, as we only want Completed and Cancelled jobs
+            const Text(
+              'History',
+              style: TextStyle(color: Colors.white, fontSize: 16),
             ),
             const SizedBox(height: 16),
             Expanded(

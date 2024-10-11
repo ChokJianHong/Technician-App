@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:technician_app/API/accept_job.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Assets/Components/BottomNav.dart';
@@ -74,6 +75,56 @@ class _PendingState extends State<Pending> {
     }
   }
 
+  Future<void> _acceptOrder() async {
+    try {
+      String eta = DateTime.now().toIso8601String(); // Modify this to get the actual ETA
+      double totalAmount = 100.0; // Modify this to get the actual total amount
+
+      await AcceptJob().acceptOrder(
+        widget.token,
+        int.parse(widget.orderId),
+        eta,
+        totalAmount,
+      );
+
+      // Display a success message or navigate to another page
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Success'),
+              content: const Text('Order accepted successfully!'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        _showErrorDialog('Failed to accept order: $error');
+      }
+    }
+  }
+
+  String formatDateTime(String utcDateTime) {
+    try {
+      DateTime parsedDate = DateTime.parse(utcDateTime);
+      DateTime localDate = parsedDate.toLocal();
+      return DateFormat('yyyy-MM-dd').format(localDate);
+    } catch (e) {
+      print('Error parsing date: $e');
+      return 'Invalid date';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,53 +142,22 @@ class _PendingState extends State<Pending> {
               return const Center(child: Text('No jobs found.'));
             }
 
-            // Extract order details
             final orderDetails = snapshot.data!['result'];
+            print(orderDetails); 
 
-            // Debugging: Print the entire orderDetails map
-            print(
-                orderDetails); // This line helps to check the structure of the response
+            String locationDetail = orderDetails['locationDetail'] ?? 'Location details not available';
+            String orderDate = orderDetails['orderDate'] ?? 'Date not available';
+            String orderDetail = orderDetails['orderDetail'] ?? 'No description available';
+            String orderTime = orderDetails['orderTime'] ?? 'Not available'; 
+            String problemType = orderDetails['ProblemType'] ?? 'unknown'; 
 
-            // Safely extract data using null checks
-            String locationDetail = orderDetails['locationDetail'] ??
-                'Location details not available';
-            String orderDate =
-                orderDetails['orderDate'] ?? 'Date not available';
-            String orderDetail =
-                orderDetails['orderDetail'] ?? 'No description available';
-            String orderTime = orderDetails['orderTime'] ??
-                'Not available'; // Placeholder for order time
-            String problemType =
-                orderDetails['ProblemType'] ?? 'unknown'; // Added default value
-
-            // Set the brand based on problem type
             String brand;
             if (problemType == 'autogate') {
-              brand = orderDetails['customer']['autogateBrand'] ??
-                  'Brand not available';
+              brand = orderDetails['customer']['autogateBrand'] ?? 'Brand not available';
             } else if (problemType == 'alarm') {
-              brand = orderDetails['customer']['alarmBrand'] ??
-                  'Brand not available'; // Assuming this field exists
+              brand = orderDetails['customer']['alarmBrand'] ?? 'Brand not available';
             } else {
               brand = 'Unknown brand';
-            }
-
-            String formatDateTime(String utcDateTime) {
-              try {
-                // Parse the UTC date string into a DateTime object
-                DateTime parsedDate = DateTime.parse(utcDateTime);
-
-                // Convert the UTC date to local time
-                DateTime localDate = parsedDate.toLocal();
-
-                // Format the local date into a desired string format
-                return DateFormat('yyyy-MM-dd')
-                    .format(localDate); // Adjust format as needed
-              } catch (e) {
-                // Handle potential parsing errors
-                print('Error parsing date: $e');
-                return 'Invalid date'; // Return a default value or error message
-              }
             }
 
             return Padding(
@@ -148,28 +168,17 @@ class _PendingState extends State<Pending> {
                   const Center(
                     child: Text(
                       'Auto Gate',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Center(
-                    child: Image.asset('lib/Assets/Images/problem.png'),
-                  ),
+                  Center(child: Image.asset('lib/Assets/Images/problem.png')),
                   const SizedBox(height: 10),
                   const Text(
                     'Address',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Colors.white),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
                   ),
-                  Text(
-                    locationDetail,
-                    style: const TextStyle(fontSize: 15, color: Colors.white),
-                  ),
+                  Text(locationDetail, style: const TextStyle(fontSize: 15, color: Colors.white)),
                   Padding(
                     padding: const EdgeInsets.only(top: 20),
                     child: Row(
@@ -179,16 +188,9 @@ class _PendingState extends State<Pending> {
                           children: [
                             const Text(
                               'Brand',
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
                             ),
-                            Text(
-                              brand,
-                              style: const TextStyle(
-                                  fontSize: 15, color: Colors.white),
-                            ),
+                            Text(brand, style: const TextStyle(fontSize: 15, color: Colors.white)),
                           ],
                         ),
                         const SizedBox(width: 115),
@@ -197,15 +199,11 @@ class _PendingState extends State<Pending> {
                           children: [
                             Text(
                               'Model',
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
                             ),
                             Text(
-                              'eGate X1 Mini', // Update if your API provides this
-                              style:
-                                  TextStyle(fontSize: 15, color: Colors.white),
+                              'eGate X1 Mini',
+                              style: TextStyle(fontSize: 15, color: Colors.white),
                             ),
                           ],
                         ),
@@ -221,16 +219,9 @@ class _PendingState extends State<Pending> {
                           children: [
                             const Text(
                               'Date',
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
                             ),
-                            Text(
-                              formatDateTime(orderDate),
-                              style: const TextStyle(
-                                  fontSize: 15, color: Colors.white),
-                            ),
+                            Text(formatDateTime(orderDate), style: const TextStyle(fontSize: 15, color: Colors.white)),
                           ],
                         ),
                         const SizedBox(width: 90),
@@ -239,16 +230,9 @@ class _PendingState extends State<Pending> {
                           children: [
                             const Text(
                               'Time',
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
                             ),
-                            Text(
-                              orderTime,
-                              style: const TextStyle(
-                                  fontSize: 15, color: Colors.white),
-                            ),
+                            Text(orderTime, style: const TextStyle(fontSize: 15, color: Colors.white)),
                           ],
                         ),
                       ],
@@ -257,10 +241,7 @@ class _PendingState extends State<Pending> {
                   const SizedBox(height: 20),
                   const Text(
                     'Description of the Problem',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Colors.white),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
                   ),
                   const SizedBox(height: 10),
                   TextField(
@@ -269,26 +250,25 @@ class _PendingState extends State<Pending> {
                     decoration: InputDecoration(
                       fillColor: Colors.white,
                       filled: true,
-                      border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(20))),
+                      border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
                       hintText: orderDetail,
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       MyButton(
                         text: 'Decline',
-                        onTap: () {},
+                        onTap: () {
+                          // Implement decline functionality if needed
+                        },
                         color: Color(0xFF554E6B),
                       ),
                       MyButton(
                         text: 'Accept',
-                        onTap: () {},
+                        onTap: _acceptOrder,
                         color: Color(0xFF8FA78C),
                       ),
                     ],
