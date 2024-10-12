@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Assets/Components/current_job.dart';
 import 'package:technician_app/Assets/Components/new_jobs.dart';
-import 'package:technician_app/assets/components/navbartop.dart';
 import 'package:technician_app/assets/components/BottomNav.dart'; // Adjust the path as needed
 
 class HomePage extends StatefulWidget {
