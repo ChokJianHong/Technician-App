@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Assets/Components/current_job.dart';
 import 'package:technician_app/Assets/Components/new_jobs.dart';
 import 'package:technician_app/assets/components/navbartop.dart';
@@ -29,9 +30,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Theme.of(context).colorScheme.primary,
 
       // Top Navigation Bar
-      appBar: const NavBar(
-        showBackButton: false,
-      ),
+      appBar: CustomAppBar(token: widget.token),
 
       // Main Content using ListView for scrollable content
       body: ListView(

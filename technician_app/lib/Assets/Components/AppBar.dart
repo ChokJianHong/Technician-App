@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:technician_app/Pages/setting.dart';
 
@@ -11,12 +13,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      leading: GestureDetector(
-        child: const Icon(
-          Icons.settings,
-          color: Colors.white,
-        ),
-        onTap: () {
+      leading: IconButton(
+        icon: const Icon(Icons.settings),
+        color: Colors.white,
+        onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
