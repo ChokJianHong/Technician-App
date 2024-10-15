@@ -5,13 +5,16 @@ import 'package:technician_app/core/configs/theme/appColors.dart';
 
 class Setting extends StatelessWidget {
   final String token;
-  const Setting({super.key,required this.token});
+  const Setting({super.key, required this.token});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Account Settings', style: TextStyle(color: Colors.white),),
+        title: const Text(
+          'Account Settings',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: AppColors.secondary,
       ),
       backgroundColor: AppColors.primary,
@@ -25,8 +28,8 @@ class Setting extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 40,
-                  backgroundImage: AssetImage(
-                      'lib/Assets/photos/smallProfile.png'), // Replace with your image
+                  backgroundImage:
+                      AssetImage('lib/Assets/Images/smallProfile.png'),
                 ),
                 SizedBox(width: 16),
                 Column(
@@ -61,9 +64,10 @@ class Setting extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.all(0),
                 children: [
-                  SettingItem(title: 'Account', onTap: () {
-                    
-                  },),
+                  SettingItem(
+                    title: 'Account',
+                    onTap: () {},
+                  ),
                   const SettingItem(title: 'Notification Settings'),
                   const SettingItem(title: 'Help Center'),
                 ],

@@ -88,7 +88,7 @@ class _NewJobsState extends State<NewJobs> {
           }
 
           // Use a fixed-height container for the ListView
-          return Container(
+          return SizedBox(
             height: 300, // Set a specific height for the ListView
             child: ListView.builder(
               itemCount: pendingOrders.length,

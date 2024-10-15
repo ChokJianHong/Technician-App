@@ -1,8 +1,14 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Assets/Components/BottomNav.dart';
+import 'package:technician_app/API/get_job_order.dart';
+import 'package:technician_app/Assets/Model/order_model.dart';
+import 'package:technician_app/Assets/Components/NewJobcard.dart'; // import the NewJobcard component
 import 'dart:collection';
+
+import 'package:technician_app/Pages/Job_Details.dart';
 
 class Schedule extends StatefulWidget {
   final String token;
@@ -14,82 +20,62 @@ class Schedule extends StatefulWidget {
 
 class _ScheduleState extends State<Schedule> {
   int _currentIndex = 2;
-
-  // Add calendar-related states
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   CalendarFormat _calendarFormat = CalendarFormat.month;
-
-  // Store events in a map
-  final Map<DateTime, List<String>> _events = LinkedHashMap(
+  final Map<DateTime, List<OrderModel>> _events = LinkedHashMap(
     equals: isSameDay,
     hashCode: (DateTime day) =>
         day.day * 1000000 + day.month * 10000 + day.year,
   );
 
-  // Handle bottom navigation bar tap
-  void _onTapTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _fetchOngoingOrders();
   }
 
-  // Get events for the selected day
-  List<String> _getEventsForDay(DateTime day) {
+  Future<void> _fetchOngoingOrders() async {
+    try {
+      // Fetch ongoing orders from the API
+      final orders = await TechnicianJobOrder()
+          .getTechnicianJobs(widget.token, 'technicianId');
+
+      // Filter and organize only ongoing orders by their date
+      final ongoingOrders =
+          orders.where((order) => order.orderStatus == 'ongoing').toList();
+      final ordersByDate = groupBy(ongoingOrders, (OrderModel order) {
+        final orderDate = DateTime.parse(order.orderDate).toLocal();
+        return DateTime(orderDate.year, orderDate.month, orderDate.day);
+      });
+
+      // Update _events map to store events for each date
+      setState(() {
+        _events.clear();
+        ordersByDate.forEach((date, ordersList) {
+          _events[date] = ordersList;
+        });
+      });
+    } catch (e) {
+      print('Error fetching ongoing orders: $e');
+    }
+  }
+
+  List<OrderModel> _getEventsForDay(DateTime day) {
     return _events[day] ?? [];
-  }
-
-  // Show dialog to add events
-  Future<void> _addEventDialog() async {
-    String eventText = '';
-
-    return showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Event'),
-        content: TextField(
-          onChanged: (value) {
-            eventText = value;
-          },
-          decoration: const InputDecoration(hintText: "Enter event details"),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                if (_selectedDay != null && eventText.isNotEmpty) {
-                  if (_events[_selectedDay!] == null) {
-                    _events[_selectedDay!] = [];
-                  }
-                  _events[_selectedDay!]!.add(eventText);
-                }
-              });
-              Navigator.of(context).pop();
-            },
-            child: const Text('Add'),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF391370),
-      appBar: CustomAppBar(token: widget.token,),
+      appBar: CustomAppBar(token: widget.token),
       body: Column(
         children: [
           TableCalendar(
             focusedDay: _focusedDay,
             firstDay: DateTime.utc(2024, 1, 1),
-            lastDay: DateTime.utc(2024, 12, 30),
+            lastDay: DateTime.utc(2024, 12, 31),
             selectedDayPredicate: (day) {
               return isSameDay(_selectedDay, day);
             },
@@ -108,11 +94,7 @@ class _ScheduleState extends State<Schedule> {
             onPageChanged: (focusedDay) {
               _focusedDay = focusedDay;
             },
-            // Indicate which days have events
-            eventLoader: (day) {
-              return _getEventsForDay(day);
-            },
-            // Customize text style to white and add dots for events
+            eventLoader: _getEventsForDay,
             calendarStyle: const CalendarStyle(
               defaultTextStyle: TextStyle(color: Colors.white),
               weekendTextStyle: TextStyle(color: Colors.white),
@@ -135,28 +117,41 @@ class _ScheduleState extends State<Schedule> {
             ),
           ),
           const SizedBox(height: 10),
-          // Display events for the selected day
           Expanded(
             child: ListView(
               children: _getEventsForDay(_selectedDay ?? _focusedDay)
-                  .map((event) => ListTile(
-                        title: Text(event,
-                            style: const TextStyle(color: Colors.white)),
+                  .map((order) => GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RequestDetails(
+                                token: widget.token,
+                                orderId: order.orderId.toString(),
+                              ),
+                            ),
+                          );
+                        },
+                        child: NewJobcard(
+                          name: order.problemType,
+                          location: order.locationDetails,
+                          jobType: order.urgencyLevel,
+                          status: order.orderStatus,
+                        ),
                       ))
                   .toList(),
             ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addEventDialog,
-        child: const Icon(Icons.add),
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF391370),
-      ),
       bottomNavigationBar: BottomNav(
-        onTap: _onTapTapped,
-        currentIndex: _currentIndex, token: widget.token,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        currentIndex: _currentIndex,
+        token: widget.token,
       ),
     );
   }

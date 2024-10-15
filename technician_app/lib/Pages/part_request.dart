@@ -7,7 +7,8 @@ import '../assets/components/button.dart';
 
 class Request extends StatefulWidget {
   final String token;
-  const Request({super.key, required this.token});
+  final String orderId;
+  const Request({super.key, required this.token, required this.orderId});
 
   @override
   State<Request> createState() => _RequestState();
@@ -126,7 +127,8 @@ class _RequestState extends State<Request> {
       // Bottom Navigation Bar
       bottomNavigationBar: BottomNav(
         onTap: _onTap,
-        currentIndex: _currentIndex, token: widget.token, // Set the current index for BottomNav
+        currentIndex: _currentIndex,
+        token: widget.token, // Set the current index for BottomNav
       ),
     );
   }
