@@ -6,7 +6,8 @@ const baseUrl = "http://10.0.2.2:5005";
 
 class OrderService {
   Future<List<OrderModel>> getPendingOrders(String token) async {
-    final url = Uri.parse('$baseUrl/dashboarddatabase/orders/pending?status=pending');
+    final url =
+        Uri.parse('$baseUrl/dashboarddatabase/orders/pending?status=pending');
 
     try {
       final response = await http.get(
@@ -25,13 +26,13 @@ class OrderService {
         List<dynamic> data = jsonDecode(response.body)['result'];
 
         // No filtering for technician_id, map all orders directly to OrderModel
-        List<OrderModel> pendingOrders = data
-            .map((order) => OrderModel.fromJson(order))
-            .toList();
+        List<OrderModel> pendingOrders =
+            data.map((order) => OrderModel.fromJson(order)).toList();
 
         return pendingOrders;
       } else {
-        throw Exception('Failed to load pending orders: ${response.reasonPhrase}');
+        throw Exception(
+            'Failed to load pending orders: ${response.reasonPhrase}');
       }
     } catch (error) {
       print('Error fetching pending orders: $error');

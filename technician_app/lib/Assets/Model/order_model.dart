@@ -21,7 +21,6 @@ class OrderModel {
   final int? totalPrice;
   final int accept;
 
-  final String customerID;
   final String? customerName;
   final String? customerLocation;
   final String? autoGateBrand;
@@ -47,7 +46,6 @@ class OrderModel {
     required this.priceStatus,
     required this.totalPrice,
     required this.accept,
-    required this.customerID,
     this.customerName,
     this.customerLocation,
     this.autoGateBrand,
@@ -77,7 +75,6 @@ class OrderModel {
       priceStatus: json['price_status'] ?? '',
       totalPrice: json['total_price'] ?? 0,
       accept: json['accept'] ?? 0,
-      customerID: json['customer_id'],
       customerName: json['customer_name'],
       customerLocation: json['customer_location'],
       autoGateBrand: json['auto_gate_brand'],
