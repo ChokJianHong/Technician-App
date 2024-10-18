@@ -20,7 +20,6 @@ class RequestDetails extends StatefulWidget {
 class _RequestDetailsState extends State<RequestDetails> {
   int _currentIndex = 2;
   late Future<Map<String, dynamic>> _orderDetailFuture;
-  
 
   void _onTapTapped(int index) {
     setState(() {
@@ -32,7 +31,7 @@ class _RequestDetailsState extends State<RequestDetails> {
   void initState() {
     super.initState();
     _orderDetailFuture =
-        _fetchOrderDetails(widget.token, widget.orderId); // Fetch data on init
+        _fetchOrderDetails(widget.token, widget.orderId); 
   }
 
   Future<Map<String, dynamic>> _fetchOrderDetails(
@@ -132,7 +131,8 @@ class _RequestDetailsState extends State<RequestDetails> {
                         Text(
                             "Problem Type: ${orderDetails['ProblemType'] ?? 'Not provided'}"),
                         const SizedBox(height: 20),
-                        Text("Date and Time: ${orderDetails['orderDate']}"),
+                        Text(
+                            "Date and Time: ${orderDetails['orderDate']?.toString() ?? 'Not provided'}"),
                         const SizedBox(height: 20),
                         Text("Priority: ${orderDetails['priority']}"),
                         const SizedBox(height: 20),
@@ -189,11 +189,19 @@ class _RequestDetailsState extends State<RequestDetails> {
                         ),
                         Column(
                           children: [
-                            MyButton(text: 'Order Complete', onTap: () {} , color: Colors.green,),
+                            MyButton(
+                              text: 'Order Complete',
+                              onTap: () {},
+                              color: Colors.green,
+                            ),
                             const SizedBox(
                               height: 20,
                             ),
-                            MyButton(text: 'Cancel Request', onTap: () {},color: Colors.red,),
+                            MyButton(
+                              text: 'Cancel Request',
+                              onTap: () {},
+                              color: Colors.red,
+                            ),
                             const SizedBox(
                               height: 20,
                             ),
@@ -205,14 +213,18 @@ class _RequestDetailsState extends State<RequestDetails> {
                                     MaterialPageRoute(
                                         builder: (context) => Request(
                                               token: widget.token,
-                                              orderId: orderDetails['orderId'],
+                                              orderId: orderDetails['orderId'].toString(),
                                             )),
                                   );
                                 }),
                             const SizedBox(
                               height: 20,
                             ),
-                            MyButton(text: 'Start Request', onTap: () {},color: AppColors.secondary,),
+                            MyButton(
+                              text: 'Start Request',
+                              onTap: () {},
+                              color: AppColors.secondary,
+                            ),
                           ],
                         ),
                       ],
