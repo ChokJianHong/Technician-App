@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:technician_app/API/getCust.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
-import 'package:technician_app/API/Req.dart'; // Import the request form API
+import 'package:technician_app/API/req.dart';
+
 import 'package:technician_app/Assets/Components/detail.dart';
 import 'package:technician_app/assets/components/text_box.dart';
 import '../assets/components/button.dart';
+import 'package:intl/intl.dart';
 
 class Request extends StatefulWidget {
   final String token;
@@ -61,24 +63,45 @@ class _RequestState extends State<Request> {
     }
   }
 
+  String formatDateTime(String utcDateTime) {
+    try {
+      
+      DateTime parsedDate = DateTime.parse(utcDateTime);
+
+      
+      DateTime localDate = parsedDate.toLocal();
+
+      
+      return DateFormat('yyyy-MM-dd ')
+          .format(localDate); 
+    } catch (e) {
+      
+      print('Error parsing date: $e');
+      return 'Invalid date'; 
+    }
+  }
+
   // Function to handle the request submission
   Future<void> _handleRequestSubmission(
       Map<String, dynamic> customerData, Map<String, dynamic> orderData) async {
     try {
-      final String technicianName =
-          "Technician Name"; // Replace with actual technician name
+      const String technicianName =
+          "Technician Name"; 
       final String customerId = customerData['customerId'].toString();
       final String customerName =
-          customerData['name'].toString(); // Ensure this is a string
-      final String equipment =
-          customerData['alarmBrand'] ?? ''; // Handle null case
-      final String brand =
-          customerData['autogateBrand'] ?? ''; // Handle null case
+          customerData['name']; 
+      final String equipment = orderData['ProblemType'] ??
+          ''; 
+      final String brand = customerData['autogateBrand'] ??
+          customerData['alarmBrand'] ??
+          ''; 
       final String partsNeeded = _newsearchController.text;
 
+      
       await _requestApi.createRequestForm(
         technicianName: technicianName,
         customerId: customerId,
+        customerName: customerName,
         equipment: equipment,
         brand: brand,
         partsNeeded: partsNeeded,
@@ -156,7 +179,7 @@ class _RequestState extends State<Request> {
             }
 
             final orderData = snapshot.data!['order']; // Order details
-            final customerData = snapshot.data!['customer']; // Customer details
+            final customerData = snapshot.data!['customer']; 
 
             return Padding(
               padding: const EdgeInsets.all(20.0),
@@ -177,7 +200,7 @@ class _RequestState extends State<Request> {
                     brand: customerData['autogateBrand'] ??
                         customerData['alarmBrand'],
                     model: orderData['ProblemType'],
-                    date: orderData['orderDate'],
+                    date: formatDateTime(orderData['orderDate']),
                     time: orderData['orderTime'],
                   ),
                   const SizedBox(height: 30),

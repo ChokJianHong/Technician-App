@@ -1,5 +1,6 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Pages/part_request.dart';
@@ -30,8 +31,25 @@ class _RequestDetailsState extends State<RequestDetails> {
   @override
   void initState() {
     super.initState();
-    _orderDetailFuture =
-        _fetchOrderDetails(widget.token, widget.orderId); 
+    _orderDetailFuture = _fetchOrderDetails(widget.token, widget.orderId);
+  }
+
+  String formatDateTime(String utcDateTime) {
+    try {
+      // Parse the UTC date string into a DateTime object
+      DateTime parsedDate = DateTime.parse(utcDateTime);
+
+      // Convert the UTC date to local time
+      DateTime localDate = parsedDate.toLocal();
+
+      // Format the local date into a desired string format
+      return DateFormat('yyyy-MM-dd HH:mm:ss')
+          .format(localDate); // Adjust format as needed
+    } catch (e) {
+      // Handle potential parsing errors
+      print('Error parsing date: $e');
+      return 'Invalid date'; // Return a default value or error message
+    }
   }
 
   Future<Map<String, dynamic>> _fetchOrderDetails(
@@ -76,29 +94,6 @@ class _RequestDetailsState extends State<RequestDetails> {
     }
   }
 
-  void _showSuccessDialog(String message) {
-    if (mounted) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Success'),
-            content: Text(message),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop(); // Go back to the previous screen
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,7 +127,7 @@ class _RequestDetailsState extends State<RequestDetails> {
                             "Problem Type: ${orderDetails['ProblemType'] ?? 'Not provided'}"),
                         const SizedBox(height: 20),
                         Text(
-                            "Date and Time: ${orderDetails['orderDate']?.toString() ?? 'Not provided'}"),
+                            "Date and Time: ${formatDateTime(orderDetails['orderDate'])}"),
                         const SizedBox(height: 20),
                         Text("Priority: ${orderDetails['priority']}"),
                         const SizedBox(height: 20),
@@ -213,7 +208,8 @@ class _RequestDetailsState extends State<RequestDetails> {
                                     MaterialPageRoute(
                                         builder: (context) => Request(
                                               token: widget.token,
-                                              orderId: orderDetails['orderId'].toString(),
+                                              orderId: orderDetails['orderId']
+                                                  .toString(),
                                             )),
                                   );
                                 }),
