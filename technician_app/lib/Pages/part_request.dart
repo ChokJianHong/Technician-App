@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:technician_app/API/getCust.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/API/req.dart';
-
 import 'package:technician_app/Assets/Components/detail.dart';
 import 'package:technician_app/assets/components/text_box.dart';
 import '../assets/components/button.dart';
@@ -26,7 +25,7 @@ final TextEditingController _newsearchController = TextEditingController();
 
 class _RequestState extends State<Request> {
   late Future<Map<String, dynamic>> _combinedDetailsFuture;
-  final Req _requestApi = Req(); // Initialize the request API
+  final Req _requestApi = Req();
 
   @override
   void initState() {
@@ -44,7 +43,6 @@ class _RequestState extends State<Request> {
       if (orderDetails['success']) {
         final String customerId = orderDetails['result']['CustomerID']
             .toString(); // Extract customerId
-
         // Fetch customer details using the customerId from the order details
         final customerDetails = await getCustomerDetails(customerId);
 
