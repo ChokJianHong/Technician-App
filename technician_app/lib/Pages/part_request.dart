@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:technician_app/API/getCust.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/API/req.dart';
+import 'package:technician_app/API/getTechnician.dart'; // Import Technician API service
 import 'package:technician_app/Assets/Components/detail.dart';
 import 'package:technician_app/assets/components/text_box.dart';
 import '../assets/components/button.dart';
 import 'package:intl/intl.dart';
+import 'package:jwt_decoder/jwt_decoder.dart'; // Import the jwt_decoder package
 
 class Request extends StatefulWidget {
   final String token;
@@ -26,12 +28,56 @@ final TextEditingController _newsearchController = TextEditingController();
 class _RequestState extends State<Request> {
   late Future<Map<String, dynamic>> _combinedDetailsFuture;
   final Req _requestApi = Req();
+  final TechnicianService _technicianService =
+      TechnicianService(); // Add TechnicianService instance
+  String technicianName =
+      "Loading..."; // Set default loading state for technician name
 
   @override
   void initState() {
     super.initState();
     _combinedDetailsFuture =
         _fetchOrderAndCustomerDetails(widget.token, widget.orderId);
+    _fetchTechnicianName(); // Fetch the technician's name when the page loads
+  }
+
+  void _fetchTechnicianName() async {
+  try {
+    // Decode the token to extract the technician ID
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
+    String technicianId = decodedToken['technician_id']; // Extract the technician ID from token
+
+    // Fetch technician details using the ID
+    Map<String, dynamic> technicianDetails = await _technicianService.getTechnicianById(widget.token, technicianId);
+
+    // Directly use technicianDetails['name']
+    setState(() {
+      technicianName = technicianDetails['name']; // Update technician name in the state
+    });
+  } catch (error) {
+    print("Error decoding token or fetching technician details: $error");
+    setState(() {
+      technicianName = "Unknown"; // Set a fallback name in case of an error
+    });
+  }
+}
+
+  String formatDateTime(String utcDateTime) {
+    try {
+      // Parse the UTC date string into a DateTime object
+      DateTime parsedDate = DateTime.parse(utcDateTime);
+
+      // Convert the UTC date to local time
+      DateTime localDate = parsedDate.toLocal();
+
+      // Format the local date into a desired string format
+      return DateFormat('yyyy-MM-dd')
+          .format(localDate); // Adjust format as needed
+    } catch (e) {
+      // Handle potential parsing errors
+      print('Error parsing date: $e');
+      return 'Invalid date'; // Return a default value or error message
+    }
   }
 
   // Fetch order details, extract customerId, and then fetch customer details
@@ -61,56 +107,34 @@ class _RequestState extends State<Request> {
     }
   }
 
-  String formatDateTime(String utcDateTime) {
-    try {
-      
-      DateTime parsedDate = DateTime.parse(utcDateTime);
-
-      
-      DateTime localDate = parsedDate.toLocal();
-
-      
-      return DateFormat('yyyy-MM-dd ')
-          .format(localDate); 
-    } catch (e) {
-      
-      print('Error parsing date: $e');
-      return 'Invalid date'; 
+  Future<void> _handleRequestSubmission(Map<String, dynamic> customerData, Map<String, dynamic> orderData) async {
+  try {
+    if (technicianName == "Loading..." || technicianName == "Unknown") {
+      _showErrorDialog("Technician's name is not available yet. Please try again.");
+      return;
     }
+
+    final String customerId = customerData['customerId'].toString();
+    final String customerName = customerData['name'];
+    final String equipment = orderData['ProblemType'] ?? '';
+    final String brand = customerData['autogateBrand'] ?? customerData['alarmBrand'] ?? '';
+    final String partsNeeded = _newsearchController.text;
+
+    // Submit the request form with the technician's name and other details
+    await _requestApi.createRequestForm(
+      technicianName: technicianName, // Use fetched technician name
+      customerId: customerId,
+      customerName: customerName,
+      equipment: equipment,
+      brand: brand,
+      partsNeeded: partsNeeded,
+    );
+
+    _showSuccessDialog("Request Form submitted successfully!");
+  } catch (error) {
+    _showErrorDialog('Failed to submit request: $error');
   }
-
-  // Function to handle the request submission
-  Future<void> _handleRequestSubmission(
-      Map<String, dynamic> customerData, Map<String, dynamic> orderData) async {
-    try {
-      const String technicianName =
-          "Technician Name"; 
-      final String customerId = customerData['customerId'].toString();
-      final String customerName =
-          customerData['name']; 
-      final String equipment = orderData['ProblemType'] ??
-          ''; 
-      final String brand = customerData['autogateBrand'] ??
-          customerData['alarmBrand'] ??
-          ''; 
-      final String partsNeeded = _newsearchController.text;
-
-      
-      await _requestApi.createRequestForm(
-        technicianName: technicianName,
-        customerId: customerId,
-        customerName: customerName,
-        equipment: equipment,
-        brand: brand,
-        partsNeeded: partsNeeded,
-      );
-
-      // Show success message
-      _showSuccessDialog("Request Form submitted successfully!");
-    } catch (error) {
-      _showErrorDialog('Failed to submit request: $error');
-    }
-  }
+}
 
   // Display an error dialog if needed
   void _showErrorDialog(String errorMessage) {
@@ -163,7 +187,6 @@ class _RequestState extends State<Request> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(),
-      // Fetch and display both customer and order details
       body: SingleChildScrollView(
         child: FutureBuilder<Map<String, dynamic>>(
           future: _combinedDetailsFuture,
@@ -176,8 +199,8 @@ class _RequestState extends State<Request> {
               return const Center(child: Text('No data found.'));
             }
 
-            final orderData = snapshot.data!['order']; // Order details
-            final customerData = snapshot.data!['customer']; 
+            final orderData = snapshot.data!['order'];
+            final customerData = snapshot.data!['customer'];
 
             return Padding(
               padding: const EdgeInsets.all(20.0),
