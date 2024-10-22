@@ -28,39 +28,54 @@ final TextEditingController _newsearchController = TextEditingController();
 class _RequestState extends State<Request> {
   late Future<Map<String, dynamic>> _combinedDetailsFuture;
   final Req _requestApi = Req();
-  final TechnicianService _technicianService =
-      TechnicianService(); // Add TechnicianService instance
-  String technicianName =
-      "Loading..."; // Set default loading state for technician name
+  final TechnicianService _technicianService = TechnicianService(); // Add TechnicianService instance
+  String technicianName = "Loading..."; // Set default loading state for technician name
 
   @override
   void initState() {
     super.initState();
-    _combinedDetailsFuture =
-        _fetchOrderAndCustomerDetails(widget.token, widget.orderId);
-    _fetchTechnicianName(); // Fetch the technician's name when the page loads
-  }
-
-  void _fetchTechnicianName() async {
-  try {
+    
     // Decode the token to extract the technician ID
-    Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
-    String technicianId = decodedToken['technician_id']; // Extract the technician ID from token
+    String technicianId;
+    try {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
+      technicianId = decodedToken['userId'].toString(); // Adjust key as needed
+      print('Technician ID: $technicianId');
+    } catch (error) {
+      print('Error decoding token: $error');
+      technicianId = 'default'; // Set a default value if decoding fails
+    }
 
-    // Fetch technician details using the ID
-    Map<String, dynamic> technicianDetails = await _technicianService.getTechnicianById(widget.token, technicianId);
-
-    // Directly use technicianDetails['name']
-    setState(() {
-      technicianName = technicianDetails['name']; // Update technician name in the state
-    });
-  } catch (error) {
-    print("Error decoding token or fetching technician details: $error");
-    setState(() {
-      technicianName = "Unknown"; // Set a fallback name in case of an error
-    });
+    // Fetch the technician's name using the technician ID
+    _fetchTechnicianName(technicianId); 
+    _combinedDetailsFuture = _fetchOrderAndCustomerDetails(widget.token, widget.orderId);
   }
-}
+
+  // Fetch technician details using the technician ID
+  void _fetchTechnicianName(String technicianId) async {
+    try {
+      // Fetch technician details using the ID
+      Map<String, dynamic> technicianDetails = await TechnicianService.getTechnician(widget.token, technicianId);
+
+      // Access the technician data from the response
+      if (technicianDetails['technician'] != null && technicianDetails['technician'].isNotEmpty) {
+        // Extract technician details from the first element of the array
+        String name = technicianDetails['technician'][0]['name'];
+        
+        // Update technician name in the state
+        setState(() {
+          technicianName = name; // Set technician name from the API response
+        });
+      } else {
+        throw Exception("Technician details are empty or missing.");
+      }
+    } catch (error) {
+      print("Error fetching technician details: $error");
+      setState(() {
+        technicianName = "Unknown"; // Set a fallback name in case of an error
+      });
+    }
+  }
 
   String formatDateTime(String utcDateTime) {
     try {
@@ -71,8 +86,7 @@ class _RequestState extends State<Request> {
       DateTime localDate = parsedDate.toLocal();
 
       // Format the local date into a desired string format
-      return DateFormat('yyyy-MM-dd')
-          .format(localDate); // Adjust format as needed
+      return DateFormat('yyyy-MM-dd').format(localDate); // Adjust format as needed
     } catch (e) {
       // Handle potential parsing errors
       print('Error parsing date: $e');
@@ -81,14 +95,12 @@ class _RequestState extends State<Request> {
   }
 
   // Fetch order details, extract customerId, and then fetch customer details
-  Future<Map<String, dynamic>> _fetchOrderAndCustomerDetails(
-      String token, String orderId) async {
+  Future<Map<String, dynamic>> _fetchOrderAndCustomerDetails(String token, String orderId) async {
     try {
       // Fetch the order details
       final orderDetails = await OrderDetails().getOrderDetail(token, orderId);
       if (orderDetails['success']) {
-        final String customerId = orderDetails['result']['CustomerID']
-            .toString(); // Extract customerId
+        final String customerId = orderDetails['result']['CustomerID'].toString(); // Extract customerId
         // Fetch customer details using the customerId from the order details
         final customerDetails = await getCustomerDetails(customerId);
 
@@ -108,33 +120,33 @@ class _RequestState extends State<Request> {
   }
 
   Future<void> _handleRequestSubmission(Map<String, dynamic> customerData, Map<String, dynamic> orderData) async {
-  try {
-    if (technicianName == "Loading..." || technicianName == "Unknown") {
-      _showErrorDialog("Technician's name is not available yet. Please try again.");
-      return;
+    try {
+      if (technicianName == "Loading..." || technicianName == "Unknown") {
+        _showErrorDialog("Technician's name is not available yet. Please try again.");
+        return;
+      }
+
+      final String customerId = customerData['customerId'].toString();
+      final String customerName = customerData['name'];
+      final String equipment = orderData['ProblemType'] ?? '';
+      final String brand = customerData['autogateBrand'] ?? customerData['alarmBrand'] ?? '';
+      final String partsNeeded = _newsearchController.text;
+
+      // Submit the request form with the technician's name and other details
+      await _requestApi.createRequestForm(
+        technicianName: technicianName, // Use fetched technician name
+        customerId: customerId,
+        customerName: customerName,
+        equipment: equipment,
+        brand: brand,
+        partsNeeded: partsNeeded,
+      );
+
+      _showSuccessDialog("Request Form submitted successfully!");
+    } catch (error) {
+      _showErrorDialog('Failed to submit request: $error');
     }
-
-    final String customerId = customerData['customerId'].toString();
-    final String customerName = customerData['name'];
-    final String equipment = orderData['ProblemType'] ?? '';
-    final String brand = customerData['autogateBrand'] ?? customerData['alarmBrand'] ?? '';
-    final String partsNeeded = _newsearchController.text;
-
-    // Submit the request form with the technician's name and other details
-    await _requestApi.createRequestForm(
-      technicianName: technicianName, // Use fetched technician name
-      customerId: customerId,
-      customerName: customerName,
-      equipment: equipment,
-      brand: brand,
-      partsNeeded: partsNeeded,
-    );
-
-    _showSuccessDialog("Request Form submitted successfully!");
-  } catch (error) {
-    _showErrorDialog('Failed to submit request: $error');
   }
-}
 
   // Display an error dialog if needed
   void _showErrorDialog(String errorMessage) {
@@ -186,7 +198,7 @@ class _RequestState extends State<Request> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
-      appBar: AppBar(),
+      appBar: AppBar(title: const Text('Request Parts')),
       body: SingleChildScrollView(
         child: FutureBuilder<Map<String, dynamic>>(
           future: _combinedDetailsFuture,
@@ -208,7 +220,7 @@ class _RequestState extends State<Request> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    "Client Details: ",
+                    "Client Details:",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
@@ -218,15 +230,14 @@ class _RequestState extends State<Request> {
                   const SizedBox(height: 10),
                   ClientBox(
                     name: customerData['name'],
-                    brand: customerData['autogateBrand'] ??
-                        customerData['alarmBrand'],
+                    brand: customerData['autogateBrand'] ?? customerData['alarmBrand'],
                     model: orderData['ProblemType'],
                     date: formatDateTime(orderData['orderDate']),
                     time: orderData['orderTime'],
                   ),
                   const SizedBox(height: 30),
                   const Text(
-                    'Parts Request: ',
+                    'Parts Request:',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
