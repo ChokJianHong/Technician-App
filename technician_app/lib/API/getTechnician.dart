@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class TechnicianService {
   static const String baseUrl =
-      'http://10.0.2.2:5005'; // Replace with your actual base URL
+      'http://10.0.2.2:5005'; 
 
   static Future<Map<String, dynamic>> getTechnician(
       String token, String technicianId) async {

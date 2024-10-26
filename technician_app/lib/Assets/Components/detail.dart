@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ClientBox extends StatelessWidget {
   final String name;
   final String brand;
-  final String model;
+  final String warranty;
   final String date;
   final String time;
 
@@ -11,7 +11,7 @@ class ClientBox extends StatelessWidget {
     super.key,
     required this.name,
     required this.brand,
-    required this.model,
+    required this.warranty,
     required this.date,
     required this.time,
   });
@@ -67,14 +67,14 @@ class ClientBox extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Model',
+                        'Warranty',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(model),
+                      Text(warranty),
                     ],
                   ),
                 ),

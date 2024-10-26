@@ -28,13 +28,15 @@ final TextEditingController _newsearchController = TextEditingController();
 class _RequestState extends State<Request> {
   late Future<Map<String, dynamic>> _combinedDetailsFuture;
   final Req _requestApi = Req();
-  final TechnicianService _technicianService = TechnicianService(); // Add TechnicianService instance
-  String technicianName = "Loading..."; // Set default loading state for technician name
+  final TechnicianService _technicianService =
+      TechnicianService(); // Add TechnicianService instance
+  String technicianName =
+      "Loading..."; // Set default loading state for technician name
 
   @override
   void initState() {
     super.initState();
-    
+
     // Decode the token to extract the technician ID
     String technicianId;
     try {
@@ -47,21 +49,24 @@ class _RequestState extends State<Request> {
     }
 
     // Fetch the technician's name using the technician ID
-    _fetchTechnicianName(technicianId); 
-    _combinedDetailsFuture = _fetchOrderAndCustomerDetails(widget.token, widget.orderId);
+    _fetchTechnicianName(technicianId);
+    _combinedDetailsFuture =
+        _fetchOrderAndCustomerDetails(widget.token, widget.orderId);
   }
 
   // Fetch technician details using the technician ID
   void _fetchTechnicianName(String technicianId) async {
     try {
       // Fetch technician details using the ID
-      Map<String, dynamic> technicianDetails = await TechnicianService.getTechnician(widget.token, technicianId);
+      Map<String, dynamic> technicianDetails =
+          await TechnicianService.getTechnician(widget.token, technicianId);
 
       // Access the technician data from the response
-      if (technicianDetails['technician'] != null && technicianDetails['technician'].isNotEmpty) {
+      if (technicianDetails['technician'] != null &&
+          technicianDetails['technician'].isNotEmpty) {
         // Extract technician details from the first element of the array
         String name = technicianDetails['technician'][0]['name'];
-        
+
         // Update technician name in the state
         setState(() {
           technicianName = name; // Set technician name from the API response
@@ -86,7 +91,8 @@ class _RequestState extends State<Request> {
       DateTime localDate = parsedDate.toLocal();
 
       // Format the local date into a desired string format
-      return DateFormat('yyyy-MM-dd').format(localDate); // Adjust format as needed
+      return DateFormat('yyyy-MM-dd')
+          .format(localDate); // Adjust format as needed
     } catch (e) {
       // Handle potential parsing errors
       print('Error parsing date: $e');
@@ -95,12 +101,14 @@ class _RequestState extends State<Request> {
   }
 
   // Fetch order details, extract customerId, and then fetch customer details
-  Future<Map<String, dynamic>> _fetchOrderAndCustomerDetails(String token, String orderId) async {
+  Future<Map<String, dynamic>> _fetchOrderAndCustomerDetails(
+      String token, String orderId) async {
     try {
       // Fetch the order details
       final orderDetails = await OrderDetails().getOrderDetail(token, orderId);
       if (orderDetails['success']) {
-        final String customerId = orderDetails['result']['CustomerID'].toString(); // Extract customerId
+        final String customerId = orderDetails['result']['CustomerID']
+            .toString(); // Extract customerId
         // Fetch customer details using the customerId from the order details
         final customerDetails = await getCustomerDetails(customerId);
 
@@ -119,17 +127,20 @@ class _RequestState extends State<Request> {
     }
   }
 
-  Future<void> _handleRequestSubmission(Map<String, dynamic> customerData, Map<String, dynamic> orderData) async {
+  Future<void> _handleRequestSubmission(
+      Map<String, dynamic> customerData, Map<String, dynamic> orderData) async {
     try {
       if (technicianName == "Loading..." || technicianName == "Unknown") {
-        _showErrorDialog("Technician's name is not available yet. Please try again.");
+        _showErrorDialog(
+            "Technician's name is not available yet. Please try again.");
         return;
       }
 
       final String customerId = customerData['customerId'].toString();
       final String customerName = customerData['name'];
       final String equipment = orderData['ProblemType'] ?? '';
-      final String brand = customerData['autogateBrand'] ?? customerData['alarmBrand'] ?? '';
+      final String brand =
+          customerData['autogateBrand'] ?? customerData['alarmBrand'] ?? '';
       final String partsNeeded = _newsearchController.text;
 
       // Submit the request form with the technician's name and other details
@@ -211,8 +222,21 @@ class _RequestState extends State<Request> {
               return const Center(child: Text('No data found.'));
             }
 
-            final orderData = snapshot.data!['order'];
-            final customerData = snapshot.data!['customer'];
+            final orderData = snapshot.data!['order'] ?? {};
+            final customerData = snapshot.data!['customer'] ?? {};
+
+            // Determine brand and warranty fields based on ProblemType
+            String problemType = orderData['ProblemType'] ?? 'Unknown Problem';
+            String brand = 'Unknown Brand';
+            String warranty = 'No warranty';
+
+            if (problemType == 'autogate') {
+              brand = customerData['autogateBrand'] ?? 'Unknown Brand';
+              warranty = customerData['autogateWarranty'] ?? 'No warranty';
+            } else if (problemType == 'alarm') {
+              brand = customerData['alarmBrand'] ?? 'Unknown Brand';
+              warranty = customerData['alarmWarranty'] ?? 'No warranty';
+            }
 
             return Padding(
               padding: const EdgeInsets.all(20.0),
@@ -229,11 +253,12 @@ class _RequestState extends State<Request> {
                   ),
                   const SizedBox(height: 10),
                   ClientBox(
-                    name: customerData['name'],
-                    brand: customerData['autogateBrand'] ?? customerData['alarmBrand'],
-                    model: orderData['ProblemType'],
-                    date: formatDateTime(orderData['orderDate']),
-                    time: orderData['orderTime'],
+                    name: customerData['name'] ?? 'Unknown Name',
+                    brand: brand,
+                    warranty: formatDateTime(warranty),
+                    date: formatDateTime(
+                        orderData['orderDate'] ?? DateTime.now().toString()),
+                    time: orderData['orderTime'] ?? 'No time available',
                   ),
                   const SizedBox(height: 30),
                   const Text(
@@ -254,7 +279,6 @@ class _RequestState extends State<Request> {
                   MyButton(
                     text: "Request Parts",
                     onTap: () {
-                      // Call the request submission function with data
                       _handleRequestSubmission(customerData, orderData);
                     },
                   ),
