@@ -264,12 +264,12 @@ class _PendingState extends State<Pending> {
                         onTap: () {
                           // Implement decline functionality if needed
                         },
-                        color: Color(0xFF554E6B),
+                        color: const Color(0xFF554E6B),
                       ),
                       MyButton(
                         text: 'Accept',
                         onTap: _acceptOrder,
-                        color: Color(0xFF8FA78C),
+                        color: const Color(0xFF8FA78C),
                       ),
                     ],
                   ),
