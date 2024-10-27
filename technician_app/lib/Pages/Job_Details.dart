@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:technician_app/API/cancel.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
+import 'package:technician_app/Pages/Completed_Job_Details.dart';
 import 'package:technician_app/Pages/part_request.dart';
 import 'package:technician_app/assets/components/BottomNav.dart';
 import 'package:technician_app/assets/components/button.dart';
@@ -46,7 +47,8 @@ class _RequestDetailsState extends State<RequestDetails> {
     }
   }
 
-  Future<Map<String, dynamic>> _fetchOrderDetails(String token, String orderId) async {
+  Future<Map<String, dynamic>> _fetchOrderDetails(
+      String token, String orderId) async {
     try {
       final orderDetails = await OrderDetails().getOrderDetail(token, orderId);
       if (orderDetails['success']) {
@@ -141,7 +143,8 @@ class _RequestDetailsState extends State<RequestDetails> {
   // Function to handle order cancellation
   Future<void> _cancelOrder(String reason) async {
     try {
-      final response = await CancelService.declineOrder(widget.orderId, reason, widget.token);
+      final response = await CancelService.declineOrder(
+          widget.orderId, reason, widget.token);
       // Handle successful cancellation response
       if (response['status'] == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -182,9 +185,11 @@ class _RequestDetailsState extends State<RequestDetails> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Problem Type: ${orderDetails['ProblemType'] ?? 'Not provided'}"),
+                        Text(
+                            "Problem Type: ${orderDetails['ProblemType'] ?? 'Not provided'}"),
                         const SizedBox(height: 20),
-                        Text("Date and Time: ${formatDateTime(orderDetails['orderDate'])}"),
+                        Text(
+                            "Date and Time: ${formatDateTime(orderDetails['orderDate'])}"),
                         const SizedBox(height: 20),
                         Text("Priority: ${orderDetails['priority']}"),
                         const SizedBox(height: 20),
@@ -226,7 +231,9 @@ class _RequestDetailsState extends State<RequestDetails> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Expanded(child: Text("Picture: ${orderDetails['orderImage']}")),
+                            Expanded(
+                                child: Text(
+                                    "Picture: ${orderDetails['orderImage']}")),
                             const Text("View"),
                           ],
                         ),
@@ -235,13 +242,24 @@ class _RequestDetailsState extends State<RequestDetails> {
                           children: [
                             MyButton(
                               text: 'Order Complete',
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CompletedJobDetails(
+                                      token: widget.token,
+                                      orderId: widget.orderId,
+                                    ),
+                                  ),
+                                );
+                              },
                               color: Colors.green,
                             ),
                             const SizedBox(height: 20),
                             MyButton(
                               text: 'Cancel Request',
-                              onTap: _showCancelDialog, // Call the dialog method
+                              onTap:
+                                  _showCancelDialog, // Call the dialog method
                               color: Colors.red,
                             ),
                             const SizedBox(height: 20),
@@ -253,7 +271,8 @@ class _RequestDetailsState extends State<RequestDetails> {
                                     MaterialPageRoute(
                                         builder: (context) => Request(
                                               token: widget.token,
-                                              orderId: orderDetails['orderId'].toString(),
+                                              orderId: orderDetails['orderId']
+                                                  .toString(),
                                             )),
                                   );
                                 }),
