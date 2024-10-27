@@ -1,6 +1,5 @@
-// ignore_for_file: file_names
 
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+
 import 'package:flutter/material.dart';
 import 'package:technician_app/Pages/History.dart';
 import 'package:technician_app/Pages/Scheduel.dart';
@@ -21,70 +20,60 @@ class BottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CurvedNavigationBar(
-      index: currentIndex,
-      backgroundColor: Colors.transparent,
-      color: AppColors.secondary,
-      buttonBackgroundColor: AppColors.primary,
-      height: 60.0,
-      onTap: (index) {
-        _navigateToPage(context, index, token); // Pass token here
-      },
+    return BottomNavigationBar(
+      currentIndex: currentIndex,
+      onTap: (index) => _navigateToPage(context, index, token), // Handle tap
+      backgroundColor: Colors.white, // Clean background
+      selectedItemColor: AppColors.primary, // Professional highlight color
+      unselectedItemColor: Colors.grey, // Subtle unselected color
+      showSelectedLabels: true, // Show labels for clarity
+      showUnselectedLabels: false, // Hide labels for unselected items
+      type: BottomNavigationBarType.fixed, // Ensures all icons are visible
       items: const [
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 20.0),
-          child: Icon(
-            Icons.favorite,
-            color: Colors.white,
-            size: 40,
-          ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.favorite),
+          label: 'Favorites',
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 20.0),
-          child: Icon(
-            Icons.home,
-            color: Colors.white,
-            size: 40,
-          ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 20.0),
-          child: Icon(
-            Icons.settings,
-            color: Colors.white,
-            size: 40,
-          ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings),
+          label: 'Settings',
         ),
       ],
     );
   }
-}
 
-// Update the navigation function to accept the token
-void _navigateToPage(BuildContext context, int index, String token) {
-  switch (index) {
-    case 0:
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => History(token: token,)),
-      );
-      break;
-    case 1:
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage(token: token,)),
-      );
-      break;
-    case 2:
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>  Schedule(token: token,), // Pass token correctly
-        ),
-      );
-      break;
-    default:
-      // Handle default case if necessary
-      break;
+  void _navigateToPage(BuildContext context, int index, String token) {
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => History(token: token),
+          ),
+        );
+        break;
+      case 1:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(token: token),
+          ),
+        );
+        break;
+      case 2:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Schedule(token: token),
+          ),
+        );
+        break;
+      default:
+        break;
+    }
   }
 }

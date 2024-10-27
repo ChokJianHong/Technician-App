@@ -9,6 +9,7 @@ import 'package:technician_app/Assets/Components/NewJobcard.dart'; // import the
 import 'dart:collection';
 
 import 'package:technician_app/Pages/Job_Details.dart';
+import 'package:technician_app/core/configs/theme/appColors.dart';
 
 class Schedule extends StatefulWidget {
   final String token;
@@ -68,7 +69,7 @@ class _ScheduleState extends State<Schedule> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF391370),
+      backgroundColor: AppColors.primary,
       appBar: CustomAppBar(token: widget.token),
       body: Column(
         children: [

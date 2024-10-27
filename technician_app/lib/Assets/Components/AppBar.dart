@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:technician_app/Pages/setting.dart';
+import 'package:technician_app/core/configs/theme/appColors.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String token;
@@ -31,11 +32,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           padding: EdgeInsets.only(right: 16.0),
           child: Icon(
             Icons.notifications,
-            color: Colors.white,
+            color: Color(0xFF8977C5),
           ),
         )
       ],
-      backgroundColor: const Color(0xFF4E31AA),
+      backgroundColor: AppColors.secondary,
     );
   }
 

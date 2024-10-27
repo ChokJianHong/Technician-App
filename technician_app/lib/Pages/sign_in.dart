@@ -135,7 +135,15 @@ class _SignInPageState extends State<SignInPage> {
                 if (errorMessage != null)
                   Text(errorMessage!,
                       style: const TextStyle(color: Colors.red)),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
+                Container(
+                  alignment: Alignment.centerRight, // Aligns to the right
+                  child: Text(
+                    "Forgot Password?",
+                    style: TextStyle(color: Colors.grey[400], fontSize: 14),
+                  ),
+                ),
+                const SizedBox(height: 10),
                 isLoading
                     ? const CircularProgressIndicator()
                     : MyButton(
@@ -143,46 +151,6 @@ class _SignInPageState extends State<SignInPage> {
                         onTap: _signIn,
                         color: const Color(0xFF41336D),
                       ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    const Expanded(
-                      child: Divider(
-                          thickness: 1, color: Colors.white, endIndent: 10),
-                    ),
-                    Text("or continue with",
-                        style:
-                            TextStyle(color: Colors.grey[400], fontSize: 14)),
-                    const Expanded(
-                      child: Divider(
-                          thickness: 1, color: Colors.white, endIndent: 10),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.account_circle),
-                      color: Colors.white,
-                      iconSize: 50,
-                      onPressed: () {
-                        // Handle Google login
-                      },
-                    ),
-                    const SizedBox(width: 30),
-                    IconButton(
-                      icon: const Icon(
-                          Icons.settings), // Substitute with your second icon
-                      color: Colors.white,
-                      iconSize: 50,
-                      onPressed: () {
-                        // Handle second login
-                      },
-                    ),
-                  ],
-                ),
                 const SizedBox(height: 20),
               ],
             ),

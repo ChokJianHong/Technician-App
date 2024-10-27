@@ -28,8 +28,7 @@ final TextEditingController _newsearchController = TextEditingController();
 class _RequestState extends State<Request> {
   late Future<Map<String, dynamic>> _combinedDetailsFuture;
   final Req _requestApi = Req();
-  final TechnicianService _technicianService =
-      TechnicianService(); // Add TechnicianService instance
+// Add TechnicianService instance
   String technicianName =
       "Loading..."; // Set default loading state for technician name
 
@@ -252,13 +251,16 @@ class _RequestState extends State<Request> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  ClientBox(
-                    name: customerData['name'] ?? 'Unknown Name',
-                    brand: brand,
-                    warranty: formatDateTime(warranty),
-                    date: formatDateTime(
-                        orderData['orderDate'] ?? DateTime.now().toString()),
-                    time: orderData['orderTime'] ?? 'No time available',
+                  DefaultTextStyle(
+                    style: const TextStyle(color: Colors.white),
+                    child: ClientBox(
+                      name: customerData['name'] ?? 'Unknown Name',
+                      brand: brand,
+                      warranty: formatDateTime(warranty),
+                      date: formatDateTime(
+                          orderData['orderDate'] ?? DateTime.now().toString()),
+                      time: orderData['orderTime'] ?? 'No time available',
+                    ),
                   ),
                   const SizedBox(height: 30),
                   const Text(
