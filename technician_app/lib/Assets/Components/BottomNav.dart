@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:technician_app/Pages/History.dart';
 import 'package:technician_app/Pages/Scheduel.dart';
@@ -23,24 +21,24 @@ class BottomNav extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: (index) => _navigateToPage(context, index, token), // Handle tap
-      backgroundColor: Colors.white, // Clean background
-      selectedItemColor: AppColors.primary, // Professional highlight color
-      unselectedItemColor: Colors.grey, // Subtle unselected color
+      backgroundColor: AppColors.secondary, // Clean background
+      selectedItemColor: Colors.white, // Professional highlight color
+      unselectedItemColor: const Color(0xFF8977C5), // Subtle unselected color
       showSelectedLabels: true, // Show labels for clarity
       showUnselectedLabels: false, // Hide labels for unselected items
       type: BottomNavigationBarType.fixed, // Ensures all icons are visible
       items: const [
         BottomNavigationBarItem(
-          icon: Icon(Icons.favorite),
-          label: 'Favorites',
+          icon: Icon(Icons.format_list_bulleted),
+          label: 'History',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: 'Settings',
+          icon: Icon(Icons.schedule),
+          label: 'Schedule',
         ),
       ],
     );

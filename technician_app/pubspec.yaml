@@ -41,6 +41,7 @@ flutter:
     - lib/Assets/Images/signinlock.png
     - lib/Assets/Images/problem.png
     - lib/Assets/Images/smallProfile.png
+    - lib/Assets/Images/Frame.png
 
 
   fonts:
