@@ -1,4 +1,3 @@
-
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:email_validator/email_validator.dart';
@@ -117,8 +116,9 @@ class _SignInPageState extends State<SignInPage> {
               children: <Widget>[
                 Image.asset('lib/Assets/Images/signinlock.png'),
                 const SizedBox(height: 20),
-                const Text('Welcome Back!',
-                    style: TextStyle(fontWeight: FontWeight.w500,color: Colors.white)),
+                const Text("Welcome Back! You've been missed",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500, color: Colors.white)),
                 const SizedBox(height: 20),
                 MyTextField(
                   controller: emailController,
@@ -138,7 +138,11 @@ class _SignInPageState extends State<SignInPage> {
                 const SizedBox(height: 20),
                 isLoading
                     ? const CircularProgressIndicator()
-                    : MyButton(text: "Sign In", onTap: _signIn),
+                    : MyButton(
+                        text: "Sign In",
+                        onTap: _signIn,
+                        color: const Color(0xFF41336D),
+                      ),
                 const SizedBox(height: 20),
                 Row(
                   children: [
@@ -180,7 +184,6 @@ class _SignInPageState extends State<SignInPage> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                
               ],
             ),
           ),
