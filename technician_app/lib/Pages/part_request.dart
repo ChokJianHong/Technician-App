@@ -3,6 +3,8 @@ import 'package:technician_app/API/getCust.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/API/req.dart';
 import 'package:technician_app/API/getTechnician.dart'; // Import Technician API service
+import 'package:technician_app/Assets/Components/AppBar.dart';
+import 'package:technician_app/Assets/Components/BottomNav.dart';
 import 'package:technician_app/Assets/Components/detail.dart';
 import 'package:technician_app/assets/components/text_box.dart';
 import '../assets/components/button.dart';
@@ -26,11 +28,18 @@ class Request extends StatefulWidget {
 final TextEditingController _newsearchController = TextEditingController();
 
 class _RequestState extends State<Request> {
+  int _currentIndex = 1;
   late Future<Map<String, dynamic>> _combinedDetailsFuture;
   final Req _requestApi = Req();
 // Add TechnicianService instance
   String technicianName =
       "Loading..."; // Set default loading state for technician name
+
+  void _onTap(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 
   @override
   void initState() {
@@ -208,7 +217,7 @@ class _RequestState extends State<Request> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
-      appBar: AppBar(title: const Text('Request Parts')),
+      appBar: CustomAppBar(token: widget.token),
       body: SingleChildScrollView(
         child: FutureBuilder<Map<String, dynamic>>(
           future: _combinedDetailsFuture,
@@ -290,6 +299,13 @@ class _RequestState extends State<Request> {
           },
         ),
       ),
+      bottomNavigationBar: BottomNav(
+        onTap: _onTap,
+        currentIndex: _currentIndex,
+        token: widget.token,
+      ),
     );
+    
   }
+  
 }
