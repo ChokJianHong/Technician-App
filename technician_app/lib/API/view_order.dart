@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:technician_app/Assets/Model/order_model.dart';
 
-const baseUrl = "http://10.0.2.2:5005";
+const baseUrl = "http://82.112.238.13:5005";
 
 class OrderService {
   Future<List<OrderModel>> getPendingOrders(String token) async {

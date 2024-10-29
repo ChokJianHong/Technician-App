@@ -3,7 +3,7 @@ import 'dart:async'; // For handling timeouts
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
-const baseUrl = "http://10.0.2.2:5005"; // Adjust if needed
+const baseUrl = "http://82.112.238.13:5005"; // Adjust if needed
 
 class SignInAPI {
   final storage = const FlutterSecureStorage();

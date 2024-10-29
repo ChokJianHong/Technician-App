@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-const baseUrl = "http://10.0.2.2:5005";
+const baseUrl = "http://82.112.238.13:5005";
 
 class OrderDetails {
   Future<Map<String, dynamic>> getOrderDetail(String token, String orderId) async {

@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 
-const baseUrl = "http://10.0.2.2:5005";
+const baseUrl = "http://82.112.238.13:5005";
 
 class Req {
   Future<Map<String, dynamic>> getCustomerDetails(String customerId) async {
     final String apiUrl =
-        'http://10.0.2.2:5005/dashboarddatabase/technician/customersDetail/$customerId'; // Replace with your API endpoint
+        'http://82.112.238.13:5005/dashboarddatabase/technician/customersDetail/$customerId'; // Replace with your API endpoint
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
