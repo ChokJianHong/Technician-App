@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Pages/home.dart';
+import 'package:technician_app/Pages/payment.dart';
 import 'package:technician_app/assets/components/BottomNav.dart';
 import 'package:technician_app/assets/components/button.dart';
 import 'package:http/http.dart' as http;
@@ -285,7 +286,7 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => HomePage(token: widget.token)),
+              builder: (context) => Payment(token: widget.token)),
         ); // Navigate to confirmation page
       } else {
         String errorMessage = result['message'] ?? 'An error occurred';

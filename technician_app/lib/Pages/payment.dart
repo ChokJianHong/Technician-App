@@ -1,131 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:technician_app/Assets/Components/category.dart';
+import 'package:technician_app/Assets/Components/text_box.dart';
+import 'package:technician_app/core/configs/theme/appColors.dart';
 
-void main() {
-  runApp(MyApp());
-}
+class Payment extends StatefulWidget {
+  final String token;
 
-class MyApp extends StatelessWidget {
+  Payment({super.key, required this.token});
+
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primaryColor: Color(0xFF6E01CA), // Purple shade
-      ),
-      home: PaymentScreen(),
-    );
-  }
+  State<Payment> createState() => _PaymentState();
 }
 
-class PaymentScreen extends StatelessWidget {
+class _PaymentState extends State<Payment> {
+  final TextEditingController _newsearchController = TextEditingController();
+  String? selectedCategory;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF243D66), // Dark blue shade for background
-      appBar: AppBar(
-        backgroundColor: Color(0xFF6E01CA), // Purple shade for app bar
-        title: Text('Payment Amount', style: TextStyle(fontSize: 18)),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 20),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Payment Amount',
-                fillColor: Color(0xFFEBECF1), // Light gray for text field background
-                filled: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+            const Text(
+              'Payment:',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                color: Colors.white,
               ),
             ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                PaymentOptionButton(
-                  label: 'Cash',
-                  icon: Icons.attach_money,
-                ),
-                PaymentOptionButton(
-                  label: 'QR Pay',
-                  icon: Icons.qr_code,
-                ),
-              ],
+            const SizedBox(height: 5),
+            MyTextField(
+              controller: _newsearchController,
+              hintText: 'Amount',
+              obscureText: false,
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFC285FA), // Light purple for confirm button
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+            const SizedBox(height: 20),
+            CategoryButtons(
+              onCategorySelected: (category) {
+                setState(() {
+                  selectedCategory = category;
+                });
+              },
+            ),
+            if (selectedCategory != null)
+              Text(
+                'Selected Category: $selectedCategory',
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: AppColors.primary,
                 ),
               ),
-              onPressed: () {},
-              child: Text('Confirm', style: TextStyle(fontSize: 16)),
-            ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        color: Color(0xFF6E01CA), // Purple for bottom navigation bar
-        shape: CircularNotchedRectangle(),
-        notchMargin: 6.0,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                icon: Icon(Icons.add_box, color: Colors.white),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(Icons.home, color: Colors.white),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(Icons.download, color: Colors.white),
-                onPressed: () {},
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class PaymentOptionButton extends StatelessWidget {
-  final String label;
-  final IconData icon;
-
-  PaymentOptionButton({required this.label, required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 120,
-      height: 120,
-      decoration: BoxDecoration(
-        color: Color(0xFF4FB0C6), // Blue shade for option buttons
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 40, color: Colors.white),
-          SizedBox(height: 8),
-          Text(label, style: TextStyle(color: Colors.white, fontSize: 16)),
-        ],
       ),
     );
   }
