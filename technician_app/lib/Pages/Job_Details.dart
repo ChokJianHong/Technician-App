@@ -97,12 +97,15 @@ class _RequestDetailsState extends State<RequestDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+
           title: const Text('Cancel Request'),
+
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text('Please enter the reason for cancellation:'),
               TextField(
+
                 onChanged: (value) {
                   cancellationReason = value; // Update the reason
                 },
@@ -126,13 +129,17 @@ class _RequestDetailsState extends State<RequestDetails> {
                   );
                 }
               },
+
               child: const Text('Confirm'),
+
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
+
               child: const Text('Cancel'),
+
             ),
           ],
         );
@@ -161,6 +168,7 @@ class _RequestDetailsState extends State<RequestDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       backgroundColor: AppColors.primary,
       appBar: CustomAppBar(
         token: widget.token,
@@ -225,6 +233,7 @@ class _RequestDetailsState extends State<RequestDetails> {
                               ),
                               style: const TextStyle(fontSize: 18),
                             ),
+
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -294,6 +303,7 @@ class _RequestDetailsState extends State<RequestDetails> {
             return const Center(child: Text('No data available'));
           }
         },
+
       ),
       bottomNavigationBar: BottomNav(
         onTap: _onTapTapped,

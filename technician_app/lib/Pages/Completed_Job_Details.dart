@@ -174,6 +174,7 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
+
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
@@ -258,6 +259,7 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
             return const Center(child: Text('No data available'));
           }
         },
+
       ),
       bottomNavigationBar: BottomNav(
         onTap: _onTapTapped,

@@ -101,6 +101,7 @@ class _HistoryState extends State<History> {
             const Text(
               'History',
               style: TextStyle(color: Colors.white, fontSize: 16),
+
             ),
             const SizedBox(height: 16),
             Expanded(

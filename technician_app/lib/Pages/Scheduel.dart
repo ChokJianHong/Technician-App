@@ -145,6 +145,7 @@ class _ScheduleState extends State<Schedule> {
           ),
         ],
       ),
+
       bottomNavigationBar: BottomNav(
         onTap: (index) {
           setState(() {
