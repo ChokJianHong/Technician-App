@@ -1,62 +1,145 @@
+// ignore_for_file: file_names
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:technician_app/API/cancel.dart';
+import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
-import 'package:technician_app/Assets/Components/BottomNav.dart';
+import 'package:technician_app/Pages/Completed_Job_Details.dart';
+import 'package:technician_app/Pages/part_request.dart';
+import 'package:technician_app/assets/components/BottomNav.dart';
+import 'package:technician_app/assets/components/button.dart';
+import 'package:technician_app/core/configs/theme/appColors.dart';
 
-class JobDetails extends StatefulWidget {
-  const JobDetails({super.key});
+class RequestDetails extends StatefulWidget {
+  final String token;
+  final String orderId;
+
+  const RequestDetails({super.key, required this.token, required this.orderId});
 
   @override
-  State<JobDetails> createState() => _JobDetailsState();
+  State<RequestDetails> createState() => _RequestDetailsState();
 }
 
-class _JobDetailsState extends State<JobDetails> {
+class _RequestDetailsState extends State<RequestDetails> {
+  int _currentIndex = 2;
+  late Future<Map<String, dynamic>> _orderDetailFuture;
 
-  int _currentIndex = 1;
-  final TextEditingController _reasonController = TextEditingController();
   void _onTapTapped(int index) {
     setState(() {
       _currentIndex = index;
     });
   }
 
-void _showCancelDialog(BuildContext context) {
+  @override
+  void initState() {
+    super.initState();
+    _orderDetailFuture = _fetchOrderDetails(widget.token, widget.orderId);
+  }
+
+  String formatDateTime(String utcDateTime) {
+    try {
+      DateTime parsedDate = DateTime.parse(utcDateTime);
+      DateTime localDate = parsedDate.toLocal();
+      return DateFormat('yyyy-MM-dd HH:mm:ss').format(localDate);
+    } catch (e) {
+      print('Error parsing date: $e');
+      return 'Invalid date';
+    }
+  }
+
+  Future<Map<String, dynamic>> _fetchOrderDetails(
+      String token, String orderId) async {
+    try {
+      final orderDetails = await OrderDetails().getOrderDetail(token, orderId);
+      if (orderDetails['success']) {
+        return orderDetails;
+      } else {
+        if (mounted) {
+          _showErrorDialog(orderDetails['error']);
+        }
+        throw Exception('Failed to fetch order details');
+      }
+    } catch (error) {
+      if (mounted) {
+        _showErrorDialog('Error fetching order details: $error');
+      }
+      throw Exception('Failed to fetch order details');
+    }
+  }
+
+  void _showErrorDialog(String errorMessage) {
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  // New method to show cancel confirmation dialog
+  void _showCancelDialog() {
+    String cancellationReason = '';
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Reason for Cancel Request'),
+
+          title: const Text('Cancel Request'),
+
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              const Text('Please enter the reason for cancellation:'),
               TextField(
-                controller: _reasonController,
+
+                onChanged: (value) {
+                  cancellationReason = value; // Update the reason
+                },
                 decoration: const InputDecoration(
-                  labelText: 'Enter your reason',
+                  hintText: 'Reason for cancellation',
                   border: OutlineInputBorder(),
                 ),
-                maxLines: 3,
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () {
-                // Close the dialog without action
-                Navigator.of(context).pop();
+                if (cancellationReason.isNotEmpty) {
+                  _cancelOrder(cancellationReason); // Call the cancel function
+                  Navigator.of(context).pop(); // Close the dialog
+                } else {
+                  // Show an error if the reason is empty
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please provide a reason.')),
+                  );
+                }
               },
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Handle the submit action
-                String reason = _reasonController.text;
-                print('Cancel Reason: $reason'); // Replace with actual action
 
-                // Clear the text field and close the dialog
-                _reasonController.clear();
-                Navigator.of(context).pop();
+              child: const Text('Confirm'),
+
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
               },
-              child: const Text('Submit'),
+
+              child: const Text('Cancel'),
+
             ),
           ],
         );
@@ -64,106 +147,168 @@ void _showCancelDialog(BuildContext context) {
     );
   }
 
-  @override
-  void dispose() {
-    _reasonController.dispose(); // Clean up the controller
-    super.dispose();
+  // Function to handle order cancellation
+  Future<void> _cancelOrder(String reason) async {
+    try {
+      final response = await CancelService.declineOrder(
+          widget.orderId, reason, widget.token);
+      // Handle successful cancellation response
+      if (response['status'] == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Order cancelled successfully.')),
+        );
+        // Optionally, navigate back or refresh the page
+      }
+    } catch (e) {
+      // Handle any errors during cancellation
+      _showErrorDialog('Failed to cancel order: $e');
+    }
   }
-  
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF391370),
-      appBar: const CustomAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Container(
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.white),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Address',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
-                    const Text('226A, Jalan Abdul Razak, 93200, Kuching Sarawak',style: TextStyle(fontSize: 15),),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 20),
-                      child: Row(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Brand',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
-                              Text('Eden Robot',style: TextStyle(fontSize: 15),)
-                            ],
+
+      backgroundColor: AppColors.primary,
+      appBar: CustomAppBar(
+        token: widget.token,
+      ),
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: _orderDetailFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            final orderDetails = snapshot.data!['result'];
+
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Card(
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                            "Problem Type: ${orderDetails['ProblemType'] ?? 'Not provided'}"),
+                        const SizedBox(height: 20),
+                        Text(
+                            "Date and Time: ${formatDateTime(orderDetails['orderDate'])}"),
+                        const SizedBox(height: 20),
+                        Text("Priority: ${orderDetails['priority']}"),
+                        const SizedBox(height: 20),
+                        const Text("Problem Description"),
+                        const SizedBox(height: 10),
+                        Container(
+                          width: double.infinity,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          SizedBox(width: 115,),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                            Text('Model',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
-                            Text('eGate X1 Mini',style: TextStyle(fontSize: 15),)
-                          ],)
-                        ],
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10),
-                      child: Row(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Date',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
-                              Text('16 March 2024',style: TextStyle(fontSize: 15),)
-                            ],
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              maxLines: null,
+                              decoration: InputDecoration(
+                                hintText: '${orderDetails['orderDetail']}',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Colors.grey,
+                                    width: 1.0,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Colors.blue,
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
+                              style: const TextStyle(fontSize: 18),
+                            ),
+
                           ),
-                          SizedBox(width: 90,),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                            Text('Time',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
-                            Text('4:30PM',style: TextStyle(fontSize: 15),)
-                          ],)
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                child: Text(
+                                    "Picture: ${orderDetails['orderImage']}")),
+                            const Text("View"),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Column(
+                          children: [
+                            MyButton(
+                              text: 'Order Complete',
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CompletedJobDetails(
+                                      token: widget.token,
+                                      orderId: widget.orderId,
+                                    ),
+                                  ),
+                                );
+                              },
+                              color: Colors.green,
+                            ),
+                            const SizedBox(height: 20),
+                            MyButton(
+                              text: 'Cancel Request',
+                              onTap:
+                                  _showCancelDialog, // Call the dialog method
+                              color: Colors.red,
+                            ),
+                            const SizedBox(height: 20),
+                            MyButton(
+                                text: 'Part Request',
+                                onTap: () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Request(
+                                              token: widget.token,
+                                              orderId: orderDetails['orderId']
+                                                  .toString(),
+                                            )),
+                                  );
+                                }),
+                            const SizedBox(height: 20),
+                            MyButton(
+                              text: 'Start Request',
+                              onTap: () {},
+                              color: AppColors.secondary,
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 10,),
-                    const Text('Description of the Problem',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
-                    const SizedBox(height: 10,),
-                    const TextField(
-                      maxLines: 3,
-                      style: TextStyle(color: Colors.black, fontSize: 16),
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
-                        hintText: 'There is no response of the autogate working',
-                      ),
-                    ),
-                    const SizedBox(height: 10,),
-                    Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF42CE30)),onPressed: () {}, child: const Text('Order Complete',style: TextStyle(color: Colors.white),)),
-                          const SizedBox(height: 10,),
-                          ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD02B2B)),onPressed: () {
-                            _showCancelDialog(context);
-                          }, child: const Text('Cancel Request',style: TextStyle(color: Colors.white),)),
-                          const SizedBox(height: 10,),
-                          ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3795BD)),onPressed: () {}, child: const Text('Part Request',style: TextStyle(color: Colors.white),)),
-                          const SizedBox(height: 10,),
-                          ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4E31AA)),onPressed: () {}, child: const Text('Start Request',style: TextStyle(color: Colors.white),)),
-                        ],
-                      ),
-                    ),
-            ],),
-          ),
-        ),
+                  ),
+                ),
+              ),
+            );
+          } else {
+            return const Center(child: Text('No data available'));
+          }
+        },
+
       ),
       bottomNavigationBar: BottomNav(
         onTap: _onTapTapped,
         currentIndex: _currentIndex,
+        token: widget.token,
       ),
     );
   }

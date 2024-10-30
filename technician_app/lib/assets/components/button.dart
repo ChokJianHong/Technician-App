@@ -19,11 +19,13 @@ To use this widget, you need:
 class MyButton extends StatelessWidget {
   final String text;
   final void Function()? onTap;
+  final Color? color;
 
   const MyButton({
     super.key,
     required this.text,
     required this.onTap,
+    this.color,
   });
 
   @override
@@ -35,7 +37,7 @@ class MyButton extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
             // Color of the button
-            color: Theme.of(context).colorScheme.tertiary,
+            color: color ?? Theme.of(context).colorScheme.tertiary,
             // Curved corners
             borderRadius: BorderRadius.circular(8)),
         child: Center(

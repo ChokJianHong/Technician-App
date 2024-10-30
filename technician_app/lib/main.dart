@@ -18,12 +18,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF3A1078),
-          primary: const Color(0xFF3A1078),
+          primary: const Color(0xFF1A1521),
           secondary: const Color(0xFF4E31AA),
           tertiary: const Color(0xFF3795BD),
         ),
         appBarTheme: const AppBarTheme(
-          color: Color(0xFF4E31AA), // Hex color for AppBar
+          color: Color(0xFF1A1521), // Hex color for AppBar
         ),
         textTheme: const TextTheme(
           bodySmall: TextStyle(
@@ -33,7 +33,9 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: SignInPage(), // Choose the home page you want
+
+      home: const SignInPage(), // Choose the home page you want
+
       debugShowCheckedModeBanner: false, // Add if needed
 
     );
