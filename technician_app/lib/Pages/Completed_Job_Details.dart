@@ -171,11 +171,10 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Card(
-                  color: Colors.white,
+                  color: AppColors.lightgrey,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
-
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
@@ -192,7 +191,7 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
                           width: double.infinity,
                           height: 100,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: AppColors.lightgrey,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Padding(
@@ -246,6 +245,7 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
                             const SizedBox(height: 40),
                             MyButton(
                               text: 'Continue',
+                              color: AppColors.orange,
                               onTap: () => _pictureTaken(),
                             ),
                           ],
@@ -260,7 +260,6 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
             return const Center(child: Text('No data available'));
           }
         },
-
       ),
       bottomNavigationBar: BottomNav(
         onTap: _onTapTapped,
@@ -285,8 +284,7 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
       if (result['message'] == 'success') {
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) => Payment(token: widget.token)),
+          MaterialPageRoute(builder: (context) => Payment(token: widget.token)),
         ); // Navigate to confirmation page
       } else {
         String errorMessage = result['message'] ?? 'An error occurred';

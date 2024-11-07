@@ -7,6 +7,7 @@ import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Assets/Components/BottomNav.dart';
 import 'package:technician_app/Assets/Components/detail.dart';
 import 'package:technician_app/assets/components/text_box.dart';
+import 'package:technician_app/core/configs/theme/appColors.dart';
 import '../assets/components/button.dart';
 import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart'; // Import the jwt_decoder package
@@ -216,7 +217,7 @@ class _RequestState extends State<Request> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: AppColors.primary,
       appBar: CustomAppBar(token: widget.token),
       body: SingleChildScrollView(
         child: FutureBuilder<Map<String, dynamic>>(
@@ -256,7 +257,7 @@ class _RequestState extends State<Request> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
-                      color: Colors.white,
+                      color: AppColors.lightgrey,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -289,6 +290,7 @@ class _RequestState extends State<Request> {
                   const Padding(padding: EdgeInsets.only(bottom: 150)),
                   MyButton(
                     text: "Request Parts",
+                    color: AppColors.orange,
                     onTap: () {
                       _handleRequestSubmission(customerData, orderData);
                     },
@@ -305,7 +307,5 @@ class _RequestState extends State<Request> {
         token: widget.token,
       ),
     );
-    
   }
-  
 }

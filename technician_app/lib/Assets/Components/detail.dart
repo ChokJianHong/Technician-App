@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:technician_app/core/configs/theme/appColors.dart';
 
 class ClientBox extends StatelessWidget {
   final String name;
@@ -22,7 +23,7 @@ class ClientBox extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: const Color(0xFF322C43),
+          color: AppColors.lightTeal,
           borderRadius: BorderRadius.circular(20),
           // boxShadow: [
           //   BoxShadow(
@@ -39,10 +40,9 @@ class ClientBox extends StatelessWidget {
             Text(
               'Name: $name',
               style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white
-              ),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.lightgrey),
             ),
             const SizedBox(height: 10),
             Row(
@@ -54,10 +54,9 @@ class ClientBox extends StatelessWidget {
                       const Text(
                         'Brand',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white
-                        ),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.lightgrey),
                       ),
                       const SizedBox(height: 8),
                       Text(brand),
@@ -71,10 +70,9 @@ class ClientBox extends StatelessWidget {
                       const Text(
                         'Warranty',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white
-                        ),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.lightgrey),
                       ),
                       const SizedBox(height: 8),
                       Text(warranty),
@@ -93,10 +91,9 @@ class ClientBox extends StatelessWidget {
                       const Text(
                         'Date',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white
-                        ),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.lightgrey),
                       ),
                       const SizedBox(height: 8),
                       Text(date),
@@ -110,10 +107,9 @@ class ClientBox extends StatelessWidget {
                       const Text(
                         'Time',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white
-                        ),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.lightgrey),
                       ),
                       const SizedBox(height: 8),
                       Text(time),
