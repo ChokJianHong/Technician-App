@@ -3,7 +3,8 @@ import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Assets/Components/current_job.dart';
 import 'package:technician_app/Assets/Components/new_jobs.dart';
 import 'package:technician_app/Assets/Components/request_card.dart';
-import 'package:technician_app/assets/components/BottomNav.dart'; // Adjust the path as needed
+import 'package:technician_app/assets/components/BottomNav.dart';
+import 'package:technician_app/core/configs/theme/appColors.dart'; // Adjust the path as needed
 
 class HomePage extends StatefulWidget {
   final String token;
@@ -20,13 +21,12 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _currentIndex = index;
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: AppColors.primary,
       appBar: CustomAppBar(token: widget.token),
       body: ListView(
         padding: const EdgeInsets.all(16.0),

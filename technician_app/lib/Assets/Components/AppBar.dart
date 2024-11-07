@@ -16,7 +16,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       leading: IconButton(
         icon: const Icon(Icons.settings),
-        color: Color(0xFF8977C5),
+        color: AppColors.lightgrey,
         onPressed: () {
           Navigator.push(
             context,
@@ -32,11 +32,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           padding: EdgeInsets.only(right: 16.0),
           child: Icon(
             Icons.notifications,
-            color: Color(0xFF8977C5),
+            color: AppColors.lightgrey,
           ),
         )
       ],
-      backgroundColor: AppColors.secondary,
+      backgroundColor: AppColors.darkTeal,
     );
   }
 

@@ -1,8 +1,6 @@
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
-
 
 class JobCard extends StatelessWidget {
   final String name;
@@ -22,9 +20,9 @@ class JobCard extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8), // Adjust margin for spacing between cards
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.secondary,
+        color: AppColors.lightBlue,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -42,23 +40,28 @@ class JobCard extends StatelessWidget {
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
-              color: Colors.grey,
+              color: AppColors.darkGray,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 8),
-          AutoSizeText(
-            description,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
+          Flexible(
+            child: AutoSizeText(
+              description,
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.darkGray,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 16),
-          _StatusBadge(status: status, color: statusColor),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: _StatusBadge(status: status, color: statusColor),
+          ),
         ],
       ),
     );
@@ -102,6 +105,7 @@ class _StatusBadge extends StatelessWidget {
           fontSize: 14,
         ),
         maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }

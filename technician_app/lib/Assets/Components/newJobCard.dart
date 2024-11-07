@@ -3,7 +3,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
 
-
 class NewJobcard extends StatelessWidget {
   final String name;
   final String location;
@@ -27,7 +26,7 @@ class NewJobcard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.secondary,
+        color: AppColors.lightBlue,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -45,7 +44,7 @@ class NewJobcard extends StatelessWidget {
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
-              color: Colors.grey,
+              color: AppColors.darkGray,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -55,7 +54,7 @@ class NewJobcard extends StatelessWidget {
             location,
             style: const TextStyle(
               fontSize: 14,
-              color: Colors.grey,
+              color: AppColors.darkGray,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,

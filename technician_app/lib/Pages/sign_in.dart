@@ -9,6 +9,7 @@ import 'package:technician_app/API/signInAPI.dart';
 import 'package:technician_app/Assets/Components/button.dart';
 import 'package:technician_app/Assets/Components/text_box.dart';
 import 'package:technician_app/Pages/home.dart';
+import 'package:technician_app/core/configs/theme/appColors.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -107,7 +108,7 @@ class _SignInPageState extends State<SignInPage> {
     final ThemeData theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.primaryColor,
+      backgroundColor: AppColors.primary,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -144,19 +145,17 @@ class _SignInPageState extends State<SignInPage> {
                     style: TextStyle(color: Colors.grey[400], fontSize: 14),
                   ),
                 ),
-
                 const SizedBox(height: 10),
                 isLoading
                     ? const CircularProgressIndicator()
                     : MyButton(
                         text: "Sign In",
                         onTap: _signIn,
-                        color: const Color(0xFF41336D),
+                        color: AppColors.orange,
                       ),
                 const SizedBox(height: 20),
               ],
             ),
-
           ),
         ),
       ),
