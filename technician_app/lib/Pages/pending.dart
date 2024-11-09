@@ -171,15 +171,6 @@ class _PendingState extends State<Pending> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Center(
-                    child: Text(
-                      'Auto Gate',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -204,13 +195,30 @@ class _PendingState extends State<Pending> {
                         const Text("No Image Available"),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Center(
+                    child: Text(
+                      toBeginningOfSentenceCase(orderDetails['ProblemType']) ??
+                          'Unknown Problem',
+                      style: const TextStyle(
+                        color: AppColors.lightgrey,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 35,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   const Text(
                     'Address',
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                        fontSize: 20,
                         color: Colors.white),
+                  ),
+                  const SizedBox(
+                    height: 10,
                   ),
                   Text(locationDetail,
                       style:
@@ -301,7 +309,7 @@ class _PendingState extends State<Pending> {
                         fontSize: 15,
                         color: Colors.white),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   TextField(
                     maxLines: 3,
                     style: const TextStyle(color: Colors.black, fontSize: 16),
@@ -313,7 +321,7 @@ class _PendingState extends State<Pending> {
                       hintText: orderDetail,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
