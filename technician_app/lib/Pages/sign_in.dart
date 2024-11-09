@@ -105,7 +105,7 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    Theme.of(context);
 
     return Scaffold(
       backgroundColor: AppColors.primary,

@@ -32,9 +32,8 @@ class _RequestState extends State<Request> {
   int _currentIndex = 1;
   late Future<Map<String, dynamic>> _combinedDetailsFuture;
   final Req _requestApi = Req();
-// Add TechnicianService instance
   String technicianName =
-      "Loading..."; // Set default loading state for technician name
+      "Loading..."; // Default loading state for technician name
 
   void _onTap(int index) {
     setState(() {
@@ -54,7 +53,7 @@ class _RequestState extends State<Request> {
       print('Technician ID: $technicianId');
     } catch (error) {
       print('Error decoding token: $error');
-      technicianId = 'default'; // Set a default value if decoding fails
+      technicianId = 'default'; // Default value if decoding fails
     }
 
     // Fetch the technician's name using the technician ID
@@ -70,15 +69,11 @@ class _RequestState extends State<Request> {
       Map<String, dynamic> technicianDetails =
           await TechnicianService.getTechnician(widget.token, technicianId);
 
-      // Access the technician data from the response
       if (technicianDetails['technician'] != null &&
           technicianDetails['technician'].isNotEmpty) {
-        // Extract technician details from the first element of the array
         String name = technicianDetails['technician'][0]['name'];
-
-        // Update technician name in the state
         setState(() {
-          technicianName = name; // Set technician name from the API response
+          technicianName = name;
         });
       } else {
         throw Exception("Technician details are empty or missing.");
@@ -86,26 +81,19 @@ class _RequestState extends State<Request> {
     } catch (error) {
       print("Error fetching technician details: $error");
       setState(() {
-        technicianName = "Unknown"; // Set a fallback name in case of an error
+        technicianName = "Unknown";
       });
     }
   }
 
   String formatDateTime(String utcDateTime) {
     try {
-      // Parse the UTC date string into a DateTime object
       DateTime parsedDate = DateTime.parse(utcDateTime);
-
-      // Convert the UTC date to local time
       DateTime localDate = parsedDate.toLocal();
-
-      // Format the local date into a desired string format
-      return DateFormat('yyyy-MM-dd')
-          .format(localDate); // Adjust format as needed
+      return DateFormat('yyyy-MM-dd').format(localDate);
     } catch (e) {
-      // Handle potential parsing errors
       print('Error parsing date: $e');
-      return 'Invalid date'; // Return a default value or error message
+      return 'Invalid date';
     }
   }
 
@@ -113,15 +101,12 @@ class _RequestState extends State<Request> {
   Future<Map<String, dynamic>> _fetchOrderAndCustomerDetails(
       String token, String orderId) async {
     try {
-      // Fetch the order details
       final orderDetails = await OrderDetails().getOrderDetail(token, orderId);
       if (orderDetails['success']) {
-        final String customerId = orderDetails['result']['CustomerID']
-            .toString(); // Extract customerId
-        // Fetch customer details using the customerId from the order details
+        final String customerId =
+            orderDetails['result']['CustomerID'].toString();
         final customerDetails = await getCustomerDetails(customerId);
 
-        // Combine both order and customer details into one map
         return {
           'order': orderDetails['result'],
           'customer': customerDetails,
@@ -152,9 +137,8 @@ class _RequestState extends State<Request> {
           customerData['autogateBrand'] ?? customerData['alarmBrand'] ?? '';
       final String partsNeeded = _newsearchController.text;
 
-      // Submit the request form with the technician's name and other details
       await _requestApi.createRequestForm(
-        technicianName: technicianName, // Use fetched technician name
+        technicianName: technicianName,
         customerId: customerId,
         customerName: customerName,
         equipment: equipment,
@@ -168,7 +152,6 @@ class _RequestState extends State<Request> {
     }
   }
 
-  // Display an error dialog if needed
   void _showErrorDialog(String errorMessage) {
     if (mounted) {
       showDialog(
@@ -191,7 +174,6 @@ class _RequestState extends State<Request> {
     }
   }
 
-  // Display a success dialog
   void _showSuccessDialog(String message) {
     if (mounted) {
       showDialog(
@@ -234,7 +216,6 @@ class _RequestState extends State<Request> {
             final orderData = snapshot.data!['order'] ?? {};
             final customerData = snapshot.data!['customer'] ?? {};
 
-            // Determine brand and warranty fields based on ProblemType
             String problemType = orderData['ProblemType'] ?? 'Unknown Problem';
             String brand = 'Unknown Brand';
             String warranty = 'No warranty';
@@ -252,6 +233,46 @@ class _RequestState extends State<Request> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (orderData['orderImage'] != null)
+                        Flexible(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(
+                                15.0), // Set the border radius
+                            child: Image.network(
+                              'http://82.112.238.13:5005/${orderData['orderImage']}?timestamp=${DateTime.now().millisecondsSinceEpoch}',
+                              width: double.infinity,
+                              height: 200,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Text("Image not available");
+                              },
+                            ),
+                          ),
+                        )
+                      else
+                        const Text("No Image Available"),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Center(
+                    child: Text(
+                      toBeginningOfSentenceCase(orderData['ProblemType']) ??
+                          'Unknown Problem',
+                      style: const TextStyle(
+                        color: AppColors.lightgrey,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 35,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   const Text(
                     "Client Details:",
                     style: TextStyle(
@@ -287,7 +308,7 @@ class _RequestState extends State<Request> {
                     hintText: 'Parts Needed',
                     obscureText: false,
                   ),
-                  const Padding(padding: EdgeInsets.only(bottom: 150)),
+                  const Padding(padding: EdgeInsets.only(bottom: 70)),
                   MyButton(
                     text: "Request Parts",
                     color: AppColors.orange,
