@@ -77,7 +77,8 @@ class _PendingState extends State<Pending> {
 
   Future<void> _acceptOrder() async {
     try {
-      String eta = DateTime.now().toIso8601String(); // Modify this to get the actual ETA
+      String eta =
+          DateTime.now().toIso8601String(); // Modify this to get the actual ETA
       double totalAmount = 100.0; // Modify this to get the actual total amount
 
       await AcceptJob().acceptOrder(
@@ -143,19 +144,24 @@ class _PendingState extends State<Pending> {
             }
 
             final orderDetails = snapshot.data!['result'];
-            print(orderDetails); 
+            print(orderDetails);
 
-            String locationDetail = orderDetails['locationDetail'] ?? 'Location details not available';
-            String orderDate = orderDetails['orderDate'] ?? 'Date not available';
-            String orderDetail = orderDetails['orderDetail'] ?? 'No description available';
-            String orderTime = orderDetails['orderTime'] ?? 'Not available'; 
-            String problemType = orderDetails['ProblemType'] ?? 'unknown'; 
+            String locationDetail = orderDetails['locationDetail'] ??
+                'Location details not available';
+            String orderDate =
+                orderDetails['orderDate'] ?? 'Date not available';
+            String orderDetail =
+                orderDetails['orderDetail'] ?? 'No description available';
+            String orderTime = orderDetails['orderTime'] ?? 'Not available';
+            String problemType = orderDetails['ProblemType'] ?? 'unknown';
 
             String brand;
             if (problemType == 'autogate') {
-              brand = orderDetails['customer']['autogateBrand'] ?? 'Brand not available';
+              brand = orderDetails['customer']['autogateBrand'] ??
+                  'Brand not available';
             } else if (problemType == 'alarm') {
-              brand = orderDetails['customer']['alarmBrand'] ?? 'Brand not available';
+              brand = orderDetails['customer']['alarmBrand'] ??
+                  'Brand not available';
             } else {
               brand = 'Unknown brand';
             }
@@ -168,17 +174,47 @@ class _PendingState extends State<Pending> {
                   const Center(
                     child: Text(
                       'Auto Gate',
-                      style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Center(child: Image.asset('lib/Assets/Images/problem.png')),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (orderDetails['orderImage'] != null)
+                        Flexible(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(
+                                15.0), // Set the border radius
+                            child: Image.network(
+                              'http://82.112.238.13:5005/${orderDetails['orderImage']}?timestamp=${DateTime.now().millisecondsSinceEpoch}',
+                              width: double.infinity,
+                              height: 200,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Text("Image not available");
+                              },
+                            ),
+                          ),
+                        )
+                      else
+                        const Text("No Image Available"),
+                    ],
+                  ),
                   const SizedBox(height: 10),
                   const Text(
                     'Address',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Colors.white),
                   ),
-                  Text(locationDetail, style: const TextStyle(fontSize: 15, color: Colors.white)),
+                  Text(locationDetail,
+                      style:
+                          const TextStyle(fontSize: 15, color: Colors.white)),
                   Padding(
                     padding: const EdgeInsets.only(top: 20),
                     child: Row(
@@ -188,9 +224,14 @@ class _PendingState extends State<Pending> {
                           children: [
                             const Text(
                               'Brand',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
                             ),
-                            Text(brand, style: const TextStyle(fontSize: 15, color: Colors.white)),
+                            Text(brand,
+                                style: const TextStyle(
+                                    fontSize: 15, color: Colors.white)),
                           ],
                         ),
                         const SizedBox(width: 115),
@@ -199,11 +240,15 @@ class _PendingState extends State<Pending> {
                           children: [
                             Text(
                               'Model',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
                             ),
                             Text(
                               'eGate X1 Mini',
-                              style: TextStyle(fontSize: 15, color: Colors.white),
+                              style:
+                                  TextStyle(fontSize: 15, color: Colors.white),
                             ),
                           ],
                         ),
@@ -219,9 +264,14 @@ class _PendingState extends State<Pending> {
                           children: [
                             const Text(
                               'Date',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
                             ),
-                            Text(formatDateTime(orderDate), style: const TextStyle(fontSize: 15, color: Colors.white)),
+                            Text(formatDateTime(orderDate),
+                                style: const TextStyle(
+                                    fontSize: 15, color: Colors.white)),
                           ],
                         ),
                         const SizedBox(width: 90),
@@ -230,9 +280,14 @@ class _PendingState extends State<Pending> {
                           children: [
                             const Text(
                               'Time',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
                             ),
-                            Text(orderTime, style: const TextStyle(fontSize: 15, color: Colors.white)),
+                            Text(orderTime,
+                                style: const TextStyle(
+                                    fontSize: 15, color: Colors.white)),
                           ],
                         ),
                       ],
@@ -241,7 +296,10 @@ class _PendingState extends State<Pending> {
                   const SizedBox(height: 20),
                   const Text(
                     'Description of the Problem',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Colors.white),
                   ),
                   const SizedBox(height: 10),
                   TextField(
@@ -250,7 +308,8 @@ class _PendingState extends State<Pending> {
                     decoration: InputDecoration(
                       fillColor: Colors.white,
                       filled: true,
-                      border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+                      border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(20))),
                       hintText: orderDetail,
                     ),
                   ),

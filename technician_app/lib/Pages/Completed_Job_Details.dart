@@ -170,89 +170,116 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Card(
-                  color: AppColors.lightgrey,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                            "Location: ${orderDetails['locationDetail'] ?? 'Not provided'}"),
-                        const SizedBox(height: 20),
-                        Text(
-                            "Date and Time: ${formatDateTime(orderDetails['orderDate'])}"),
-                        const SizedBox(height: 20),
-                        Text("Priority: ${orderDetails['priority']}"),
-                        const SizedBox(height: 20),
-                        const Text("Problem Description"),
-                        const SizedBox(height: 10),
-                        Container(
-                          width: double.infinity,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: AppColors.lightgrey,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextField(
-                              maxLines: null,
-                              decoration: InputDecoration(
-                                hintText: '${orderDetails['orderDetail']}',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(
-                                    color: Colors.grey,
-                                    width: 1.0,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(
-                                    color: Colors.blue,
-                                    width: 1.5,
-                                  ),
-                                ),
+                        if (orderDetails['orderImage'] != null)
+                          Flexible(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(
+                                  15.0), // Set the border radius
+                              child: Image.network(
+                                'http://82.112.238.13:5005/${orderDetails['orderImage']}?timestamp=${DateTime.now().millisecondsSinceEpoch}',
+                                width: double.infinity,
+                                height: 200,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Text("Image not available");
+                                },
                               ),
-                              style: const TextStyle(fontSize: 18),
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                                child: Text(
-                                    "Picture: ${orderDetails['orderImage']}")),
-                            const Text("View"),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Column(
-                          children: [
-                            _image != null
-                                ? Image.file(_image!)
-                                : const Placeholder(
-                                    fallbackHeight: 200.0,
-                                    fallbackWidth: double.infinity,
-                                  ),
-                            ElevatedButton(
-                              onPressed: _captureImageWithCamera,
-                              child: const Text('Take Picture'),
-                            ),
-                            const SizedBox(height: 40),
-                            MyButton(
-                              text: 'Continue',
-                              color: AppColors.orange,
-                              onTap: () => _pictureTaken(),
-                            ),
-                          ],
-                        ),
+                          )
+                        else
+                          const Text("No Image Available"),
                       ],
                     ),
-                  ),
+                    Card(
+                      color: AppColors.lightgrey,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                                "Location: ${orderDetails['locationDetail'] ?? 'Not provided'}"),
+                            const SizedBox(height: 20),
+                            Text(
+                                "Date and Time: ${formatDateTime(orderDetails['orderDate'])}"),
+                            const SizedBox(height: 20),
+                            Text("Priority: ${orderDetails['priority']}"),
+                            const SizedBox(height: 20),
+                            const Text("Problem Description"),
+                            const SizedBox(height: 10),
+                            Container(
+                              width: double.infinity,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                color: AppColors.lightgrey,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: TextField(
+                                  maxLines: null,
+                                  decoration: InputDecoration(
+                                    hintText: '${orderDetails['orderDetail']}',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: const BorderSide(
+                                        color: Colors.grey,
+                                        width: 1.0,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: const BorderSide(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                  ),
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                    child: Text(
+                                        "Picture: ${orderDetails['orderImage']}")),
+                                const Text("View"),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            Column(
+                              children: [
+                                _image != null
+                                    ? Image.file(_image!)
+                                    : const Placeholder(
+                                        fallbackHeight: 200.0,
+                                        fallbackWidth: double.infinity,
+                                      ),
+                                ElevatedButton(
+                                  onPressed: _captureImageWithCamera,
+                                  child: const Text('Take Picture'),
+                                ),
+                                const SizedBox(height: 40),
+                                MyButton(
+                                  text: 'Continue',
+                                  color: AppColors.orange,
+                                  onTap: () => _pictureTaken(),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );

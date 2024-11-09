@@ -3,6 +3,7 @@ import 'package:technician_app/API/view_order.dart';
 import 'package:technician_app/Assets/Components/newJobCard.dart';
 import 'package:technician_app/Assets/Model/order_model.dart';
 import 'package:technician_app/Pages/pending.dart';
+import 'dart:async'; // Import the timer package
 
 class NewJobs extends StatefulWidget {
   final String token;
@@ -15,16 +16,31 @@ class NewJobs extends StatefulWidget {
 
 class _NewJobsState extends State<NewJobs> {
   late Future<List<OrderModel>> _pendingOrdersFuture;
+  late Timer _timer; // Timer for auto-refresh
 
   @override
   void initState() {
     super.initState();
-    // Fetch pending orders from the API
+    // Fetch pending orders initially
     _pendingOrdersFuture = _fetchPendingOrders();
+
+    // Set up a timer to refresh the orders every 30 seconds (adjust as needed)
+    _timer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      setState(() {
+        _pendingOrdersFuture = _fetchPendingOrders(); // Refresh the orders
+      });
+    });
   }
 
+  // Fetch pending orders from the API
   Future<List<OrderModel>> _fetchPendingOrders() {
     return OrderService().getPendingOrders(widget.token);
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel(); // Cancel the timer when the widget is disposed
+    super.dispose();
   }
 
   @override
@@ -50,7 +66,8 @@ class _NewJobsState extends State<NewJobs> {
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      _pendingOrdersFuture = _fetchPendingOrders(); // Retry fetching orders
+                      _pendingOrdersFuture =
+                          _fetchPendingOrders(); // Retry fetching orders
                     });
                   },
                   child: const Text('Retry'),
@@ -77,7 +94,8 @@ class _NewJobsState extends State<NewJobs> {
                   ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        _pendingOrdersFuture = _fetchPendingOrders(); // Reload orders
+                        _pendingOrdersFuture =
+                            _fetchPendingOrders(); // Reload orders
                       });
                     },
                     child: const Text('Refresh'),
