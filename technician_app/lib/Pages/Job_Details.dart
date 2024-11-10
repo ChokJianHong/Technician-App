@@ -23,6 +23,7 @@ class RequestDetails extends StatefulWidget {
 class _RequestDetailsState extends State<RequestDetails> {
   int _currentIndex = 2;
   late Future<Map<String, dynamic>> _orderDetailFuture;
+  bool _isRequestStarted = false;
 
   void _onTapTapped(int index) {
     setState(() {
@@ -40,7 +41,7 @@ class _RequestDetailsState extends State<RequestDetails> {
     try {
       DateTime parsedDate = DateTime.parse(utcDateTime);
       DateTime localDate = parsedDate.toLocal();
-      return DateFormat('yyyy-MM-dd HH:mm:ss').format(localDate);
+      return DateFormat('yyyy-MM-dd').format(localDate);
     } catch (e) {
       print('Error parsing date: $e');
       return 'Invalid date';
@@ -97,15 +98,12 @@ class _RequestDetailsState extends State<RequestDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-
           title: const Text('Cancel Request'),
-
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text('Please enter the reason for cancellation:'),
               TextField(
-
                 onChanged: (value) {
                   cancellationReason = value; // Update the reason
                 },
@@ -129,17 +127,13 @@ class _RequestDetailsState extends State<RequestDetails> {
                   );
                 }
               },
-
               child: const Text('Confirm'),
-
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-
               child: const Text('Cancel'),
-
             ),
           ],
         );
@@ -168,7 +162,6 @@ class _RequestDetailsState extends State<RequestDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       backgroundColor: AppColors.primary,
       appBar: CustomAppBar(
         token: widget.token,
@@ -183,75 +176,190 @@ class _RequestDetailsState extends State<RequestDetails> {
           } else if (snapshot.hasData) {
             final orderDetails = snapshot.data!['result'];
 
+            String brand = 'Unknown brand';
+            String warranty = 'Warranty not available';
+            if (orderDetails['ProblemType'] == 'autogate') {
+              brand =
+                  orderDetails['customer']['autogateBrand'] ?? 'Unknown Brand';
+              warranty =
+                  orderDetails['customer']['autogateWarranty'] ?? 'No warranty';
+            } else if (orderDetails['ProblemType'] == 'alarm') {
+              brand = orderDetails['customer']['alarmBrand'] ?? 'Unknown Brand';
+              warranty =
+                  orderDetails['customer']['alarmWarranty'] ?? 'No warranty';
+            }
+
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Card(
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (orderDetails['orderImage'] != null)
+                          Flexible(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(
+                                  15.0), // Set the border radius
+                              child: Image.network(
+                                'http://82.112.238.13:5005/${orderDetails['orderImage']}?timestamp=${DateTime.now().millisecondsSinceEpoch}',
+                                width: double.infinity,
+                                height: 200,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Text("Image not available");
+                                },
+                              ),
+                            ),
+                          )
+                        else
+                          const Text("No Image Available"),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Center(
+                      child: Text(
+                        toBeginningOfSentenceCase(
+                                orderDetails['ProblemType']) ??
+                            'Unknown Problem',
+                        style: const TextStyle(
+                          color: AppColors.lightgrey,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 35,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                            "Problem Type: ${orderDetails['ProblemType'] ?? 'Not provided'}"),
-                        const SizedBox(height: 20),
-                        Text(
-                            "Date and Time: ${formatDateTime(orderDetails['orderDate'])}"),
-                        const SizedBox(height: 20),
-                        Text("Priority: ${orderDetails['priority']}"),
-                        const SizedBox(height: 20),
-                        const Text("Problem Description"),
-                        const SizedBox(height: 10),
-                        Container(
-                          width: double.infinity,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextField(
-                              maxLines: null,
-                              decoration: InputDecoration(
-                                hintText: '${orderDetails['orderDetail']}',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(
-                                    color: Colors.grey,
-                                    width: 1.0,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(
-                                    color: Colors.blue,
-                                    width: 1.5,
-                                  ),
-                                ),
-                              ),
-                              style: const TextStyle(fontSize: 18),
-                            ),
-
-                          ),
+                        const Text(
+                          'Address',
+                          style: TextStyle(
+                              color: AppColors.darkGreen,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Text(
+                          orderDetails['locationDetail'] ?? 'Not provided',
+                          style: const TextStyle(
+                              color: AppColors.lightgrey, fontSize: 15),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                                child: Text(
-                                    "Picture: ${orderDetails['orderImage']}")),
-                            const Text("View"),
+                            const Text(
+                              'Brand',
+                              style: TextStyle(
+                                  color: AppColors.darkGreen,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              brand,
+                              style: const TextStyle(
+                                color: AppColors.lightgrey,
+                                fontSize: 15,
+                              ),
+                            )
                           ],
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(width: 100),
                         Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            MyButton(
-                              text: 'Order Complete',
-                              onTap: () {
+                            const Text(
+                              'Warranty',
+                              style: TextStyle(
+                                  color: AppColors.darkGreen,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              formatDateTime(warranty),
+                              style: TextStyle(color: AppColors.lightgrey),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Date',
+                              style: TextStyle(
+                                  color: AppColors.darkGreen,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              formatDateTime(orderDetails['orderDate']),
+                              style: const TextStyle(
+                                color: AppColors.lightgrey,
+                                fontSize: 15,
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(width: 100),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Time',
+                              style: TextStyle(
+                                  color: AppColors.darkGreen,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              orderDetails['orderTime'],
+                              style: TextStyle(color: AppColors.lightgrey),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const Text(
+                      "Problem Description",
+                      style:
+                          TextStyle(fontSize: 20, color: AppColors.darkGreen),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      orderDetails['orderDetail'],
+                      style: const TextStyle(
+                          color: AppColors.lightgrey, fontSize: 15),
+                    ),
+                    const SizedBox(height: 40),
+                    Column(
+                      children: [
+                        MyButton(
+                          text: _isRequestStarted
+                              ? 'Complete Request'
+                              : 'Start Request',
+                          onTap: () {
+                            setState(() {
+                              if (_isRequestStarted) {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
@@ -261,41 +369,40 @@ class _RequestDetailsState extends State<RequestDetails> {
                                     ),
                                   ),
                                 );
-                              },
-                              color: Colors.green,
-                            ),
-                            const SizedBox(height: 20),
-                            MyButton(
-                              text: 'Cancel Request',
-                              onTap:
-                                  _showCancelDialog, // Call the dialog method
-                              color: Colors.red,
-                            ),
-                            const SizedBox(height: 20),
-                            MyButton(
-                                text: 'Part Request',
-                                onTap: () {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Request(
-                                              token: widget.token,
-                                              orderId: orderDetails['orderId']
-                                                  .toString(),
-                                            )),
-                                  );
-                                }),
-                            const SizedBox(height: 20),
-                            MyButton(
-                              text: 'Start Request',
-                              onTap: () {},
-                              color: AppColors.secondary,
-                            ),
-                          ],
+                              } else {
+                                // Code to handle starting the request (maybe change state or show a message)
+                              }
+                              _isRequestStarted =
+                                  !_isRequestStarted; // Toggle the button state
+                            });
+                          },
+                          color: _isRequestStarted
+                              ? Colors.green
+                              : AppColors.orange,
+                        ),
+                        const SizedBox(height: 20),
+                        MyButton(
+                            text: 'Part Request',
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Request(
+                                          token: widget.token,
+                                          orderId: orderDetails['orderId']
+                                              .toString(),
+                                        )),
+                              );
+                            }),
+                        const SizedBox(height: 20),
+                        MyButton(
+                          text: 'Cancel Request',
+                          onTap: _showCancelDialog, // Call the dialog method
+                          color: Colors.red,
                         ),
                       ],
                     ),
-                  ),
+                  ],
                 ),
               ),
             );
@@ -303,7 +410,6 @@ class _RequestDetailsState extends State<RequestDetails> {
             return const Center(child: Text('No data available'));
           }
         },
-
       ),
       bottomNavigationBar: BottomNav(
         onTap: _onTapTapped,

@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
-import 'package:technician_app/Pages/home.dart';
 import 'package:technician_app/Pages/payment.dart';
 import 'package:technician_app/assets/components/BottomNav.dart';
 import 'package:technician_app/assets/components/button.dart';
@@ -172,6 +171,7 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
+                    const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -195,6 +195,22 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
                           const Text("No Image Available"),
                       ],
                     ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Center(
+                      child: Text(
+                        toBeginningOfSentenceCase(
+                                orderDetails['ProblemType']) ??
+                            'Unknown Problem',
+                        style: const TextStyle(
+                          color: AppColors.lightgrey,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 35,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     Card(
                       color: AppColors.lightgrey,
                       child: Padding(

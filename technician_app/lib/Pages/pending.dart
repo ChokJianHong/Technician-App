@@ -166,6 +166,17 @@ class _PendingState extends State<Pending> {
               brand = 'Unknown brand';
             }
 
+            String warranty;
+            if (problemType == 'autogate') {
+              warranty = orderDetails['customer']['autogateWarranty'] ??
+                  'Brand not available';
+            } else if (problemType == 'alarm') {
+              warranty = orderDetails['customer']['alarmWarranty'] ??
+                  'Brand not available';
+            } else {
+              warranty = 'Unknown brand';
+            }
+
             return Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -215,14 +226,14 @@ class _PendingState extends State<Pending> {
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
-                        color: Colors.white),
+                        color: AppColors.darkGreen),
                   ),
                   const SizedBox(
                     height: 10,
                   ),
                   Text(locationDetail,
-                      style:
-                          const TextStyle(fontSize: 15, color: Colors.white)),
+                      style: const TextStyle(
+                          fontSize: 15, color: AppColors.lightgrey)),
                   Padding(
                     padding: const EdgeInsets.only(top: 20),
                     child: Row(
@@ -235,28 +246,28 @@ class _PendingState extends State<Pending> {
                               style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                                  color: AppColors.darkGreen),
                             ),
                             Text(brand,
                                 style: const TextStyle(
-                                    fontSize: 15, color: Colors.white)),
+                                    fontSize: 15, color: AppColors.lightgrey)),
                           ],
                         ),
-                        const SizedBox(width: 115),
-                        const Column(
+                        const SizedBox(width: 125),
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Model',
+                            const Text(
+                              'Warranty',
                               style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                                  color: AppColors.darkGreen),
                             ),
                             Text(
-                              'eGate X1 Mini',
-                              style:
-                                  TextStyle(fontSize: 15, color: Colors.white),
+                              formatDateTime(warranty),
+                              style: const TextStyle(
+                                  fontSize: 15, color: AppColors.lightgrey),
                             ),
                           ],
                         ),
@@ -275,11 +286,11 @@ class _PendingState extends State<Pending> {
                               style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                                  color: AppColors.darkGreen),
                             ),
                             Text(formatDateTime(orderDate),
                                 style: const TextStyle(
-                                    fontSize: 15, color: Colors.white)),
+                                    fontSize: 15, color: AppColors.lightgrey)),
                           ],
                         ),
                         const SizedBox(width: 90),
@@ -291,11 +302,11 @@ class _PendingState extends State<Pending> {
                               style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                                  color: AppColors.darkGreen),
                             ),
                             Text(orderTime,
                                 style: const TextStyle(
-                                    fontSize: 15, color: Colors.white)),
+                                    fontSize: 15, color: AppColors.lightgrey)),
                           ],
                         ),
                       ],
@@ -307,18 +318,23 @@ class _PendingState extends State<Pending> {
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
-                        color: Colors.white),
+                        color: AppColors.darkGreen),
                   ),
                   const SizedBox(height: 20),
-                  TextField(
-                    maxLines: 3,
-                    style: const TextStyle(color: Colors.black, fontSize: 16),
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(20))),
-                      hintText: orderDetail,
+                  Container(
+                    width: double.infinity,
+                    height: 100,
+                    padding:
+                        const EdgeInsets.all(10), // Adjust padding as needed
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      orderDetail,
+                      style: const TextStyle(color: Colors.black, fontSize: 16),
+                      overflow: TextOverflow
+                          .ellipsis, // Adds ellipsis if the text overflows
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -331,12 +347,12 @@ class _PendingState extends State<Pending> {
                         onTap: () {
                           // Implement decline functionality if needed
                         },
-                        color: const Color(0xFF554E6B),
+                        color: AppColors.orange,
                       ),
                       MyButton(
                         text: 'Accept',
                         onTap: _acceptOrder,
-                        color: const Color(0xFF8FA78C),
+                        color: AppColors.darkGreen,
                       ),
                     ],
                   ),
