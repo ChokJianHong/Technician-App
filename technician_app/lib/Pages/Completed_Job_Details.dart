@@ -47,7 +47,7 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
     try {
       DateTime parsedDate = DateTime.parse(utcDateTime);
       DateTime localDate = parsedDate.toLocal();
-      return DateFormat('yyyy-MM-dd HH:mm:ss').format(localDate);
+      return DateFormat('yyyy-MM-dd').format(localDate);
     } catch (e) {
       print('Error parsing date: $e');
       return 'Invalid date';
@@ -166,6 +166,19 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
           } else if (snapshot.hasData) {
             final orderDetails = snapshot.data!['result'];
 
+            String brand = 'Unknown brand';
+            String warranty = 'Warranty not available';
+            if (orderDetails['ProblemType'] == 'autogate') {
+              brand =
+                  orderDetails['customer']['autogateBrand'] ?? 'Unknown Brand';
+              warranty =
+                  orderDetails['customer']['autogateWarranty'] ?? 'No warranty';
+            } else if (orderDetails['ProblemType'] == 'alarm') {
+              brand = orderDetails['customer']['alarmBrand'] ?? 'Unknown Brand';
+              warranty =
+                  orderDetails['customer']['alarmWarranty'] ?? 'No warranty';
+            }
+
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -211,89 +224,150 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Card(
-                      color: AppColors.lightgrey,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Address',
+                          style: TextStyle(
+                              color: AppColors.darkGreen,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          orderDetails['locationDetail'] ?? 'Not provided',
+                          style: const TextStyle(
+                              color: AppColors.lightgrey, fontSize: 15),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
                           children: [
-                            Text(
-                                "Location: ${orderDetails['locationDetail'] ?? 'Not provided'}"),
-                            const SizedBox(height: 20),
-                            Text(
-                                "Date and Time: ${formatDateTime(orderDetails['orderDate'])}"),
-                            const SizedBox(height: 20),
-                            Text("Priority: ${orderDetails['priority']}"),
-                            const SizedBox(height: 20),
-                            const Text("Problem Description"),
-                            const SizedBox(height: 10),
-                            Container(
-                              width: double.infinity,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                color: AppColors.lightgrey,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextField(
-                                  maxLines: null,
-                                  decoration: InputDecoration(
-                                    hintText: '${orderDetails['orderDetail']}',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                        color: Colors.grey,
-                                        width: 1.0,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                        color: Colors.blue,
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                  ),
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(
-                                    child: Text(
-                                        "Picture: ${orderDetails['orderImage']}")),
-                                const Text("View"),
+                                const Text(
+                                  'Brand',
+                                  style: TextStyle(
+                                      color: AppColors.darkGreen,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  brand,
+                                  style: const TextStyle(
+                                    color: AppColors.lightgrey,
+                                    fontSize: 15,
+                                  ),
+                                )
                               ],
                             ),
-                            const SizedBox(height: 20),
+                            const SizedBox(width: 100),
                             Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _image != null
-                                    ? Image.file(_image!)
-                                    : const Placeholder(
-                                        fallbackHeight: 200.0,
-                                        fallbackWidth: double.infinity,
-                                      ),
-                                ElevatedButton(
-                                  onPressed: _captureImageWithCamera,
-                                  child: const Text('Take Picture'),
+                                const Text(
+                                  'Warranty',
+                                  style: TextStyle(
+                                      color: AppColors.darkGreen,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
                                 ),
-                                const SizedBox(height: 40),
-                                MyButton(
-                                  text: 'Continue',
-                                  color: AppColors.orange,
-                                  onTap: () => _pictureTaken(),
-                                ),
+                                Text(
+                                  formatDateTime(warranty),
+                                  style: const TextStyle(
+                                      color: AppColors.lightgrey),
+                                )
                               ],
                             ),
                           ],
                         ),
-                      ),
+                        Row(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Date',
+                                  style: TextStyle(
+                                      color: AppColors.darkGreen,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  formatDateTime(orderDetails['orderDate']),
+                                  style: const TextStyle(
+                                    color: AppColors.lightgrey,
+                                    fontSize: 15,
+                                  ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(width: 100),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Time',
+                                  style: TextStyle(
+                                      color: AppColors.darkGreen,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  orderDetails['orderTime'],
+                                  style: const TextStyle(
+                                      color: AppColors.lightgrey),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const Text(
+                          "Problem Description",
+                          style: TextStyle(
+                              fontSize: 20, color: AppColors.darkGreen),
+                        ),
+                        Text(
+                          orderDetails['orderDetail'],
+                          style: const TextStyle(
+                              color: AppColors.lightgrey, fontSize: 15),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const Text(
+                          'Evidence of Completion',
+                          style: TextStyle(
+                              color: AppColors.darkGreen,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Column(
+                          children: [
+                            _image != null
+                                ? Image.file(_image!)
+                                : const Placeholder(
+                                    fallbackHeight: 200.0,
+                                    fallbackWidth: double.infinity,
+                                  ),
+                            ElevatedButton(
+                              onPressed: _captureImageWithCamera,
+                              child: const Text('Take Picture'),
+                            ),
+                            const SizedBox(height: 40),
+                            MyButton(
+                              text: 'Continue',
+                              color: AppColors.orange,
+                              onTap: () => _pictureTaken(),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ],
                 ),

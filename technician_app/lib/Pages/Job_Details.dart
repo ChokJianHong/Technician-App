@@ -251,104 +251,104 @@ class _RequestDetailsState extends State<RequestDetails> {
                           style: const TextStyle(
                               color: AppColors.lightgrey, fontSize: 15),
                         ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Brand',
+                                  style: TextStyle(
+                                      color: AppColors.darkGreen,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  brand,
+                                  style: const TextStyle(
+                                    color: AppColors.lightgrey,
+                                    fontSize: 15,
+                                  ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(width: 100),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Warranty',
+                                  style: TextStyle(
+                                      color: AppColors.darkGreen,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  formatDateTime(warranty),
+                                  style: const TextStyle(color: AppColors.lightgrey),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Date',
+                                  style: TextStyle(
+                                      color: AppColors.darkGreen,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  formatDateTime(orderDetails['orderDate']),
+                                  style: const TextStyle(
+                                    color: AppColors.lightgrey,
+                                    fontSize: 15,
+                                  ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(width: 100),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Time',
+                                  style: TextStyle(
+                                      color: AppColors.darkGreen,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  orderDetails['orderTime'],
+                                  style: const TextStyle(
+                                      color: AppColors.lightgrey),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const Text(
+                          "Problem Description",
+                          style: TextStyle(
+                              fontSize: 20, color: AppColors.darkGreen),
+                        ),
+                        Text(
+                          orderDetails['orderDetail'],
+                          style: const TextStyle(
+                              color: AppColors.lightgrey, fontSize: 15),
+                        ),
                       ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Brand',
-                              style: TextStyle(
-                                  color: AppColors.darkGreen,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              brand,
-                              style: const TextStyle(
-                                color: AppColors.lightgrey,
-                                fontSize: 15,
-                              ),
-                            )
-                          ],
-                        ),
-                        const SizedBox(width: 100),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Warranty',
-                              style: TextStyle(
-                                  color: AppColors.darkGreen,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              formatDateTime(warranty),
-                              style: TextStyle(color: AppColors.lightgrey),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Date',
-                              style: TextStyle(
-                                  color: AppColors.darkGreen,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              formatDateTime(orderDetails['orderDate']),
-                              style: const TextStyle(
-                                color: AppColors.lightgrey,
-                                fontSize: 15,
-                              ),
-                            )
-                          ],
-                        ),
-                        const SizedBox(width: 100),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Time',
-                              style: TextStyle(
-                                  color: AppColors.darkGreen,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              orderDetails['orderTime'],
-                              style: TextStyle(color: AppColors.lightgrey),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const Text(
-                      "Problem Description",
-                      style:
-                          TextStyle(fontSize: 20, color: AppColors.darkGreen),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      orderDetails['orderDetail'],
-                      style: const TextStyle(
-                          color: AppColors.lightgrey, fontSize: 15),
                     ),
                     const SizedBox(height: 40),
                     Column(
@@ -372,8 +372,7 @@ class _RequestDetailsState extends State<RequestDetails> {
                               } else {
                                 // Code to handle starting the request (maybe change state or show a message)
                               }
-                              _isRequestStarted =
-                                  !_isRequestStarted; // Toggle the button state
+                              _isRequestStarted = !_isRequestStarted;
                             });
                           },
                           color: _isRequestStarted
