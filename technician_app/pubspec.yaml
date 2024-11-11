@@ -42,6 +42,7 @@ flutter:
     - lib/Assets/Images/problem.png
     - lib/Assets/Images/smallProfile.png
     - lib/Assets/Images/Frame.png
+    - lib/Assets/Images/Profile.png
 
 
   fonts:

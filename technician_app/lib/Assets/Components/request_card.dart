@@ -42,7 +42,8 @@ class _RequestCardState extends State<RequestCard> {
         setState(() {
           technicianName = name;
         });
-        _fetchRequestForms(name);  // Fetch request forms based on technician name
+        _fetchRequestForms(
+            name); // Fetch request forms based on technician name
       } else {
         throw Exception("Technician details are empty or missing.");
       }
@@ -57,7 +58,8 @@ class _RequestCardState extends State<RequestCard> {
   void _fetchRequestForms(String technicianName) async {
     try {
       List<Map<String, dynamic>> fetchedForms =
-          await RequestFormService.getRequestFormsByTechnician(technicianName, widget.token);
+          await RequestFormService.getRequestFormsByTechnician(
+              technicianName, widget.token);
       setState(() {
         requestForms = fetchedForms;
       });
@@ -84,7 +86,8 @@ class _RequestCardState extends State<RequestCard> {
                   final form = requestForms[index];
                   return JobCard(
                     name: form['equipment'] ?? 'Unknown Equipment',
-                    description: 'Brand: ${form['brand']}, Parts needed: ${form['parts_needed']}',
+                    description:
+                        'Brand: ${form['brand']}, Parts needed: ${form['parts_needed']}',
                     status: form['status'] ?? 'Pending',
                   );
                 },
