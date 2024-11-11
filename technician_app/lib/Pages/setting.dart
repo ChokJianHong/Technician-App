@@ -3,7 +3,6 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:technician_app/API/getTechnician.dart';
 import 'package:technician_app/Assets/Components/button.dart';
 import 'package:technician_app/Assets/Components/settingItem.dart';
-import 'package:technician_app/Pages/profile.dart';
 import 'package:technician_app/Pages/sign_in.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
 
@@ -128,23 +127,10 @@ class _SettingState extends State<Setting> {
               children: [
                 Container(
                   color: AppColors.darkTeal,
-                  child: Column(
+                  child: const Column(
                     children: [
-                      SettingItem(
-                        title: 'Account',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Profile(
-                                token: widget.token,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      const SettingItem(title: 'Notification Settings'),
-                      const SettingItem(title: 'Help Center'),
+                      SettingItem(title: 'Notification Settings'),
+                      SettingItem(title: 'Help Center'),
                     ],
                   ),
                 ),

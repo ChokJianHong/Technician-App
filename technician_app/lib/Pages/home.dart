@@ -64,6 +64,9 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 10),
           RequestCard(token: widget.token),
+          const SizedBox(
+            height: 20,
+          ),
         ],
       ),
       bottomNavigationBar: BottomNav(

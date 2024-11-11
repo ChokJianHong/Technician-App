@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:technician_app/API/accept_job.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
-import 'package:technician_app/Assets/Components/AppBar.dart';
-import 'package:technician_app/Assets/Components/BottomNav.dart';
 import 'package:technician_app/Assets/Components/button.dart';
 import 'package:technician_app/Pages/home.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
@@ -19,19 +17,12 @@ class Pending extends StatefulWidget {
 }
 
 class _PendingState extends State<Pending> {
-  int _currentIndex = 1;
   late Future<Map<String, dynamic>> _orderDetailFuture;
 
   @override
   void initState() {
     super.initState();
     _orderDetailFuture = _fetchOrderDetails(widget.token, widget.orderId);
-  }
-
-  void _onTap(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
   }
 
   Future<Map<String, dynamic>> _fetchOrderDetails(
@@ -137,7 +128,18 @@ class _PendingState extends State<Pending> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primary,
-      appBar: CustomAppBar(token: widget.token),
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => HomePage(token: widget.token)),
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: FutureBuilder<Map<String, dynamic>>(
           future: _orderDetailFuture,
@@ -363,11 +365,6 @@ class _PendingState extends State<Pending> {
             );
           },
         ),
-      ),
-      bottomNavigationBar: BottomNav(
-        onTap: _onTap,
-        currentIndex: _currentIndex,
-        token: widget.token,
       ),
     );
   }

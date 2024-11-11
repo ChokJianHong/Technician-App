@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:technician_app/API/cancel.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
-import 'package:technician_app/Assets/Components/AppBar.dart';
+
 import 'package:technician_app/Pages/Completed_Job_Details.dart';
+import 'package:technician_app/Pages/home.dart';
 import 'package:technician_app/Pages/part_request.dart';
-import 'package:technician_app/assets/components/BottomNav.dart';
+
 import 'package:technician_app/assets/components/button.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
 
@@ -21,15 +22,8 @@ class RequestDetails extends StatefulWidget {
 }
 
 class _RequestDetailsState extends State<RequestDetails> {
-  int _currentIndex = 2;
   late Future<Map<String, dynamic>> _orderDetailFuture;
   bool _isRequestStarted = false;
-
-  void _onTapTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
 
   @override
   void initState() {
@@ -163,8 +157,17 @@ class _RequestDetailsState extends State<RequestDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primary,
-      appBar: CustomAppBar(
-        token: widget.token,
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => HomePage(token: widget.token)),
+          ),
+        ),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _orderDetailFuture,
@@ -288,7 +291,8 @@ class _RequestDetailsState extends State<RequestDetails> {
                                 ),
                                 Text(
                                   formatDateTime(warranty),
-                                  style: const TextStyle(color: AppColors.lightgrey),
+                                  style: const TextStyle(
+                                      color: AppColors.lightgrey),
                                 )
                               ],
                             ),
@@ -399,6 +403,9 @@ class _RequestDetailsState extends State<RequestDetails> {
                           onTap: _showCancelDialog, // Call the dialog method
                           color: Colors.red,
                         ),
+                        const SizedBox(
+                          height: 20,
+                        ),
                       ],
                     ),
                   ],
@@ -409,11 +416,6 @@ class _RequestDetailsState extends State<RequestDetails> {
             return const Center(child: Text('No data available'));
           }
         },
-      ),
-      bottomNavigationBar: BottomNav(
-        onTap: _onTapTapped,
-        currentIndex: _currentIndex,
-        token: widget.token,
       ),
     );
   }
