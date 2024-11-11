@@ -349,17 +349,12 @@ class _PendingState extends State<Pending> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      MyButton(
-                        text: 'Decline',
-                        onTap: () {
-                          // Implement decline functionality if needed
-                        },
-                        color: AppColors.orange,
-                      ),
-                      MyButton(
-                        text: 'Accept',
-                        onTap: _acceptOrder,
-                        color: AppColors.darkGreen,
+                      Center(
+                        child: MyButton(
+                          text: 'Accept',
+                          onTap: _acceptOrder,
+                          color: AppColors.darkGreen,
+                        ),
                       ),
                     ],
                   ),
