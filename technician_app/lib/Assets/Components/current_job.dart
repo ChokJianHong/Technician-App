@@ -64,9 +64,9 @@ class _CurrentJobsState extends State<CurrentJobs> {
           }
 
           return SizedBox(
-            height: 150, // Set a smaller height to control the side scroll view
+            height: 150, 
             child: PageView.builder(
-              scrollDirection: Axis.horizontal, // Horizontal side scroll
+              scrollDirection: Axis.horizontal, 
               controller: PageController(viewportFraction: 0.8),
               itemCount: ongoingOrders.length,
               itemBuilder: (context, index) {

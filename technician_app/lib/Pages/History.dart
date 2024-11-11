@@ -97,7 +97,7 @@ class _HistoryState extends State<History> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Remove DropdownButton for filtering, as we only want Completed and Cancelled jobs
+            
             const Text(
               'History',
               style: TextStyle(color: Colors.white, fontSize: 16),

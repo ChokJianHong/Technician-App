@@ -5,6 +5,7 @@ import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Assets/Components/BottomNav.dart';
 import 'package:technician_app/Assets/Components/button.dart';
+import 'package:technician_app/Pages/home.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
 
 class Pending extends StatefulWidget {
@@ -99,7 +100,13 @@ class _PendingState extends State<Pending> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => HomePage(
+                                token: widget.token,
+                              )),
+                    );
                   },
                   child: const Text('OK'),
                 ),

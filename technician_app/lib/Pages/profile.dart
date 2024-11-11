@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Profile extends StatefulWidget {
-  const Profile({super.key});
+  final String token;
+  const Profile({super.key, required this.token});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -10,8 +11,6 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      
-    );
+    return Scaffold();
   }
 }

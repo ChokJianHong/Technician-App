@@ -3,7 +3,7 @@ import 'package:technician_app/API/view_order.dart';
 import 'package:technician_app/Assets/Components/newJobCard.dart';
 import 'package:technician_app/Assets/Model/order_model.dart';
 import 'package:technician_app/Pages/pending.dart';
-import 'dart:async'; // Import the timer package
+import 'dart:async';
 
 class NewJobs extends StatefulWidget {
   final String token;
@@ -16,30 +16,27 @@ class NewJobs extends StatefulWidget {
 
 class _NewJobsState extends State<NewJobs> {
   late Future<List<OrderModel>> _pendingOrdersFuture;
-  late Timer _timer; // Timer for auto-refresh
+  late Timer _timer;
 
   @override
   void initState() {
     super.initState();
-    // Fetch pending orders initially
     _pendingOrdersFuture = _fetchPendingOrders();
 
-    // Set up a timer to refresh the orders every 30 seconds (adjust as needed)
     _timer = Timer.periodic(const Duration(seconds: 30), (timer) {
       setState(() {
-        _pendingOrdersFuture = _fetchPendingOrders(); // Refresh the orders
+        _pendingOrdersFuture = _fetchPendingOrders();
       });
     });
   }
 
-  // Fetch pending orders from the API
   Future<List<OrderModel>> _fetchPendingOrders() {
     return OrderService().getPendingOrders(widget.token);
   }
 
   @override
   void dispose() {
-    _timer.cancel(); // Cancel the timer when the widget is disposed
+    _timer.cancel();
     super.dispose();
   }
 
@@ -48,66 +45,31 @@ class _NewJobsState extends State<NewJobs> {
     return FutureBuilder<List<OrderModel>>(
       future: _pendingOrdersFuture,
       builder: (context, snapshot) {
-        // Check if the request is still in progress
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
             child: CircularProgressIndicator(),
           );
-        }
-        // Check if there was an error in the request
-        else if (snapshot.hasError) {
+        } else if (snapshot.hasError) {
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Error fetching orders: ${snapshot.error}',
-                    style: const TextStyle(color: Colors.red)),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _pendingOrdersFuture =
-                          _fetchPendingOrders(); // Retry fetching orders
-                    });
-                  },
-                  child: const Text('Retry'),
-                ),
-              ],
+            child: Text(
+              'Error fetching orders: ${snapshot.error}',
+              style: const TextStyle(color: Colors.red),
             ),
           );
-        }
-        // Check if data was received successfully
-        else if (snapshot.hasData) {
+        } else if (snapshot.hasData) {
           final List<OrderModel> pendingOrders = snapshot.data!;
 
-          // If there are no pending orders, show a message
           if (pendingOrders.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'No ongoing orders.',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _pendingOrdersFuture =
-                            _fetchPendingOrders(); // Reload orders
-                      });
-                    },
-                    child: const Text('Refresh'),
-                  ),
-                ],
+            return const Center(
+              child: Text(
+                'No ongoing orders.',
+                style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             );
           }
 
-          // Use a fixed-height container for the ListView
           return SizedBox(
-            height: 300, // Set a specific height for the ListView
+            height: 300,
             child: ListView.builder(
               itemCount: pendingOrders.length,
               itemBuilder: (context, index) {
@@ -116,7 +78,6 @@ class _NewJobsState extends State<NewJobs> {
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: GestureDetector(
                     onTap: () {
-                      // Navigate to the Pending page when an order is tapped
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -139,7 +100,7 @@ class _NewJobsState extends State<NewJobs> {
             ),
           );
         }
-        return const SizedBox(); // Fallback in case of unexpected state
+        return const SizedBox();
       },
     );
   }
