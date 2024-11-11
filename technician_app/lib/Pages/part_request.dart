@@ -5,8 +5,8 @@ import 'package:technician_app/API/req.dart';
 import 'package:technician_app/API/getTechnician.dart'; // Import Technician API service
 import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Assets/Components/BottomNav.dart';
+import 'package:technician_app/Assets/Components/autocomplete.dart';
 import 'package:technician_app/Assets/Components/detail.dart';
-import 'package:technician_app/assets/components/text_box.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
 import '../assets/components/button.dart';
 import 'package:intl/intl.dart';
@@ -124,9 +124,19 @@ class _RequestState extends State<Request> {
   Future<void> _handleRequestSubmission(
       Map<String, dynamic> customerData, Map<String, dynamic> orderData) async {
     try {
+      // Ensure technician name is available
       if (technicianName == "Loading..." || technicianName == "Unknown") {
         _showErrorDialog(
             "Technician's name is not available yet. Please try again.");
+        return;
+      }
+
+      // Capture the selected spare part from the autocomplete widget
+      final String sparePart = _newsearchController.text;
+
+      // Ensure that spare part is selected
+      if (sparePart.isEmpty) {
+        _showErrorDialog("Please select or enter a spare part.");
         return;
       }
 
@@ -135,15 +145,15 @@ class _RequestState extends State<Request> {
       final String equipment = orderData['ProblemType'] ?? '';
       final String brand =
           customerData['autogateBrand'] ?? customerData['alarmBrand'] ?? '';
-      final String partsNeeded = _newsearchController.text;
 
+      // Make the API call to submit the request
       await _requestApi.createRequestForm(
         technicianName: technicianName,
         customerId: customerId,
         customerName: customerName,
         equipment: equipment,
         brand: brand,
-        partsNeeded: partsNeeded,
+        partsNeeded: sparePart, // Pass the spare part to the API
       );
 
       _showSuccessDialog("Request Form submitted successfully!");
@@ -303,10 +313,9 @@ class _RequestState extends State<Request> {
                     ),
                   ),
                   const SizedBox(height: 5),
-                  MyTextField(
+                  MyAutocomplete(
                     controller: _newsearchController,
                     hintText: 'Parts Needed',
-                    obscureText: false,
                   ),
                   const Padding(padding: EdgeInsets.only(bottom: 70)),
                   MyButton(

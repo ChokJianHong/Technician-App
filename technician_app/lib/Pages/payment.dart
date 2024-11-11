@@ -6,7 +6,7 @@ import 'package:technician_app/core/configs/theme/appColors.dart';
 class Payment extends StatefulWidget {
   final String token;
 
-  Payment({super.key, required this.token});
+  const Payment({super.key, required this.token});
 
   @override
   State<Payment> createState() => _PaymentState();
