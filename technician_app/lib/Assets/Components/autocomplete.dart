@@ -1,14 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
 
 class MyAutocomplete extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
+  final Function(List<String>)
+      onSelectedItemsChanged; // Callback to pass selected items
 
   const MyAutocomplete({
     required this.controller,
     required this.hintText,
+    required this.onSelectedItemsChanged,
     super.key,
   });
 
@@ -41,13 +44,11 @@ class _MyAutocompleteState extends State<MyAutocomplete> {
     });
   }
 
-  // Function to fetch inventory data from your backend
   Future<List<String>> fetchInventoryFromDatabase(String query) async {
     final url = Uri.parse(
         'http://10.0.2.2:5005/dashboarddatabase/inventoryName?query=$query');
     try {
       final response = await http.get(url);
-
       if (response.statusCode == 200) {
         print('Response body: ${response.body}');
         final dynamic data = json.decode(response.body);
@@ -75,9 +76,8 @@ class _MyAutocompleteState extends State<MyAutocomplete> {
     if (!selectedItems.contains(item)) {
       setState(() {
         selectedItems.add(item);
-        widget.controller.text = item;
-        widget.controller.selection =
-            TextSelection.collapsed(offset: item.length);
+        widget.onSelectedItemsChanged(selectedItems); // Update parent widget
+        widget.controller.clear(); // Clear the input after adding an item
         inventorySuggestions = [];
       });
     }
@@ -86,12 +86,8 @@ class _MyAutocompleteState extends State<MyAutocomplete> {
   void _removeItem(String item) {
     setState(() {
       selectedItems.remove(item);
+      widget.onSelectedItemsChanged(selectedItems); // Update parent widget
     });
-  }
-
-  // Method to generate the string of all selected items
-  String getSelectedItemsString() {
-    return selectedItems.join(', '); // Concatenate items with a comma separator
   }
 
   @override
@@ -99,45 +95,36 @@ class _MyAutocompleteState extends State<MyAutocomplete> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Wrap(
+          spacing: 8.0,
+          children: selectedItems.map((item) {
+            return Chip(
+              label: Text(item),
+              deleteIcon: Icon(Icons.close),
+              onDeleted: () => _removeItem(item),
+            );
+          }).toList(),
+        ),
         TextField(
           controller: widget.controller,
           decoration: InputDecoration(
             hintText: widget.hintText,
-            suffixIcon: IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {
-                _fetchInventorySuggestions(widget.controller.text);
-              },
-            ),
           ),
+          onChanged: (text) {
+            if (text.isNotEmpty) {
+              _fetchInventorySuggestions(text);
+            }
+          },
         ),
-        if (inventorySuggestions.isNotEmpty)
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 5),
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Column(
-              children: inventorySuggestions.map((suggestion) {
-                return ListTile(
-                  title: Text(suggestion),
-                  onTap: () {
-                    _addItem(suggestion);
-                  },
-                );
-              }).toList(),
-            ),
-          ),
-        Wrap(
-          spacing: 5,
-          children: selectedItems.map((item) {
-            return Chip(
-              label: Text(item),
-              onDeleted: () {
-                _removeItem(item);
-              },
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: inventorySuggestions.map((item) {
+            return ListTile(
+              title: Text(item),
+              onTap: () => _addItem(item),
             );
           }).toList(),
         ),
-
       ],
     );
   }

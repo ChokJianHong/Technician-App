@@ -32,6 +32,7 @@ class _RequestState extends State<Request> {
   final Req _requestApi = Req();
   String technicianName =
       "Loading..."; // Default loading state for technician name
+  List<String> selectedItems = [];
 
   @override
   void initState() {
@@ -113,22 +114,23 @@ class _RequestState extends State<Request> {
     }
   }
 
+  void _handleSelectedItemsChanged(List<String> items) {
+    setState(() {
+      selectedItems = items;
+    });
+  }
+
   Future<void> _handleRequestSubmission(
       Map<String, dynamic> customerData, Map<String, dynamic> orderData) async {
     try {
-      // Ensure technician name is available
       if (technicianName == "Loading..." || technicianName == "Unknown") {
         _showErrorDialog(
             "Technician's name is not available yet. Please try again.");
         return;
       }
 
-      // Capture the selected spare part from the autocomplete widget
-      final String sparePart = _newsearchController.text;
-
-      // Ensure that spare part is selected
-      if (sparePart.isEmpty) {
-        _showErrorDialog("Please select or enter a spare part.");
+      if (selectedItems.isEmpty) {
+        _showErrorDialog("Please select or enter at least one spare part.");
         return;
       }
 
@@ -138,14 +140,13 @@ class _RequestState extends State<Request> {
       final String brand =
           customerData['autogateBrand'] ?? customerData['alarmBrand'] ?? '';
 
-      // Make the API call to submit the request
       await _requestApi.createRequestForm(
         technicianName: technicianName,
         customerId: customerId,
         customerName: customerName,
         equipment: equipment,
         brand: brand,
-        partsNeeded: sparePart, // Pass the spare part to the API
+        partsNeeded: selectedItems.join(", "), // Join all selected items
       );
 
       _showSuccessDialog("Request Form submitted successfully!");
@@ -319,13 +320,16 @@ class _RequestState extends State<Request> {
                   MyAutocomplete(
                     controller: _newsearchController,
                     hintText: 'Parts Needed',
+                    onSelectedItemsChanged: _handleSelectedItemsChanged,
                   ),
                   const Padding(padding: EdgeInsets.only(bottom: 70)),
+                  const SizedBox(height: 5),
                   MyButton(
                     text: "Request Parts",
                     color: AppColors.orange,
                     onTap: () {
                       _handleRequestSubmission(customerData, orderData);
+                      ;
                     },
                   ),
                 ],
