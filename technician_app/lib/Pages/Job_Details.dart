@@ -1,8 +1,10 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:technician_app/API/cancel.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
+import 'package:technician_app/API/sendTechLocation.dart';
 
 import 'package:technician_app/Pages/Completed_Job_Details.dart';
 import 'package:technician_app/Pages/home.dart';
@@ -31,6 +33,20 @@ class _RequestDetailsState extends State<RequestDetails> {
     _orderDetailFuture = _fetchOrderDetails(widget.token, widget.orderId);
   }
 
+  // Function to get current location
+  Future<Position> _getCurrentLocation() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        throw Exception("Location permissions are denied");
+      }
+    }
+    return await Geolocator.getCurrentPosition();
+  }
+
   String formatDateTime(String utcDateTime) {
     try {
       DateTime parsedDate = DateTime.parse(utcDateTime);
@@ -40,6 +56,11 @@ class _RequestDetailsState extends State<RequestDetails> {
       print('Error parsing date: $e');
       return 'Invalid date';
     }
+  }
+
+  void sendLocationData(double longitude, double latitude, String token) async {
+    final sendTechLocation = Sendtechlocation();
+    await sendTechLocation.sendLocation(longitude, latitude, token);
   }
 
   Future<Map<String, dynamic>> _fetchOrderDetails(
@@ -110,10 +131,11 @@ class _RequestDetailsState extends State<RequestDetails> {
           ),
           actions: [
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 if (cancellationReason.isNotEmpty) {
-                  _cancelOrder(cancellationReason); // Call the cancel function
                   Navigator.of(context).pop(); // Close the dialog
+                  await _cancelOrder(
+                      cancellationReason); // Call the cancel function outside of setState
                 } else {
                   // Show an error if the reason is empty
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -361,23 +383,36 @@ class _RequestDetailsState extends State<RequestDetails> {
                           text: _isRequestStarted
                               ? 'Complete Request'
                               : 'Start Request',
-                          onTap: () {
-                            setState(() {
-                              if (_isRequestStarted) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CompletedJobDetails(
-                                      token: widget.token,
-                                      orderId: widget.orderId,
-                                    ),
+                          onTap: () async {
+                            if (_isRequestStarted) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CompletedJobDetails(
+                                    token: widget.token,
+                                    orderId: widget.orderId,
                                   ),
-                                );
-                              } else {
-                                // Code to handle starting the request (maybe change state or show a message)
+                                ),
+                              );
+                            } else {
+                              try {
+                                // Get the current location asynchronously
+                                Position position = await _getCurrentLocation();
+                                double longitude = position.longitude;
+                                double latitude = position.latitude;
+
+                                // Send location data
+                                sendLocationData(
+                                    longitude, latitude, widget.token);
+
+                                // Update the state synchronously
+                                setState(() {
+                                  _isRequestStarted = true;
+                                });
+                              } catch (e) {
+                                print("Error getting location: $e");
                               }
-                              _isRequestStarted = !_isRequestStarted;
-                            });
+                            }
                           },
                           color: _isRequestStarted
                               ? Colors.green

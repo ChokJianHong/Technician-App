@@ -100,7 +100,7 @@ class _MyAutocompleteState extends State<MyAutocomplete> {
           children: selectedItems.map((item) {
             return Chip(
               label: Text(item),
-              deleteIcon: Icon(Icons.close),
+              deleteIcon: const Icon(Icons.close),
               onDeleted: () => _removeItem(item),
             );
           }).toList(),

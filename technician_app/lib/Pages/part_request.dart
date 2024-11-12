@@ -329,7 +329,6 @@ class _RequestState extends State<Request> {
                     color: AppColors.orange,
                     onTap: () {
                       _handleRequestSubmission(customerData, orderData);
-                      ;
                     },
                   ),
                 ],
