@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-const baseUrl = "http://10.0.2.2:5005";
+const baseUrl = "http://82.112.238.13:5005";
 
 class Sendtechlocation {
   Future<void> sendLocation(String technicianId, double longitude,
@@ -32,7 +32,8 @@ class Sendtechlocation {
     }
   }
 
-  Future<void> sendTime(String orderid, String token, String currentTime) async {
+  Future<void> sendTime(
+      String orderid, String token, String currentTime) async {
     final url = Uri.parse(
         '$baseUrl/dashboarddatabase/technician/arrive/:$orderid'); // Add technicianId to the URL
     final headers = {
