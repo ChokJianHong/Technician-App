@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "133312562940",
+    "project_id": "chat-manager-978b8",
+    "storage_bucket": "chat-manager-978b8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:133312562940:android:3e76be7148da5699cd3979",
+        "android_client_info": {
+          "package_name": "com.example.customer_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqm_QSuIzJ_JqGNFv5iTowqNJJnIMFTn4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

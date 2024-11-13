@@ -28,6 +28,10 @@ dependencies:
   image_picker:
   http_parser:
   geolocator:
+  firebase_auth: 
+  cloud_firestore: 
+  firebase_core: ^3.7.0
+  firebase_messaging: ^15.1.4
 
 dev_dependencies:
   flutter_test:
