@@ -9,6 +9,7 @@ import 'package:technician_app/API/sendTechLocation.dart';
 
 import 'package:technician_app/Pages/Completed_Job_Details.dart';
 import 'package:technician_app/Pages/home.dart';
+import 'package:technician_app/Pages/messages.dart';
 import 'package:technician_app/Pages/part_request.dart';
 
 import 'package:technician_app/assets/components/button.dart';
@@ -472,6 +473,35 @@ class _RequestDetailsState extends State<RequestDetails> {
                               : AppColors.orange,
                         ),
                         const SizedBox(height: 20),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Colors.blue, // Set button color if needed
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 12),
+                          ),
+                          onPressed: () {
+                            // Replace these with actual values
+                            String currentUserId = widget
+                                .token; // Or retrieve it from the order or user context
+                            String chatPartnerId = widget
+                                .orderId; // Or the technician's ID or another identifier
+                            String token = widget.token;
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChatScreen(
+                                  currentUserId: currentUserId,
+                                  chatPartnerId: chatPartnerId,
+                                  token: token,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Text('Go to Messages'),
+                        ),
+                        SizedBox(height: 10),
                         MyButton(
                             text: 'Part Request',
                             onTap: () {
