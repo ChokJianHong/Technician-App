@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:technician_app/API/getCust.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/API/req.dart';
-import 'package:technician_app/API/getTechnician.dart'; // Import Technician API service
+import 'package:technician_app/API/getTechnician.dart'; 
 import 'package:technician_app/Assets/Components/autocomplete.dart';
 import 'package:technician_app/Assets/Components/detail.dart';
 import 'package:technician_app/Pages/home.dart';
@@ -146,7 +146,8 @@ class _RequestState extends State<Request> {
         customerName: customerName,
         equipment: equipment,
         brand: brand,
-        partsNeeded: selectedItems.join(", "), // Join all selected items
+        partsNeeded: selectedItems.join(", "),
+        orderId: int.parse(widget.orderId),
       );
 
       _showSuccessDialog("Request Form submitted successfully!");
