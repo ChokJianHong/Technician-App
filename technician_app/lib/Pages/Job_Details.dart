@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:technician_app/API/cancel.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/API/sendTechLocation.dart';
@@ -58,9 +59,56 @@ class _RequestDetailsState extends State<RequestDetails> {
     }
   }
 
-  void sendLocationData(double longitude, double latitude, String token) async {
+  // Function to get technician ID from token
+  Future<String> getTechnicianIdFromToken(String token) async {
+    String technicianId = '';
+
+    try {
+      // Decode the token to extract the technician ID
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      technicianId = decodedToken['userId']
+          .toString(); // Adjust the key based on your token structure
+      print('Technician ID: $technicianId');
+    } catch (error) {
+      print('Error decoding token: $error');
+      technicianId = 'default'; // Set a default value if decoding fails
+    }
+
+    return technicianId; // Return the technician ID
+  }
+
+  // Function to send location data
+  Future<void> sendLocationData(
+      double longitude, double latitude, String token) async {
     final sendTechLocation = Sendtechlocation();
-    await sendTechLocation.sendLocation(longitude, latitude, token);
+
+    // Get technician ID from the token
+    String technicianId = await getTechnicianIdFromToken(token);
+
+    // Ensure technicianId is valid before sending location data
+    if (technicianId != 'default' && technicianId.isNotEmpty) {
+      try {
+        await sendTechLocation.sendLocation(
+            technicianId, latitude, longitude, token);
+        print("Location sent successfully!");
+      } catch (e) {
+        print("Error sending location: $e");
+      }
+    } else {
+      print("Invalid technician ID. Cannot send location.");
+    }
+  }
+
+  Future<void> sendCurrentTime(
+      String orderid, String token, String currentTime) async {
+    final sendtechlocation = Sendtechlocation();
+
+    try {
+      await sendtechlocation.sendTime(orderid, token, currentTime);
+      print("Time Sent Successfully");
+    } catch (err) {
+      print("Error sending location: $err");
+    }
   }
 
   Future<Map<String, dynamic>> _fetchOrderDetails(
@@ -401,9 +449,14 @@ class _RequestDetailsState extends State<RequestDetails> {
                                 double longitude = position.longitude;
                                 double latitude = position.latitude;
 
-                                // Send location data
+                                // Send location data with technicianId
                                 sendLocationData(
                                     longitude, latitude, widget.token);
+
+                                DateTime currentTime = DateTime.now();
+
+                                sendCurrentTime(widget.orderId, widget.token,
+                                    currentTime.toIso8601String());
 
                                 // Update the state synchronously
                                 setState(() {
