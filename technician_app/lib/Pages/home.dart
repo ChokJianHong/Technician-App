@@ -1,3 +1,4 @@
+import 'package:technician_app/API/firebase_api.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Assets/Components/current_job.dart';
@@ -5,6 +6,7 @@ import 'package:technician_app/Assets/Components/new_jobs.dart';
 import 'package:technician_app/Assets/Components/request_card.dart';
 import 'package:technician_app/assets/components/BottomNav.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart'; // Adjust the path as needed
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class HomePage extends StatefulWidget {
   final String token;
@@ -17,10 +19,26 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 1;
 
+  final FirebaseApi firebaseapi = FirebaseApi();
+  late String technicianId;
+
   void _onTap(int index) {
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    try {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
+      technicianId = decodedToken['userId'].toString();
+    } catch (error) {
+      print('Error decoding token: $error');
+      technicianId = 'default';
+    } 
+    firebaseapi.initNotifications(widget.token, technicianId);
   }
 
   @override
