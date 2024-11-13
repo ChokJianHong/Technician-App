@@ -2,17 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:technician_app/API/getCust.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/API/req.dart';
-import 'package:technician_app/API/getTechnician.dart'; // Import Technician API service
-<<<<<<< Updated upstream
+import 'package:technician_app/API/getTechnician.dart'; 
 import 'package:technician_app/Assets/Components/autocomplete.dart';
 import 'package:technician_app/Assets/Components/detail.dart';
 import 'package:technician_app/Pages/home.dart';
-=======
-import 'package:technician_app/Assets/Components/AppBar.dart';
-import 'package:technician_app/Assets/Components/BottomNav.dart';
-import 'package:technician_app/Assets/Components/autocomplete.dart';
-import 'package:technician_app/Assets/Components/detail.dart';
->>>>>>> Stashed changes
 import 'package:technician_app/core/configs/theme/appColors.dart';
 import '../assets/components/button.dart';
 import 'package:intl/intl.dart';
@@ -328,10 +321,7 @@ class _RequestState extends State<Request> {
                   MyAutocomplete(
                     controller: _newsearchController,
                     hintText: 'Parts Needed',
-<<<<<<< Updated upstream
                     onSelectedItemsChanged: _handleSelectedItemsChanged,
-=======
->>>>>>> Stashed changes
                   ),
                   const Padding(padding: EdgeInsets.only(bottom: 70)),
                   const SizedBox(height: 5),
