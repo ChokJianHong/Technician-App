@@ -153,7 +153,8 @@ class _RequestState extends State<Request> {
       );
 
       await StatusTracking.updateTechnicianStatus(
-          orderData['TechnicianID'].toString(), widget.orderId);
+          orderData['TechnicianID'].toString(),
+          orderData['orderId'].toString());
 
       _showSuccessDialog("Request Form submitted successfully!");
     } catch (error) {
@@ -253,6 +254,14 @@ class _RequestState extends State<Request> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text(
+                    'Order ID: ${widget.orderId}', // Display the order ID
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

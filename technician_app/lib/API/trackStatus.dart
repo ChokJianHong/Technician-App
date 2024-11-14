@@ -2,14 +2,13 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class StatusTracking {
-  static const String baseUrl =
-      'http://82.112.238.13:5005'; // Replace with your backend URL
+  static const String baseUrl = 'http://82.112.238.13:5005';
 
   // Function to update technician status based on order status
   static Future<void> updateTechnicianStatus(
       String technicianId, String orderId) async {
     final url = Uri.parse(
-        '$baseUrl/dashboarddatabase/request/technician/$technicianId');
+        '$baseUrl/dashboarddatabase/request/technician/$technicianId/$orderId');
 
     try {
       final response = await http.put(
@@ -22,6 +21,7 @@ class StatusTracking {
 
       if (response.statusCode == 200) {
         print("Technician status updated successfully.");
+        print("Response body: ${response.body}");
       } else {
         print(
             "Failed to update technician status. Status code: ${response.statusCode}");
