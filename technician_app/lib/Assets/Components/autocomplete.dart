@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -5,8 +6,7 @@ import 'package:flutter/material.dart';
 class MyAutocomplete extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
-  final Function(List<String>)
-      onSelectedItemsChanged; // Callback to pass selected items
+  final Function(List<String>) onSelectedItemsChanged;
 
   const MyAutocomplete({
     required this.controller,
@@ -22,18 +22,27 @@ class MyAutocomplete extends StatefulWidget {
 class _MyAutocompleteState extends State<MyAutocomplete> {
   List<String> inventorySuggestions = [];
   List<String> selectedItems = [];
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
     widget.controller.addListener(() {
       if (widget.controller.text.isNotEmpty) {
-        _fetchInventorySuggestions(widget.controller.text);
+        _onSearchChanged(widget.controller.text);
       } else {
         setState(() {
           inventorySuggestions = [];
         });
       }
+    });
+  }
+
+  // Debounce function
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _fetchInventorySuggestions(query);
     });
   }
 
@@ -46,11 +55,10 @@ class _MyAutocompleteState extends State<MyAutocomplete> {
 
   Future<List<String>> fetchInventoryFromDatabase(String query) async {
     final url = Uri.parse(
-        'http://10.0.2.2:5005/dashboarddatabase/inventoryName?query=$query');
+        'http://82.112.238.13:5005/dashboarddatabase/inventoryName?query=$query');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
-        print('Response body: ${response.body}');
         final dynamic data = json.decode(response.body);
 
         if (data is List) {
@@ -59,15 +67,12 @@ class _MyAutocompleteState extends State<MyAutocomplete> {
           }
           return data.map<String>((item) => item['name'] as String).toList();
         } else {
-          print('Unexpected data format');
           return [];
         }
       } else {
-        print('Failed to load inventory suggestions');
         return [];
       }
     } catch (e) {
-      print('Error fetching data: $e');
       return [];
     }
   }
@@ -78,7 +83,7 @@ class _MyAutocompleteState extends State<MyAutocomplete> {
         selectedItems.add(item);
         widget.onSelectedItemsChanged(selectedItems); // Update parent widget
         widget.controller.clear(); // Clear the input after adding an item
-        inventorySuggestions = [];
+        inventorySuggestions = []; // Clear suggestions
       });
     }
   }
@@ -88,6 +93,20 @@ class _MyAutocompleteState extends State<MyAutocomplete> {
       selectedItems.remove(item);
       widget.onSelectedItemsChanged(selectedItems); // Update parent widget
     });
+  }
+
+  // Method to handle custom part name input
+  void _handleCustomPartName() {
+    String customPartName = widget.controller.text.trim();
+    if (customPartName.isNotEmpty && !selectedItems.contains(customPartName)) {
+      _addItem(customPartName);
+    }
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
   @override
@@ -115,16 +134,31 @@ class _MyAutocompleteState extends State<MyAutocomplete> {
               _fetchInventorySuggestions(text);
             }
           },
+          onSubmitted: (_) {
+            // Add the custom part name when the user presses 'Enter'
+            _handleCustomPartName();
+          },
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: inventorySuggestions.map((item) {
-            return ListTile(
-              title: Text(item),
-              onTap: () => _addItem(item),
-            );
-          }).toList(),
-        ),
+        // Show suggestions only if there are suggestions
+        if (inventorySuggestions.isNotEmpty)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: inventorySuggestions.map((item) {
+              return ListTile(
+                title: Text(item),
+                onTap: () => _addItem(item),
+              );
+            }).toList(),
+          ),
+        // Show "No suggestions" if no suggestions are found
+        if (inventorySuggestions.isEmpty && widget.controller.text.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "No suggestions found. You can enter a custom part name.",
+              style: TextStyle(color: Colors.grey[500]),
+            ),
+          ),
       ],
     );
   }
