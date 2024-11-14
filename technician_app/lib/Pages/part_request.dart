@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:technician_app/API/getCust.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/API/req.dart';
-import 'package:technician_app/API/getTechnician.dart'; 
+import 'package:technician_app/API/getTechnician.dart';
+import 'package:technician_app/API/trackStatus.dart';
 import 'package:technician_app/Assets/Components/autocomplete.dart';
 import 'package:technician_app/Assets/Components/detail.dart';
 import 'package:technician_app/Pages/home.dart';
@@ -30,6 +31,7 @@ final TextEditingController _newsearchController = TextEditingController();
 class _RequestState extends State<Request> {
   late Future<Map<String, dynamic>> _combinedDetailsFuture;
   final Req _requestApi = Req();
+
   String technicianName =
       "Loading..."; // Default loading state for technician name
   List<String> selectedItems = [];
@@ -149,6 +151,9 @@ class _RequestState extends State<Request> {
         partsNeeded: selectedItems.join(", "),
         orderId: int.parse(widget.orderId),
       );
+
+      await StatusTracking.updateTechnicianStatus(
+          orderData['TechnicianID'].toString(), widget.orderId);
 
       _showSuccessDialog("Request Form submitted successfully!");
     } catch (error) {
