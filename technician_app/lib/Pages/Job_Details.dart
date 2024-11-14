@@ -100,7 +100,8 @@ class _RequestDetailsState extends State<RequestDetails> {
 
     if (technicianId != 'default') {
       // Change the status to 'working'
-      await sendTechLocation.changeStatus(widget.token, technicianId);
+      await sendTechLocation.changeStatus(
+          widget.token, technicianId, 'working');
 
       // Optionally, update the UI to reflect the status change
       setState(() {

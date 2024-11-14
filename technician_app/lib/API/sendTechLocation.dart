@@ -60,29 +60,28 @@ class Sendtechlocation {
     }
   }
 
-  Future<void> changeStatus(String token, String technicianId) async {
-    final url =
-        Uri.parse('$baseUrl/dashboarddatabase/technician/status/$technicianId');
+  Future<void> changeStatus(
+      String token, String technicianId, String status) async {
+    final url = Uri.parse('$baseUrl/dashboarddatabase/technician/status/$technicianId');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': token,
     };
     final body = json.encode({
-      'status': 'working',
+      'status': status, // Send 'working' or 'available', etc.
     });
 
     try {
       final response = await http.put(url, headers: headers, body: body);
-      print(response);
       if (response.statusCode != 200) {
         print('Failed to change status: ${response.statusCode}');
         throw Exception('Failed to change status');
       } else {
-        print('Status Changed Successfully');
+        print('Status changed successfully');
       }
     } catch (err) {
-      print('Error Status Changed: $err');
-      throw Exception('Error Status Changed: $err');
+      print('Error changing status: $err');
+      throw Exception('Error changing status: $err');
     }
   }
 }
