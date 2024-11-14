@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class StatusTracking {
   static const String baseUrl =
-      'http://10.0.2.2:5005'; // Replace with your backend URL
+      'http://82.112.238.13:5005'; // Replace with your backend URL
 
   // Function to update technician status based on order status
   static Future<void> updateTechnicianStatus(
