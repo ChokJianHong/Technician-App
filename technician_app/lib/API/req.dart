@@ -43,6 +43,7 @@ class Req {
   required String equipment,
   required String brand,
   required String partsNeeded,
+  required String orderId,
 }) async {
   try {
     final url = Uri.parse('$baseUrl/dashboarddatabase/request');
@@ -56,6 +57,7 @@ class Req {
         'equipment': equipment,
         'brand': brand,
         'parts_needed': partsNeeded,
+        'order_id': orderId,
       }),
     );
 

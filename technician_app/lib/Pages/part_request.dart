@@ -146,7 +146,8 @@ class _RequestState extends State<Request> {
         customerName: customerName,
         equipment: equipment,
         brand: brand,
-        partsNeeded: selectedItems.join(", "), // Join all selected items
+        partsNeeded: selectedItems.join(", "),
+        orderId: widget.orderId, // Join all selected items
       );
 
       _showSuccessDialog("Request Form submitted successfully!");
