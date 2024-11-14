@@ -13,8 +13,8 @@ class Sendtechlocation {
       'Authorization': token,
     };
     final body = json.encode({
-      'longitude': longitude,
-      'latitude': latitude,
+      'longitude': latitude,
+      'latitude': longitude,
     });
 
     try {
