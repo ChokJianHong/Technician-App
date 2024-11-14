@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:technician_app/API/getTechnician.dart';
 import 'package:technician_app/Assets/Components/button.dart';
@@ -22,6 +23,21 @@ class _SettingState extends State<Setting> {
   void initState() {
     super.initState();
     _fetchTechnicianDetails();
+  }
+
+  void _logout() async {
+    const storage = FlutterSecureStorage();
+
+    // Remove the stored token securely
+    await storage.delete(key: 'userToken');
+
+    // After deleting the token, navigate the user back to the Sign-In page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SignInPage(),
+      ),
+    );
   }
 
   Future<void> _fetchTechnicianDetails() async {
@@ -143,17 +159,7 @@ class _SettingState extends State<Setting> {
             padding: const EdgeInsets.only(
                 bottom: 16.0), // Adds space around the button
             child: MyButton(
-              text: 'Sign Out',
-              color: AppColors.orange,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SignInPage(),
-                  ),
-                );
-              },
-            ),
+                text: 'Sign Out', color: AppColors.orange, onTap: _logout),
           ),
           const SizedBox(
             height: 30,

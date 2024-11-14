@@ -1,8 +1,10 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'dart:convert';
+
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:technician_app/API/getToken.dart';
 import 'package:technician_app/API/signInAPI.dart';
@@ -23,6 +25,116 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
   String? errorMessage;
+
+  // Initialize the FlutterSecureStorage
+  final storage = const FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _checkLoggedInStatus();
+  }
+
+  // Check if a valid token exists in storage
+  Future<void> _checkLoggedInStatus() async {
+    final token = await storage.read(key: 'userToken');
+
+    if (token != null) {
+      // If a token exists, navigate directly to the home page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage(token: token)),
+      );
+    }
+  }
+
+  // Forgot Password Function
+  void _forgotPassword() async {
+    final TextEditingController emailController = TextEditingController();
+    String? userType = 'customer'; // Default user type
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Forgot Password'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: emailController,
+                decoration:
+                    const InputDecoration(labelText: 'Enter your email'),
+              ),
+              DropdownButton<String>(
+                value: userType,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    userType = newValue!;
+                  });
+                },
+                items: <String>['customer', 'technician']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                final email = emailController.text;
+
+                if (email.isEmpty || !EmailValidator.validate(email)) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Please enter a valid email')));
+                  return;
+                }
+
+                try {
+                  final response = await http.post(
+                    Uri.parse(
+                        'http://82.112.238.13:5005/dashboarddatabase/forgot-password'),
+                    headers: {'Content-Type': 'application/json'},
+                    body: json.encode({
+                      'email': email,
+                      'userType': userType,
+                    }),
+                  );
+
+                  final responseData = json.decode(response.body);
+                  if (response.statusCode == 200) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(responseData['message'] ??
+                            'Password reset email sent!')));
+                    Navigator.pop(context); // Close the dialog
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(responseData['message'] ??
+                            'Failed to send reset email')));
+                  }
+                } catch (error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error occurred: $error')));
+                }
+              },
+              child: const Text('Submit'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   bool _validateInputs() {
     final email = emailController.text;

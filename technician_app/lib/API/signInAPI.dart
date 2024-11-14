@@ -23,16 +23,25 @@ class SignInAPI {
               'userType': 'technician',
             }),
           )
-          .timeout(const Duration(seconds: 20)); // Add a timeout of 10 seconds
+          .timeout(const Duration(seconds: 20)); // Add a timeout of 20 seconds
 
       if (response.statusCode == 200) {
         // Parse the JSON response body to a Dart object
-        return jsonDecode(response.body);
+        final Map<String, dynamic> data = jsonDecode(response.body);
+
+        // Assuming the response contains the token in `token` key
+        final String token = data['token'];
+
+        // Store the token securely
+        await storage.write(key: 'jwt_token', value: token);
+
+        // Return the response data (including token)
+        return data;
       } else {
-        throw Exception('Failed to register user: ${response.statusCode}');
+        throw Exception('Failed to log in: ${response.statusCode}');
       }
     } catch (error) {
-      throw Exception('Error registering user: $error');
+      throw Exception('Error logging in: $error');
     }
   }
 }
