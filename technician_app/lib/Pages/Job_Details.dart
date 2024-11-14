@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:technician_app/API/cancel.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/API/sendTechLocation.dart';
@@ -33,6 +34,19 @@ class _RequestDetailsState extends State<RequestDetails> {
   void initState() {
     super.initState();
     _orderDetailFuture = _fetchOrderDetails(widget.token, widget.orderId);
+    _loadRequestState();
+  }
+
+  Future<void> _loadRequestState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isRequestStarted = prefs.getBool('isRequestStarted') ?? false;
+    });
+  }
+
+  Future<void> _saveRequestState(bool state) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isRequestStarted', state);
   }
 
   // Function to get current location
@@ -76,6 +90,29 @@ class _RequestDetailsState extends State<RequestDetails> {
     }
 
     return technicianId; // Return the technician ID
+  }
+
+  Future<void> _changeStatus() async {
+    // Get technician ID from token
+    String technicianId = await getTechnicianIdFromToken(widget.token);
+
+    final sendTechLocation = Sendtechlocation();
+
+    if (technicianId != 'default') {
+      // Change the status to 'working'
+      await sendTechLocation.changeStatus(widget.token, technicianId);
+
+      // Optionally, update the UI to reflect the status change
+      setState(() {
+        _isRequestStarted = true;
+      });
+
+      // Optionally, save the request state to SharedPreferences
+      await _saveRequestState(true);
+    } else {
+      // Handle the case when the technician ID is invalid
+      print("Invalid technician ID. Cannot start the request.");
+    }
   }
 
   // Function to send location data
@@ -459,10 +496,15 @@ class _RequestDetailsState extends State<RequestDetails> {
                                 sendCurrentTime(widget.orderId, widget.token,
                                     currentTime.toIso8601String());
 
+                                // Make Technician Free
+                                _changeStatus();
+
                                 // Update the state synchronously
                                 setState(() {
                                   _isRequestStarted = true;
                                 });
+
+                                await _saveRequestState(true);
                               } catch (e) {
                                 print("Error getting location: $e");
                               }
@@ -477,7 +519,7 @@ class _RequestDetailsState extends State<RequestDetails> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
                                 Colors.blue, // Set button color if needed
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 12),
                           ),
                           onPressed: () {
@@ -499,9 +541,9 @@ class _RequestDetailsState extends State<RequestDetails> {
                               ),
                             );
                           },
-                          child: Text('Go to Messages'),
+                          child: const Text('Go to Messages'),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         MyButton(
                             text: 'Part Request',
                             onTap: () {

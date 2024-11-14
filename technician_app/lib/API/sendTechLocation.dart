@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
 
 const baseUrl = "http://82.112.238.13:5005";
 
@@ -35,7 +36,7 @@ class Sendtechlocation {
   Future<void> sendTime(
       String orderid, String token, String currentTime) async {
     final url = Uri.parse(
-        '$baseUrl/dashboarddatabase/technician/arrive/:$orderid'); // Add technicianId to the URL
+        'http://10.2.2.2:5005/dashboarddatabase/technician/arrive/$orderid'); // Add technicianId to the URL
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': token,
@@ -56,6 +57,32 @@ class Sendtechlocation {
     } catch (error) {
       print('Error sending location: $error');
       throw Exception('Error sending location: $error');
+    }
+  }
+
+  Future<void> changeStatus(String token, String technicianId) async {
+    final url =
+        Uri.parse('$baseUrl/dashboarddatabase/technician/status/$technicianId');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': token,
+    };
+    final body = json.encode({
+      'status': 'working',
+    });
+
+    try {
+      final response = await http.put(url, headers: headers, body: body);
+      print(response);
+      if (response.statusCode != 200) {
+        print('Failed to change status: ${response.statusCode}');
+        throw Exception('Failed to change status');
+      } else {
+        print('Status Changed Successfully');
+      }
+    } catch (err) {
+      print('Error Status Changed: $err');
+      throw Exception('Error Status Changed: $err');
     }
   }
 }
