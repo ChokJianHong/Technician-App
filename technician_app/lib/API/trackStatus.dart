@@ -30,7 +30,7 @@ class StatusTracking {
       }
     } catch (error) {
       print("Error updating technician status: $error");
-      throw error;
+      rethrow;
     }
   }
 }

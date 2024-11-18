@@ -390,27 +390,57 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
     // Check if an image has been selected
     if (_image == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select or take a picture!')));
+        const SnackBar(content: Text('Please select or take a picture!')),
+      );
       return;
     }
+
+    // Show loading indicator while uploading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
 
     try {
       // Send data and image together
       final result = await _uploadImageAndData(_image!, widget.orderId);
-      print(result);
+
+      // Dismiss loading indicator
+      Navigator.of(context).pop();
+
+      // Handle the server response
       if (result['message'] == 'success') {
-        Navigator.push(
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Form submitted successfully!')),
+        );
+
+        // Navigate to the Payment page
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Payment(token: widget.token)),
-        ); // Navigate to confirmation page
+          MaterialPageRoute(
+            builder: (context) => Payment(token: widget.token),
+          ),
+        );
       } else {
+        // Handle server error response
         String errorMessage = result['message'] ?? 'An error occurred';
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $errorMessage')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $errorMessage')),
+        );
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Network error: Unable to create order')));
+      // Dismiss loading indicator on error
+      Navigator.of(context).pop();
+
+      // Handle network or other unexpected errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Network error: Unable to submit form')),
+      );
     }
   }
 }
