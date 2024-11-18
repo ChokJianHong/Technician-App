@@ -8,6 +8,7 @@ import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/API/sendTechLocation.dart';
 import 'package:technician_app/Pages/Completed_Job_Details.dart';
 import 'package:technician_app/Pages/home.dart';
+import 'package:technician_app/Pages/messages.dart';
 import 'package:technician_app/assets/components/button.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
 
@@ -300,6 +301,19 @@ class _RequestDetailsState extends State<RequestDetails> {
                     onTap: _showCancelDialog,
                     color: Colors.red,
                   ),
+                  const SizedBox(height: 20),
+                  MyButton(
+                      text: 'View Messages',
+                      color: Colors.blue,
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ChatScreen(
+                                    currentUserId: widget.token,
+                                    chatPartnerId: widget.orderId,
+                                    token: widget.token)));
+                      })
                 ],
               ),
             );
