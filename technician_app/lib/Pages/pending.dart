@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:technician_app/API/accept_job.dart';
+import 'package:technician_app/API/check_overlap.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/Assets/Components/button.dart';
 import 'package:technician_app/Pages/home.dart';
@@ -29,8 +31,11 @@ class _PendingState extends State<Pending> {
       String token, String orderId) async {
     try {
       final orderDetails = await OrderDetails().getOrderDetail(token, orderId);
+      print(
+          'Fetched Order Details: $orderDetails'); // Print the entire order details response
+
       if (orderDetails['success']) {
-        return orderDetails; // Return the entire response
+        return orderDetails; // Return the entire response if it's successful
       } else {
         if (mounted) {
           _showErrorDialog(orderDetails['error']);
@@ -67,11 +72,69 @@ class _PendingState extends State<Pending> {
     }
   }
 
+  String extractTechnicianIdFromToken(String token) {
+    try {
+      // Decode the JWT token
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+
+      // Extract the technicianId (adjust key based on your token structure)
+      String technicianId = decodedToken['technicianId'];
+
+      // Return the technicianId
+      return technicianId;
+    } catch (e) {
+      throw Exception('Failed to decode token: $e');
+    }
+  }
+
   Future<void> _acceptOrder() async {
     try {
-      String eta =
-          DateTime.now().toIso8601String(); // Modify this to get the actual ETA
-      double totalAmount = 100.0; // Modify this to get the actual total amount
+      // Decode the token to get technician ID
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
+      final technicianId =
+          decodedToken['userId']; // Extract 'userId' from token
+
+      if (technicianId == null) {
+        throw Exception('Token does not contain userId');
+      }
+
+      print('Technician ID: $technicianId'); // Debugging line
+
+      // Fetch order details dynamically
+      final orderDetails =
+          await _fetchOrderDetails(widget.token, widget.orderId);
+
+      if (!orderDetails['success']) {
+        throw Exception('Failed to fetch order details for acceptance.');
+      }
+
+      // Extract the required values from the order details
+      final orderDate = formatDateTime(orderDetails['result']['orderDate']);
+      final orderTime = orderDetails['result']['orderTime'];
+
+      print('Order Date: $orderDate');
+      print('Order Time: $orderTime');
+
+      // Check for job overlap
+      final overlapResult = await CheckOverlap.checkJobOverlap(
+        technicianId: technicianId,
+        orderDate: orderDate,
+        orderTime: orderTime,
+      );
+
+      // Print the overlap result
+      print('Job Overlap Check Result: ${overlapResult['overlap']}');
+      print('Overlap Message: ${overlapResult['message']}');
+
+      if (overlapResult['overlap'] == true) {
+        // Show overlap error and return
+        _showErrorDialog(overlapResult['message']);
+        return;
+      }
+
+      // If no overlap, proceed to accept the order
+      String eta = DateTime.now().toIso8601String(); // Modify to get actual ETA
+      double totalAmount = 100.0; // Modify to get the actual total amount
 
       await AcceptJob().acceptOrder(
         widget.token,
