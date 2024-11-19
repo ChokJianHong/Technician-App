@@ -18,8 +18,7 @@ class RequestDetails extends StatefulWidget {
   final String token;
   final String orderId;
 
-  const RequestDetails({Key? key, required this.token, required this.orderId})
-      : super(key: key);
+  const RequestDetails({super.key, required this.token, required this.orderId});
 
   @override
   State<RequestDetails> createState() => _RequestDetailsState();

@@ -3,6 +3,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:technician_app/Assets/Model/notification_model.dart';
 
 class NotificationPage extends StatefulWidget {
+  const NotificationPage({super.key});
+
   @override
   _NotificationPageState createState() => _NotificationPageState();
 }
@@ -35,10 +37,10 @@ class _NotificationPageState extends State<NotificationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notifications'),
+        title: const Text('Notifications'),
       ),
       body: notifications.isEmpty
-          ? Center(child: Text('No notifications yet.'))
+          ? const Center(child: Text('No notifications yet.'))
           : ListView.builder(
               itemCount: notifications.length,
               itemBuilder: (context, index) {

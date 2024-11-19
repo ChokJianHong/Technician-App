@@ -423,7 +423,7 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => Payment(token: widget.token),
+            builder: (context) => Payment(token: widget.token, orderId: widget.orderId),
           ),
         );
       } else {
