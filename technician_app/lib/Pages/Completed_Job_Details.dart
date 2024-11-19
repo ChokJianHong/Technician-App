@@ -70,7 +70,7 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
       var request = http.MultipartRequest(
         'PUT',
         Uri.parse(
-            'http://10.0.2.2:5005/dashboarddatabase/orders/$orderId/mark-complete'),
+            'http://82.112.238.13:5005/dashboarddatabase/orders/$orderId/mark-complete'),
       );
 
       // Add the authorization header

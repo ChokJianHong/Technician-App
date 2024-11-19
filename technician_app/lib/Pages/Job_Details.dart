@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
@@ -9,6 +11,7 @@ import 'package:technician_app/API/sendTechLocation.dart';
 import 'package:technician_app/Pages/Completed_Job_Details.dart';
 import 'package:technician_app/Pages/home.dart';
 import 'package:technician_app/Pages/messages.dart';
+import 'package:technician_app/Pages/part_request.dart';
 import 'package:technician_app/assets/components/button.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
 
@@ -26,6 +29,7 @@ class RequestDetails extends StatefulWidget {
 class _RequestDetailsState extends State<RequestDetails> {
   late Future<Map<String, dynamic>> _orderDetailFuture;
   bool _isRequestStarted = false;
+  DateTime? technicianStartTime;
 
   @override
   void initState() {
@@ -77,27 +81,6 @@ class _RequestDetailsState extends State<RequestDetails> {
     }
   }
 
-  Future<void> _changeStatus() async {
-    try {
-      final technicianId = await _getTechnicianIdFromToken(widget.token);
-      if (technicianId != 'default') {
-        // Perform the backend status change
-        await Sendtechlocation()
-            .changeStatus(technicianId, widget.token, 'working');
-
-        // Update state and persist
-        setState(() {
-          _isRequestStarted = true;
-        });
-        await _saveRequestState(true);
-      } else {
-        _showErrorDialog("Invalid technician ID. Cannot start the request.");
-      }
-    } catch (e) {
-      _showErrorDialog("Error changing status: $e");
-    }
-  }
-
   Future<String> _getTechnicianIdFromToken(String token) async {
     try {
       final decodedToken = JwtDecoder.decode(token);
@@ -111,8 +94,13 @@ class _RequestDetailsState extends State<RequestDetails> {
     try {
       final technicianId = await _getTechnicianIdFromToken(widget.token);
       if (technicianId != 'default') {
+        // Corrected the parameter order: longitude first, latitude second
         await Sendtechlocation().sendLocation(
-            technicianId, position.latitude, position.longitude, widget.token);
+          technicianId,
+          position.longitude, // Longitude comes first
+          position.latitude, // Latitude comes second
+          widget.token,
+        );
       }
     } catch (e) {
       _showErrorDialog("Error sending location: $e");
@@ -277,9 +265,30 @@ class _RequestDetailsState extends State<RequestDetails> {
                         try {
                           final position = await _getCurrentLocation();
                           await _sendLocationData(position);
-                          await _changeStatus();
+
+                          final startTime = DateTime.now();
+
+                          // Update status and start time
+                          await Sendtechlocation().changeStatus(
+                            technicianId:
+                                await _getTechnicianIdFromToken(widget.token),
+                            orderId: widget.orderId,
+                            token: widget.token,
+                            status: 'working',
+                          );
+
+                          // Update local state
+                          setState(() {
+                            _isRequestStarted = true;
+                          });
+
+                          // Save the state to SharedPreferences
+                          await _saveRequestState(true);
+
+                          debugPrint(
+                              "Technician start time set: ${startTime.toIso8601String()}");
                         } catch (e) {
-                          _showErrorDialog(e.toString());
+                          _showErrorDialog("Error starting request: $e");
                         }
                       } else {
                         // Complete Request logic
@@ -313,6 +322,21 @@ class _RequestDetailsState extends State<RequestDetails> {
                                     currentUserId: widget.token,
                                     chatPartnerId: widget.orderId,
                                     token: widget.token)));
+                      }),
+                  const SizedBox(height: 20),
+                  MyButton(
+                      text: 'Spare Part Request',
+                      color: Colors.brown,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Request(
+                              token: widget.token,
+                              orderId: widget.orderId,
+                            ),
+                          ),
+                        );
                       })
                 ],
               ),

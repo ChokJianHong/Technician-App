@@ -156,6 +156,7 @@ class _RequestState extends State<Request> {
           orderData['TechnicianID'].toString(),
           orderData['orderId'].toString());
 
+      // Call updateReqTime after other operations are successful
       _showSuccessDialog("Request Form submitted successfully!");
     } catch (error) {
       _showErrorDialog('Failed to submit request: $error');

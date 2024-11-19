@@ -33,4 +33,32 @@ class StatusTracking {
       rethrow;
     }
   }
+
+  Future<void> updateOrderStatus(
+      int orderId, String newStatus, String token) async {
+    final url = Uri.parse('$baseUrl/dashboarddatabase/updateOrderStatus');
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization':
+              token, // Assuming you're using an auth token
+        },
+        body: jsonEncode({
+          'orderId': orderId,
+          'newStatus': newStatus,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Order status updated successfully: ${response.body}');
+      } else {
+        print('Failed to update order status: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error updating order status: $error');
+    }
+  }
 }
