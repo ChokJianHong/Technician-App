@@ -6,25 +6,19 @@ class CheckOverlap {
       'http://82.112.238.13:5005'; // Replace with your backend URL
 
   // Function to check for job overlap
-  static Future<Map<String, dynamic>> checkJobOverlap({
-    required int technicianId,
-    required String orderDate,
-    required String orderTime,
-  }) async {
+  static Future<Map<String, dynamic>> checkJobOverlap(
+    int technicianId,
+    int orderId, 
+  ) async {
     final url = Uri.parse(
-        '$baseUrl/dashboarddatabase/technician/check-overlap/$technicianId');
+        '$baseUrl/dashboarddatabase/technician/check-overlap/$technicianId?orderId=$orderId');
 
     try {
-      final response = await http.post(
+      final response = await http.get(
         url,
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode({
-          'technician_id': technicianId,
-          'order_date': orderDate,
-          'order_time': orderTime,
-        }),
       );
 
       // Print response for debugging

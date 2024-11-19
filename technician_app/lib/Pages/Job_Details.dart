@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:technician_app/API/cancel.dart';
@@ -173,6 +172,8 @@ class _RequestDetailsState extends State<RequestDetails> {
     );
   }
 
+  
+
   Future<void> _cancelOrder(String reason) async {
     try {
       final response = await CancelService.declineOrder(
@@ -186,6 +187,8 @@ class _RequestDetailsState extends State<RequestDetails> {
       _showErrorDialog("Error cancelling order: $e");
     }
   }
+
+  
 
   @override
   Widget build(BuildContext context) {

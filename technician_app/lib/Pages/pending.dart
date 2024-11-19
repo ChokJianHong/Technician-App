@@ -88,54 +88,45 @@ class _PendingState extends State<Pending> {
   }
 
   Future<void> _acceptOrder() async {
+    String technicianId = 'default'; // Default value if decoding fails
+
     try {
-      // Decode the token to get technician ID
+      // Decode the token and extract the technicianId
       Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
-      final technicianId =
-          decodedToken['userId']; // Extract 'userId' from token
+      technicianId = decodedToken['userId'].toString(); // Adjust key as needed
+      print('Technician ID: $technicianId');
+    } catch (error) {
+      print('Error decoding token: $error');
+      technicianId = 'default'; // Default value if decoding fails
+      _showErrorDialog('Failed to extract technician ID from token.');
+      return; // Exit the function early if there's an error
+    }
 
-      if (technicianId == null) {
-        throw Exception('Token does not contain userId');
-      }
+    // Ensure technicianId is valid
+    if (technicianId == 'default') {
+      _showErrorDialog('Invalid technician ID.');
+      return;
+    }
 
-      print('Technician ID: $technicianId'); // Debugging line
+    // Define ETA and totalAmount for the job
+    String eta =
+        DateTime.now().toIso8601String(); // Modify this to get the actual ETA
+    double totalAmount = 100.0; // Modify this to get the actual total amount
 
-      // Fetch order details dynamically
-      final orderDetails =
-          await _fetchOrderDetails(widget.token, widget.orderId);
-
-      if (!orderDetails['success']) {
-        throw Exception('Failed to fetch order details for acceptance.');
-      }
-
-      // Extract the required values from the order details
-      final orderDate = formatDateTime(orderDetails['result']['orderDate']);
-      final orderTime = orderDetails['result']['orderTime'];
-
-      print('Order Date: $orderDate');
-      print('Order Time: $orderTime');
-
-      // Check for job overlap
-      final overlapResult = await CheckOverlap.checkJobOverlap(
-        technicianId: technicianId,
-        orderDate: orderDate,
-        orderTime: orderTime,
+    try {
+      // Check for job overlap using the technicianId
+      final overlapResponse = await CheckOverlap.checkJobOverlap(
+        int.parse(technicianId), // Pass extracted technicianId as integer
+        int.parse(widget.orderId), // Pass orderId for checking overlap
       );
 
-      // Print the overlap result
-      print('Job Overlap Check Result: ${overlapResult['overlap']}');
-      print('Overlap Message: ${overlapResult['message']}');
-
-      if (overlapResult['overlap'] == true) {
-        // Show overlap error and return
-        _showErrorDialog(overlapResult['message']);
-        return;
+      // If the response indicates an overlap, show an error message
+      if (overlapResponse.containsKey('error')) {
+        _showErrorDialog('Failed to accept order: ${overlapResponse['error']}');
+        return; // Exit if there's an overlap
       }
 
-      // If no overlap, proceed to accept the order
-      String eta = DateTime.now().toIso8601String(); // Modify to get actual ETA
-      double totalAmount = 100.0; // Modify to get the actual total amount
-
+      // If no overlap, proceed with accepting the job
       await AcceptJob().acceptOrder(
         widget.token,
         int.parse(widget.orderId),
