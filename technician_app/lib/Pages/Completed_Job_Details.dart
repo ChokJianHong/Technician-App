@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Pages/payment.dart';
@@ -61,6 +62,15 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
       setState(() {
         _image = File(pickedFile.path);
       });
+    }
+  }
+
+  Future<String> _getTechnicianIdFromToken(String token) async {
+    try {
+      final decodedToken = JwtDecoder.decode(token);
+      return decodedToken['userId']?.toString() ?? 'default';
+    } catch (error) {
+      return 'default';
     }
   }
 
@@ -419,11 +429,18 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
           const SnackBar(content: Text('Form submitted successfully!')),
         );
 
+        // Fetch Technician ID from the token
+        String technicianId = await _getTechnicianIdFromToken(widget.token);
+
         // Navigate to the Payment page
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => Payment(token: widget.token, orderId: widget.orderId),
+            builder: (context) => Payment(
+              token: widget.token,
+              orderId: widget.orderId,
+              technicianId: technicianId,
+            ),
           ),
         );
       } else {
