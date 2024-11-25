@@ -218,7 +218,8 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     Theme.of(context);
-
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: Padding(
@@ -228,11 +229,12 @@ class _SignInPageState extends State<SignInPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Image.asset('lib/Assets/Images/signinlock.png'),
-                const SizedBox(height: 20),
-                const Text("Welcome Back! You've been missed",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w500, color: Colors.white)),
+                Image.asset(
+                  'lib/Assets/Images/Logo.png',
+                  width: screenWidth * 0.5,
+                  height: screenHeight * 0.3,
+                  fit: BoxFit.contain,
+                ),
                 const SizedBox(height: 20),
                 MyTextField(
                   controller: emailController,
