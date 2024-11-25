@@ -51,6 +51,7 @@ flutter:
     - lib/Assets/Images/Frame.png
     - lib/Assets/Images/Profile.png
     - lib/Assets/Images/duitnow.jpg
+    - lib/Assets/Images/Logo.png
 
 
   fonts:
