@@ -3,7 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:technician_app/API/getTechnician.dart'; // For formatting timestamps
+import 'package:technician_app/API/getTechnician.dart';
+import 'package:technician_app/Pages/home.dart';
+import 'package:technician_app/core/configs/theme/appColors.dart'; // For formatting timestamps
 
 class ChatScreen extends StatefulWidget {
   final String currentUserId;
@@ -114,7 +116,22 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chat with Technician')),
+      appBar: AppBar(
+        title: const Text(
+          'Contact with Technician',
+          style: TextStyle(color: AppColors.lightgrey),
+        ),
+        backgroundColor: AppColors.darkTeal,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => HomePage(token: widget.token)),
+          ),
+        ),
+      ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _orderDetailsFuture,
         builder: (context, snapshot) {

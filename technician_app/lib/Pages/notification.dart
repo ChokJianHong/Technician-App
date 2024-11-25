@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:technician_app/Assets/Model/notification_model.dart';
+import 'package:logging/logging.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -10,25 +11,37 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationPageState extends State<NotificationPage> {
+  // Create a logger instance
+  final Logger _logger = Logger('NotificationPage');
+  
   List<NotificationModel> notifications = [];
 
   @override
   void initState() {
     super.initState();
+
     // Listen for foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      // You can handle notifications that arrive when the app is in the foreground
-      setState(() {
-        notifications.add(NotificationModel.fromMap(message.data));
-      });
+      if (message.notification != null) {
+        // Log the message instead of print
+        _logger.info('Foreground notification received: ${message.notification!.title}');
+
+        setState(() {
+          notifications.add(NotificationModel.fromMap(message.data));
+        });
+      }
     });
 
     // Listen for background messages
-    FirebaseMessaging.onBackgroundMessage((RemoteMessage message) {
-      // Handle background message here if needed
-      setState(() {
-        notifications.add(NotificationModel.fromMap(message.data));
-      });
+    FirebaseMessaging.onBackgroundMessage((RemoteMessage message) async {
+      if (message.notification != null) {
+        // Log the message instead of print
+        _logger.info('Background notification received: ${message.notification!.title}');
+
+        setState(() {
+          notifications.add(NotificationModel.fromMap(message.data));
+        });
+      }
       return Future.value();
     });
   }
@@ -50,8 +63,7 @@ class _NotificationPageState extends State<NotificationPage> {
                   subtitle: Text(notification.body),
                   onTap: () {
                     // Handle the notification tap
-                    // Maybe navigate to another screen or show more details
-                    print("Notification tapped: ${notification.title}");
+                    _logger.info("Notification tapped: ${notification.title}");
                   },
                 );
               },
