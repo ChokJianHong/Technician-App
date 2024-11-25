@@ -41,7 +41,7 @@ class Req {
     required String customerName,
     required String equipment,
     required String brand,
-    required String partsNeeded,
+    required List<String> partsNeeded,
     required int orderId,
   }) async {
     try {

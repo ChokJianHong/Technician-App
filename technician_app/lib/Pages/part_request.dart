@@ -141,14 +141,14 @@ class _RequestState extends State<Request> {
       final String equipment = orderData['ProblemType'] ?? '';
       final String brand =
           customerData['autogateBrand'] ?? customerData['alarmBrand'] ?? '';
-
+      print(selectedItems);
       await _requestApi.createRequestForm(
         technicianName: technicianName,
         customerId: customerId,
         customerName: customerName,
         equipment: equipment,
         brand: brand,
-        partsNeeded: selectedItems.join(", "),
+        partsNeeded: selectedItems,
         orderId: int.parse(widget.orderId),
       );
 
