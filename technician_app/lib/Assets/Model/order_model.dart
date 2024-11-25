@@ -20,6 +20,7 @@ class OrderModel {
   final String priceStatus;
   final int? totalPrice;
   final int accept;
+  final DateTime createAt;
 
   final String? customerName;
   final String? customerLocation;
@@ -46,6 +47,7 @@ class OrderModel {
     required this.priceStatus,
     required this.totalPrice,
     required this.accept,
+    required this.createAt,
     this.customerName,
     this.customerLocation,
     this.autoGateBrand,
@@ -66,6 +68,9 @@ class OrderModel {
       urgencyLevel: json['urgency_level'] ?? '',
       problemType: json['problem_type'] ?? '',
       technicianId: json['technician_id'],
+      createAt: json['create_at'] != null
+          ? DateTime.parse(json['create_at']) 
+          : DateTime.now(),
       technicianEta: json['technician_eta'] != null
           ? DateTime.parse(json['technician_eta'])
           : null,

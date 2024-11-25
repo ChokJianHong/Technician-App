@@ -15,23 +15,38 @@ class NewJobs extends StatefulWidget {
 }
 
 class _NewJobsState extends State<NewJobs> {
-  late Future<List<OrderModel>> _pendingOrdersFuture;
+  late List<OrderModel> _pendingOrders; // Maintain the current list of orders
   late Timer _timer;
 
   @override
   void initState() {
     super.initState();
-    _pendingOrdersFuture = _fetchPendingOrders();
+    _pendingOrders = []; // Initialize the list as empty
+    _fetchAndUpdatePendingOrders();
 
-    _timer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      setState(() {
-        _pendingOrdersFuture = _fetchPendingOrders();
-      });
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      _fetchAndUpdatePendingOrders(); // Fetch new orders every 5 seconds
     });
   }
 
-  Future<List<OrderModel>> _fetchPendingOrders() {
-    return OrderService().getPendingOrders(widget.token);
+  // Fetch orders and update the state
+  Future<void> _fetchAndUpdatePendingOrders() async {
+    List<OrderModel> newOrders =
+        await OrderService().getPendingOrders(widget.token);
+
+    // Sort orders by createAt in descending order (newest first)
+    newOrders.sort((a, b) => b.createAt.compareTo(a.createAt));
+
+    setState(() {
+      // Insert new orders at the top if they are not already in the list
+      for (var order in newOrders) {
+        if (!_pendingOrders
+            .any((existingOrder) => existingOrder.orderId == order.orderId)) {
+          _pendingOrders.insert(
+              0, order); // Insert new orders at the top (index 0)
+        }
+      }
+    });
   }
 
   @override
@@ -42,38 +57,16 @@ class _NewJobsState extends State<NewJobs> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<OrderModel>>(
-      future: _pendingOrdersFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
+    return _pendingOrders.isEmpty
+        ? const Center(
             child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text(
-              'Error fetching orders: ${snapshot.error}',
-              style: const TextStyle(color: Colors.red),
-            ),
-          );
-        } else if (snapshot.hasData) {
-          final List<OrderModel> pendingOrders = snapshot.data!;
-
-          if (pendingOrders.isEmpty) {
-            return const Center(
-              child: Text(
-                'No ongoing orders.',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
-            );
-          }
-
-          return SizedBox(
+          )
+        : SizedBox(
             height: 300,
             child: ListView.builder(
-              itemCount: pendingOrders.length,
+              itemCount: _pendingOrders.length,
               itemBuilder: (context, index) {
-                final OrderModel order = pendingOrders[index];
+                final OrderModel order = _pendingOrders[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: GestureDetector(
@@ -99,9 +92,5 @@ class _NewJobsState extends State<NewJobs> {
               },
             ),
           );
-        }
-        return const SizedBox();
-      },
-    );
   }
 }
