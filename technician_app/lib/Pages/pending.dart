@@ -314,9 +314,24 @@ class _PendingState extends State<Pending> {
                             Text(brand,
                                 style: const TextStyle(
                                     fontSize: 15, color: AppColors.lightgrey)),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            const Text(
+                              'Date',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.darkGreen),
+                            ),
+                            Text(formatDateTime(orderDate),
+                                style: const TextStyle(
+                                    fontSize: 15, color: AppColors.lightgrey)),
                           ],
                         ),
-                        const SizedBox(width: 125),
+                        const SizedBox(
+                          width: 100,
+                        ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -332,34 +347,9 @@ class _PendingState extends State<Pending> {
                               style: const TextStyle(
                                   fontSize: 15, color: AppColors.lightgrey),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Date',
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.darkGreen),
+                            const SizedBox(
+                              height: 20,
                             ),
-                            Text(formatDateTime(orderDate),
-                                style: const TextStyle(
-                                    fontSize: 15, color: AppColors.lightgrey)),
-                          ],
-                        ),
-                        const SizedBox(width: 90),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
                             const Text(
                               'Time',
                               style: TextStyle(

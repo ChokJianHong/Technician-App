@@ -301,34 +301,10 @@ class _RequestDetailsState extends State<RequestDetails> {
                                   color: AppColors.lightgrey,
                                   fontSize: 15,
                                 ),
-                              )
-                            ],
-                          ),
-                          const SizedBox(width: 100),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Warranty',
-                                style: TextStyle(
-                                    color: AppColors.darkGreen,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
                               ),
-                              Text(
-                                formatDateTime(warranty),
-                                style:
-                                    const TextStyle(color: AppColors.lightgrey),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
                               const Text(
                                 'Date',
                                 style: TextStyle(
@@ -345,10 +321,29 @@ class _RequestDetailsState extends State<RequestDetails> {
                               )
                             ],
                           ),
-                          const SizedBox(width: 100),
+                          const SizedBox(
+                            width: 100,
+                          ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              const Text(
+                                'Warranty',
+                                style: TextStyle(
+                                    color: AppColors.darkGreen,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                formatDateTime(warranty),
+                                style: const TextStyle(
+                                  color: AppColors.lightgrey,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
                               const Text(
                                 'Time',
                                 style: TextStyle(
@@ -358,8 +353,10 @@ class _RequestDetailsState extends State<RequestDetails> {
                               ),
                               Text(
                                 orderDetails['orderTime'],
-                                style:
-                                    const TextStyle(color: AppColors.lightgrey),
+                                style: const TextStyle(
+                                  color: AppColors.lightgrey,
+                                  fontSize: 15,
+                                ),
                               )
                             ],
                           ),
