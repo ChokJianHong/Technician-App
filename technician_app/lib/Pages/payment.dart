@@ -31,7 +31,8 @@ class _PaymentState extends State<Payment> {
     calculatePayment(widget.orderId, widget.technicianId);
   }
 
-  Future<void> _fetchDataAndNavigate(String orderId) async {
+  Future<void> _fetchDataAndNavigate(
+      String orderId, String technicianId) async {
     try {
       // Display a loading indicator while the API request is in progress
       showDialog(
@@ -47,7 +48,7 @@ class _PaymentState extends State<Payment> {
       // Fetch data from the backend API
       final response = await http.put(
         Uri.parse(
-            'http://82.112.238.13:5005/dashboarddatabase/orders/$orderId/mark-complete'),
+            'http://82.112.238.13:5005/dashboarddatabase/orders/$orderId/mark-complete/$technicianId'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': widget.token, // Ensure proper format
@@ -261,7 +262,7 @@ class _PaymentState extends State<Payment> {
             MyButton(
                 text: 'Completed Payment',
                 onTap: () {
-                  _fetchDataAndNavigate(widget.orderId);
+                  _fetchDataAndNavigate(widget.orderId, widget.technicianId);
                 })
           ],
         ),
