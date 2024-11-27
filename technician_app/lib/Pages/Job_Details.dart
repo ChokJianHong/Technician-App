@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:technician_app/API/cancel.dart';
@@ -103,6 +104,17 @@ class _RequestDetailsState extends State<RequestDetails> {
     }
   }
 
+  String formatDateTime(String utcDateTime) {
+    try {
+      DateTime parsedDate = DateTime.parse(utcDateTime);
+      DateTime localDate = parsedDate.toLocal();
+      return DateFormat('yyyy-MM-dd').format(localDate);
+    } catch (e) {
+      print('Error parsing date: $e');
+      return 'Invalid date';
+    }
+  }
+
   Future<Position> _getCurrentLocation() async {
     final permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied ||
@@ -169,8 +181,6 @@ class _RequestDetailsState extends State<RequestDetails> {
     );
   }
 
-  
-
   Future<void> _cancelOrder(String reason) async {
     try {
       final response = await CancelService.declineOrder(
@@ -184,8 +194,6 @@ class _RequestDetailsState extends State<RequestDetails> {
       _showErrorDialog("Error cancelling order: $e");
     }
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -215,10 +223,18 @@ class _RequestDetailsState extends State<RequestDetails> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             final orderDetails = snapshot.data!;
-            final brand =
-                orderDetails['customer']['autogateBrand'] ?? 'Unknown Brand';
-            final warranty =
-                orderDetails['customer']['autogateWarranty'] ?? 'No warranty';
+            String brand = 'Unknown brand';
+            String warranty = 'Warranty not available';
+            if (orderDetails['ProblemType'] == 'autogate') {
+              brand =
+                  orderDetails['customer']['autogateBrand'] ?? 'Unknown Brand';
+              warranty =
+                  orderDetails['customer']['autogateWarranty'] ?? 'No warranty';
+            } else if (orderDetails['ProblemType'] == 'alarm') {
+              brand = orderDetails['customer']['alarmBrand'] ?? 'Unknown Brand';
+              warranty =
+                  orderDetails['customer']['alarmWarranty'] ?? 'No warranty';
+            }
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -249,10 +265,121 @@ class _RequestDetailsState extends State<RequestDetails> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _buildDetailsSection(
-                      'Address', orderDetails['locationDetail']),
-                  _buildDetailsSection('Brand', brand),
-                  _buildDetailsSection('Warranty', warranty),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Address',
+                        style: TextStyle(
+                            color: AppColors.darkGreen,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        orderDetails['locationDetail'] ?? 'Not provided',
+                        style: const TextStyle(
+                            color: AppColors.lightgrey, fontSize: 15),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Brand',
+                                style: TextStyle(
+                                    color: AppColors.darkGreen,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                brand,
+                                style: const TextStyle(
+                                  color: AppColors.lightgrey,
+                                  fontSize: 15,
+                                ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(width: 100),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Warranty',
+                                style: TextStyle(
+                                    color: AppColors.darkGreen,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                formatDateTime(warranty),
+                                style:
+                                    const TextStyle(color: AppColors.lightgrey),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Date',
+                                style: TextStyle(
+                                    color: AppColors.darkGreen,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                formatDateTime(orderDetails['orderDate']),
+                                style: const TextStyle(
+                                  color: AppColors.lightgrey,
+                                  fontSize: 15,
+                                ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(width: 100),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Time',
+                                style: TextStyle(
+                                    color: AppColors.darkGreen,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                orderDetails['orderTime'],
+                                style:
+                                    const TextStyle(color: AppColors.lightgrey),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const Text(
+                        "Problem Description",
+                        style:
+                            TextStyle(fontSize: 20, color: AppColors.darkGreen),
+                      ),
+                      Text(
+                        orderDetails['orderDetail'],
+                        style: const TextStyle(
+                            color: AppColors.lightgrey, fontSize: 15),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 20),
                   MyButton(
                     text: _isRequestStarted
@@ -346,30 +473,6 @@ class _RequestDetailsState extends State<RequestDetails> {
           }
         },
       ),
-    );
-  }
-
-  Widget _buildDetailsSection(String title, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            color: AppColors.darkGreen,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          value,
-          style: const TextStyle(
-            color: AppColors.lightgrey,
-            fontSize: 16,
-          ),
-        ),
-        const SizedBox(height: 10),
-      ],
     );
   }
 }
