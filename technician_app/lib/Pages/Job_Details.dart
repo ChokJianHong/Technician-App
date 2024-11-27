@@ -451,7 +451,8 @@ class _RequestDetailsState extends State<RequestDetails> {
                                     token: widget.token)));
                       }),
                   const SizedBox(height: 20),
-                  MyButton(
+                  if (_isRequestStarted)
+                    MyButton(
                       text: 'Spare Part Request',
                       color: Colors.brown,
                       onTap: () {
@@ -464,7 +465,8 @@ class _RequestDetailsState extends State<RequestDetails> {
                             ),
                           ),
                         );
-                      })
+                      },
+                    ),
                 ],
               ),
             );
