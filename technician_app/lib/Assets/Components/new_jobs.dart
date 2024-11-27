@@ -21,7 +21,7 @@ class _NewJobsState extends State<NewJobs> {
   @override
   void initState() {
     super.initState();
-    _pendingOrders = []; // Initialize the list as empty
+    _pendingOrders = []; 
     _fetchAndUpdatePendingOrders();
 
     _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
