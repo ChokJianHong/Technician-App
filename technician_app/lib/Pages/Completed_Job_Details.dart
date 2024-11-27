@@ -74,13 +74,13 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
     }
   }
 
-  Future<Map<String, dynamic>> _uploadImageAndData(
+  Future<Map<String, dynamic>> _uploadImage(
       File imageFile, String orderId) async {
     try {
       var request = http.MultipartRequest(
-        'PUT',
+        'PUT', // Change PUT to POST
         Uri.parse(
-            'http://82.112.238.13:5005/dashboarddatabase/orders/$orderId/mark-complete'),
+            'http://82.112.238.13:5005/dashboarddatabase/orders/$orderId/upload-image'), // Confirm this URL
       );
 
       // Add the authorization header
@@ -89,10 +89,9 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
       // Add the image file
       request.files.add(
         await http.MultipartFile.fromPath(
-          'image', // Adjust this key based on your backend expectation
+          'image', // Confirm the key name with the backend
           imageFile.path,
-          contentType:
-              MediaType('image', 'jpeg'), // Adjust for the correct type
+          contentType: MediaType('image', 'jpeg'),
         ),
       );
 
@@ -102,9 +101,6 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
       // Get the response
       var responseBody = await http.Response.fromStream(response);
 
-      print('Response status: ${responseBody.statusCode}');
-      print('Response body: ${responseBody.body}');
-
       if (responseBody.statusCode == 200) {
         return jsonDecode(responseBody.body);
       } else {
@@ -112,8 +108,7 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
             'Upload failed with status: ${responseBody.statusCode}');
       }
     } catch (e) {
-      print('Error uploading image and data: $e');
-      throw Exception('Upload failed');
+      throw Exception('Error uploading image: $e');
     }
   }
 
@@ -418,7 +413,7 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
 
     try {
       // Send data and image together
-      final result = await _uploadImageAndData(_image!, widget.orderId);
+      final result = await _uploadImage(_image!, widget.orderId);
 
       // Dismiss loading indicator
       Navigator.of(context).pop();

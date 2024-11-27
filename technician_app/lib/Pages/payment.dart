@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:technician_app/Assets/Components/button.dart';
+import 'package:technician_app/Pages/home.dart';
 
 class Payment extends StatefulWidget {
   final String token;
@@ -27,6 +29,63 @@ class _PaymentState extends State<Payment> {
     super.initState();
     // Automatically fetch payment details when the page loads
     calculatePayment(widget.orderId, widget.technicianId);
+  }
+
+  Future<void> _fetchDataAndNavigate(String orderId) async {
+    try {
+      // Display a loading indicator while the API request is in progress
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      );
+
+      // Fetch data from the backend API
+      final response = await http.put(
+        Uri.parse(
+            'http://82.112.238.13:5005/dashboarddatabase/orders/$orderId/mark-complete'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': widget.token, // Ensure proper format
+        },
+      );
+
+      // Close the loading dialog once the API response is received
+      Navigator.of(context).pop();
+
+      if (response.statusCode == 200) {
+        // Decode the API response
+        final data = json.decode(response.body);
+
+        // Navigate to the home page and pass the fetched data
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(
+              token: widget.token,
+            ),
+          ),
+        );
+      } else {
+        // Handle non-200 responses
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Failed to fetch data: ${response.statusCode}')),
+        );
+      }
+    } catch (error) {
+      // Close the loading dialog in case of an error
+      Navigator.of(context).pop();
+
+      // Handle network or parsing errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching data: $error')),
+      );
+    }
   }
 
   Future<void> calculatePayment(String orderId, String technicianId) async {
@@ -199,6 +258,11 @@ class _PaymentState extends State<Payment> {
                         ),
                       ),
                     ),
+            MyButton(
+                text: 'Completed Payment',
+                onTap: () {
+                  _fetchDataAndNavigate(widget.orderId);
+                })
           ],
         ),
       ),
@@ -210,7 +274,7 @@ class _PaymentState extends State<Payment> {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [ 
+        children: [
           Text(
             label,
             style: const TextStyle(
