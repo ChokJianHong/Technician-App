@@ -215,10 +215,18 @@ class _RequestDetailsState extends State<RequestDetails> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             final orderDetails = snapshot.data!;
-            final brand =
-                orderDetails['customer']['autogateBrand'] ?? 'Unknown Brand';
-            final warranty =
-                orderDetails['customer']['autogateWarranty'] ?? 'No warranty';
+            String brand = 'Unknown brand';
+            String warranty = 'Warranty not available';
+            if (orderDetails['ProblemType'] == 'autogate') {
+              brand =
+                  orderDetails['customer']['autogateBrand'] ?? 'Unknown Brand';
+              warranty =
+                  orderDetails['customer']['autogateWarranty'] ?? 'No warranty';
+            } else if (orderDetails['ProblemType'] == 'alarm') {
+              brand = orderDetails['customer']['alarmBrand'] ?? 'Unknown Brand';
+              warranty =
+                  orderDetails['customer']['alarmWarranty'] ?? 'No warranty';
+            }
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16),
