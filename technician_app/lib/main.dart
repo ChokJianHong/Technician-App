@@ -33,6 +33,7 @@ Future<void> handleBackgroundMessage(RemoteMessage message) async {
   print('Payload: ${message.data}');
 }
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
