@@ -21,7 +21,7 @@ class _NewJobsState extends State<NewJobs> {
   @override
   void initState() {
     super.initState();
-    _pendingOrders = []; 
+    _pendingOrders = [];
     _fetchAndUpdatePendingOrders();
 
     _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
@@ -38,14 +38,12 @@ class _NewJobsState extends State<NewJobs> {
     newOrders.sort((a, b) => b.createAt.compareTo(a.createAt));
 
     setState(() {
-      // Insert new orders at the top if they are not already in the list
-      for (var order in newOrders) {
-        if (!_pendingOrders
-            .any((existingOrder) => existingOrder.orderId == order.orderId)) {
-          _pendingOrders.insert(
-              0, order); // Insert new orders at the top (index 0)
-        }
-      }
+      // Update the list by removing duplicates and adding new ones
+      _pendingOrders = [
+        ...newOrders, // Add the newly fetched orders
+        ..._pendingOrders.where((existingOrder) =>
+            !newOrders.any((o) => o.orderId == existingOrder.orderId))
+      ];
     });
   }
 
