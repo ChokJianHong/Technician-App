@@ -47,8 +47,15 @@ class _RequestCardState extends State<RequestCard> {
         String technicianName = technicianDetails['technician'][0]['name'];
 
         // Fetch part requests by technician name
-        return await RequestFormService.getRequestFormsByTechnician(
-            technicianName, widget.token);
+        List<Map<String, dynamic>> partRequests =
+            await RequestFormService.getRequestFormsByTechnician(
+                technicianName, widget.token);
+
+        // Sort by timestamp (replace 'createdAt' with the correct field)
+        partRequests.sort((a, b) => DateTime.parse(b['created_at'])
+            .compareTo(DateTime.parse(a['created_at'])));
+
+        return partRequests;
       } else {
         throw Exception("Technician details are empty or missing.");
       }
