@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
+import 'package:technician_app/Assets/Components/notification_manager.dart';
 
 const baseUrl = "http://82.112.238.13:5005"; // Adjust if needed
 
@@ -12,7 +13,8 @@ Future<void> handleBackgroundMessage(RemoteMessage message) async{
 
 class FirebaseApi {
   final _firebaseMessaging = FirebaseMessaging.instance;
-
+  final NotificationManager notificationManager;
+  FirebaseApi(this.notificationManager);
   Future<void> initNotifications(String token, String technicianId) async {
     await _firebaseMessaging.requestPermission();
     final fCMToken = await _firebaseMessaging.getToken();
@@ -27,6 +29,19 @@ class FirebaseApi {
     }
 
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
+
+    // Foreground message listener
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Foreground message - Title: ${message.notification?.title}');
+      print('Foreground message - Body: ${message.notification?.body}');
+      print('Foreground message - Payload: ${message.data}');
+
+      // Save notification to the manager
+      notificationManager.addNotification({
+        "title": message.notification?.title ?? "No Title",
+        "body": message.notification?.body ?? "No Content",
+      });
+    });
     
   }
 

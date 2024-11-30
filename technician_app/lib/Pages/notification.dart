@@ -1,73 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:technician_app/Assets/Model/notification_model.dart';
-import 'package:logging/logging.dart';
+import 'package:provider/provider.dart';
 
-class NotificationPage extends StatefulWidget {
-  const NotificationPage({super.key});
+import 'package:technician_app/Assets/Components/notification_manager.dart';
+import 'package:technician_app/core/configs/theme/appColors.dart';
 
-  @override
-  _NotificationPageState createState() => _NotificationPageState();
-}
-
-class _NotificationPageState extends State<NotificationPage> {
-  // Create a logger instance
-  final Logger _logger = Logger('NotificationPage');
-  
-  List<NotificationModel> notifications = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Listen for foreground messages
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.notification != null) {
-        // Log the message instead of print
-        _logger.info('Foreground notification received: ${message.notification!.title}');
-
-        setState(() {
-          notifications.add(NotificationModel.fromMap(message.data));
-        });
-      }
-    });
-
-    // Listen for background messages
-    FirebaseMessaging.onBackgroundMessage((RemoteMessage message) async {
-      if (message.notification != null) {
-        // Log the message instead of print
-        _logger.info('Background notification received: ${message.notification!.title}');
-
-        setState(() {
-          notifications.add(NotificationModel.fromMap(message.data));
-        });
-      }
-      return Future.value();
-    });
-  }
-
+class NotificationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications'),
-      ),
-      body: notifications.isEmpty
-          ? const Center(child: Text('No notifications yet.'))
-          : ListView.builder(
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                final notification = notifications[index];
-                return ListTile(
-                  title: Text(notification.title),
-                  subtitle: Text(notification.body),
-                  onTap: () {
-                    // Handle the notification tap
-                    _logger.info("Notification tapped: ${notification.title}");
-                  },
-                );
-              },
+        backgroundColor: AppColors.darkTeal,
+        title: const Text(
+          'Notifications',
+          style: TextStyle(color: AppColors.lightgrey),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.delete,
             ),
+            onPressed: () {
+              // Clear all notifications
+              Provider.of<NotificationManager>(context, listen: false)
+                  .clearNotifications();
+            },
+          ),
+        ],
+      ),
+      body: Consumer<NotificationManager>(
+        builder: (context, notificationManager, child) {
+          // If no notifications, show a placeholder
+          if (notificationManager.notifications.isEmpty) {
+            return const Center(
+              child: Text('No notifications yet.'),
+            );
+          }
+
+          // Otherwise, show the list of notifications
+          return ListView.builder(
+            itemCount: notificationManager.notifications.length,
+            itemBuilder: (context, index) {
+              final notification = notificationManager.notifications[index];
+              return Card(
+                margin: const EdgeInsets.all(8.0),
+                child: ListTile(
+                  title: Text(notification["title"] ?? "No Title"),
+                  subtitle: Text(notification["body"] ?? "No Content"),
+                  leading: const Icon(Icons.notifications),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

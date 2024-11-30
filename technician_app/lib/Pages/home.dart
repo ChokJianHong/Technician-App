@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Assets/Components/current_job.dart';
 import 'package:technician_app/Assets/Components/new_jobs.dart';
+import 'package:technician_app/Assets/Components/notification_manager.dart';
 import 'package:technician_app/Assets/Components/request_card.dart';
 import 'package:technician_app/assets/components/BottomNav.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart'; // Adjust the path as needed
@@ -19,7 +20,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 1;
 
-  final FirebaseApi firebaseapi = FirebaseApi();
+  late FirebaseApi firebaseapi; // Declare firebaseApi
+  final NotificationManager notificationManager = NotificationManager();
   late String technicianId;
 
   void _onTap(int index) {
