@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
-import 'package:technician_app/API/getTechnician.dart';
-import 'package:technician_app/API/get_request_form.dart';
+import 'package:technician_app/API/request_form_by_id.dart';
 import 'package:technician_app/Assets/Components/divider.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
 
@@ -41,39 +39,17 @@ class _FinalCompletionPageState extends State<FinalCompletionPage> {
 
   Future<List<Map<String, dynamic>>> _fetchPartRequests() async {
     try {
-      // Decode the technician ID from the token
-      String technicianId;
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
+      // Use the provided API to fetch part requests by order ID
+      final List<Map<String, dynamic>> partRequests =
+          await RequestPartService.getRequestFormsByOrderId(
+        widget.orderId,
+        widget.token,
+      );
 
-      // Check if decoding was successful
-      if (!decodedToken.containsKey('userId')) {
-        throw Exception("Token decoding failed, userId is missing.");
-      }
+      // Log the fetched parts for debugging
+      print('Fetched part requests: $partRequests');
 
-      technicianId = decodedToken['userId'].toString();
-
-      // Fetch technician details
-      Map<String, dynamic> technicianDetails =
-          await TechnicianService.getTechnician(widget.token, technicianId);
-
-      // Ensure that technician details are present
-      if (technicianDetails['technician'] == null ||
-          technicianDetails['technician'].isEmpty) {
-        throw Exception("Technician details are empty or missing.");
-      }
-
-      String technicianName = technicianDetails['technician'][0]['name'];
-
-      // Fetch part requests by technician name
-      List<Map<String, dynamic>> partRequests =
-          await RequestFormService.getRequestFormsByTechnician(
-              technicianName, widget.token);
-
-      if (partRequests.isEmpty) {
-        print("No part requests found for technician: $technicianName");
-      }
-
-      return partRequests;
+      return partRequests.isNotEmpty ? partRequests : [];
     } catch (error) {
       print("Error fetching part requests: $error");
       return []; // Return an empty list in case of error
@@ -450,7 +426,7 @@ class _FinalCompletionPageState extends State<FinalCompletionPage> {
                               );
                             }
                           },
-                        ),
+                        )
                       ],
                     ),
                   ],
