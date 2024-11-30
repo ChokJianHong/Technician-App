@@ -20,7 +20,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 1;
 
-  late FirebaseApi firebaseapi; // Declare firebaseApi
+  late FirebaseApi firebaseapi;
   final NotificationManager notificationManager = NotificationManager();
   late String technicianId;
 
@@ -33,13 +33,14 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    firebaseapi = FirebaseApi(notificationManager);
     try {
       Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
       technicianId = decodedToken['userId'].toString();
     } catch (error) {
       print('Error decoding token: $error');
       technicianId = 'default';
-    } 
+    }
     firebaseapi.initNotifications(widget.token, technicianId);
   }
 

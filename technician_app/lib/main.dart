@@ -36,8 +36,7 @@ Future<void> handleBackgroundMessage(RemoteMessage message) async {
   print('Payload: ${message.data}');
 }
 
-
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   const AndroidInitializationSettings initializationSettingsAndroid =
@@ -49,20 +48,33 @@ Future<void> main() async {
 
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
-  runApp(ChangeNotifierProvider(
+
+  runApp(
+    ChangeNotifierProvider(
       create: (context) => NotificationManager(),
       child: const MyApp(),
-    ),);
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late FirebaseApi firebaseApi;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize firebaseApi in initState to prevent LateInitializationError
     final notificationManager = context.read<NotificationManager>();
-    final firebaseApi = FirebaseApi(notificationManager);
+    firebaseApi = FirebaseApi(notificationManager);
     firebaseApi.initNotifications("yourTokenHere", "yourCustomerId");
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('Foreground Notification: ${message.notification?.title}');
       _showNotification(message);
@@ -73,6 +85,10 @@ class MyApp extends StatelessWidget {
         "body": message.notification?.body ?? "No Content",
       });
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Themed App',
       theme: ThemeData(
@@ -93,9 +109,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-
       home: const SignInPage(), // Choose the home page you want
-
       debugShowCheckedModeBanner: false, // Add if needed
     );
   }
