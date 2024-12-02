@@ -36,6 +36,7 @@ dependencies:
   flutter_local_notifications: ^18.0.1
   logging: ^1.0.2
   provider: ^6.0.3
+  signature: 
 
 dev_dependencies:
   flutter_test:
