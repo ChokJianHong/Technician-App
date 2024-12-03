@@ -1,9 +1,13 @@
+import 'package:technician_app/API/firebase_api.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Assets/Components/current_job.dart';
 import 'package:technician_app/Assets/Components/new_jobs.dart';
+import 'package:technician_app/Assets/Components/notification_manager.dart';
 import 'package:technician_app/Assets/Components/request_card.dart';
-import 'package:technician_app/assets/components/BottomNav.dart'; // Adjust the path as needed
+import 'package:technician_app/assets/components/BottomNav.dart';
+import 'package:technician_app/core/configs/theme/appColors.dart'; // Adjust the path as needed
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class HomePage extends StatefulWidget {
   final String token;
@@ -16,17 +20,34 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 1;
 
+  late FirebaseApi firebaseapi;
+  final NotificationManager notificationManager = NotificationManager();
+  late String technicianId;
+
   void _onTap(int index) {
     setState(() {
       _currentIndex = index;
     });
+  }
 
+  @override
+  void initState() {
+    super.initState();
+    firebaseapi = FirebaseApi(notificationManager);
+    try {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
+      technicianId = decodedToken['userId'].toString();
+    } catch (error) {
+      print('Error decoding token: $error');
+      technicianId = 'default';
+    }
+    firebaseapi.initNotifications(widget.token, technicianId);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: AppColors.primary,
       appBar: CustomAppBar(token: widget.token),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
@@ -64,6 +85,9 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 10),
           RequestCard(token: widget.token),
+          const SizedBox(
+            height: 20,
+          ),
         ],
       ),
       bottomNavigationBar: BottomNav(

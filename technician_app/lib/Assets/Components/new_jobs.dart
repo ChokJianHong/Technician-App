@@ -3,6 +3,7 @@ import 'package:technician_app/API/view_order.dart';
 import 'package:technician_app/Assets/Components/newJobCard.dart';
 import 'package:technician_app/Assets/Model/order_model.dart';
 import 'package:technician_app/Pages/pending.dart';
+import 'dart:async';
 
 class NewJobs extends StatefulWidget {
   final String token;
@@ -14,91 +15,60 @@ class NewJobs extends StatefulWidget {
 }
 
 class _NewJobsState extends State<NewJobs> {
-  late Future<List<OrderModel>> _pendingOrdersFuture;
+  late List<OrderModel> _pendingOrders; // Maintain the current list of orders
+  late Timer _timer;
 
   @override
   void initState() {
     super.initState();
-    // Fetch pending orders from the API
-    _pendingOrdersFuture = _fetchPendingOrders();
+    _pendingOrders = [];
+    _fetchAndUpdatePendingOrders();
+
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      _fetchAndUpdatePendingOrders(); // Fetch new orders every 5 seconds
+    });
   }
 
-  Future<List<OrderModel>> _fetchPendingOrders() {
-    return OrderService().getPendingOrders(widget.token);
+  // Fetch orders and update the state
+  Future<void> _fetchAndUpdatePendingOrders() async {
+    List<OrderModel> newOrders =
+        await OrderService().getPendingOrders(widget.token);
+
+    // Sort orders by createAt in descending order (newest first)
+    newOrders.sort((a, b) => b.createAt.compareTo(a.createAt));
+
+    setState(() {
+      // Update the list by removing duplicates and adding new ones
+      _pendingOrders = [
+        ...newOrders, // Add the newly fetched orders
+        ..._pendingOrders.where((existingOrder) =>
+            !newOrders.any((o) => o.orderId == existingOrder.orderId))
+      ];
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<OrderModel>>(
-      future: _pendingOrdersFuture,
-      builder: (context, snapshot) {
-        // Check if the request is still in progress
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
+    return _pendingOrders.isEmpty
+        ? const Center(
             child: CircularProgressIndicator(),
-          );
-        }
-        // Check if there was an error in the request
-        else if (snapshot.hasError) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Error fetching orders: ${snapshot.error}',
-                    style: const TextStyle(color: Colors.red)),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _pendingOrdersFuture = _fetchPendingOrders(); // Retry fetching orders
-                    });
-                  },
-                  child: const Text('Retry'),
-                ),
-              ],
-            ),
-          );
-        }
-        // Check if data was received successfully
-        else if (snapshot.hasData) {
-          final List<OrderModel> pendingOrders = snapshot.data!;
-
-          // If there are no pending orders, show a message
-          if (pendingOrders.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'No ongoing orders.',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _pendingOrdersFuture = _fetchPendingOrders(); // Reload orders
-                      });
-                    },
-                    child: const Text('Refresh'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          // Use a fixed-height container for the ListView
-          return SizedBox(
-            height: 300, // Set a specific height for the ListView
+          )
+        : SizedBox(
+            height: 300,
             child: ListView.builder(
-              itemCount: pendingOrders.length,
+              itemCount: _pendingOrders.length,
               itemBuilder: (context, index) {
-                final OrderModel order = pendingOrders[index];
+                final OrderModel order = _pendingOrders[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: GestureDetector(
                     onTap: () {
-                      // Navigate to the Pending page when an order is tapped
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -120,9 +90,5 @@ class _NewJobsState extends State<NewJobs> {
               },
             ),
           );
-        }
-        return const SizedBox(); // Fallback in case of unexpected state
-      },
-    );
   }
 }

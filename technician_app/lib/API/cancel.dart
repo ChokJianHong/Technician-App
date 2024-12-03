@@ -7,9 +7,9 @@ class CancelService {
 
   static Future<Map<String, dynamic>> declineOrder(
       String orderId, String cancelDetails, String token) async {
-    final url = Uri.parse('$baseUrl/dashboarddatabase/orders/$orderId/decline-request');
+    final url = Uri.parse('$baseUrl/dashboarddatabase/technician/$orderId/decline-request');
 
-    print('Declining order from URL: $url'); // Print the URL
+    print('Declining order from URL: $url'); 
 
     final response = await http.put(
       url,

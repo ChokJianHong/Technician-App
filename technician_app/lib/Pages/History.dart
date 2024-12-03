@@ -8,7 +8,7 @@ import 'package:technician_app/Assets/Components/AppBar.dart';
 import 'package:technician_app/Assets/Components/BottomNav.dart';
 import 'package:technician_app/Assets/Components/newJobCard.dart';
 import 'package:technician_app/Assets/Model/order_model.dart';
-import 'package:technician_app/Pages/Job_Details.dart';
+import 'package:technician_app/Pages/final_completion_page.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
 import 'package:collection/collection.dart';
 
@@ -97,7 +97,7 @@ class _HistoryState extends State<History> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Remove DropdownButton for filtering, as we only want Completed and Cancelled jobs
+            
             const Text(
               'History',
               style: TextStyle(color: Colors.white, fontSize: 16),
@@ -142,7 +142,7 @@ class _HistoryState extends State<History> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => RequestDetails(
+                                        builder: (context) => FinalCompletionPage(
                                           orderId: order.orderId.toString(),
                                           token: widget.token,
                                         ),

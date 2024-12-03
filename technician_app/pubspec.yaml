@@ -27,6 +27,16 @@ dependencies:
   camera: ^0.11.0+2
   image_picker:
   http_parser:
+  geolocator:
+  firebase_auth: 
+  cloud_firestore: 
+  firebase_core: ^3.7.0
+  firebase_messaging: ^15.1.4
+  shared_preferences:
+  flutter_local_notifications: ^18.0.1
+  logging: ^1.0.2
+  provider: ^6.0.3
+  signature: 
 
 dev_dependencies:
   flutter_test:
@@ -42,6 +52,9 @@ flutter:
     - lib/Assets/Images/problem.png
     - lib/Assets/Images/smallProfile.png
     - lib/Assets/Images/Frame.png
+    - lib/Assets/Images/Profile.png
+    - lib/Assets/Images/duitnow.jpg
+    - lib/Assets/Images/Logo.png
 
 
   fonts:

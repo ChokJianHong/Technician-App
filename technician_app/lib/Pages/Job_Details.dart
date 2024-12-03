@@ -1,12 +1,15 @@
-// ignore_for_file: file_names
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:technician_app/API/cancel.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
-import 'package:technician_app/Assets/Components/AppBar.dart';
+import 'package:technician_app/API/sendTechLocation.dart';
 import 'package:technician_app/Pages/Completed_Job_Details.dart';
+import 'package:technician_app/Pages/home.dart';
+import 'package:technician_app/Pages/messages.dart';
 import 'package:technician_app/Pages/part_request.dart';
-import 'package:technician_app/assets/components/BottomNav.dart';
 import 'package:technician_app/assets/components/button.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
 
@@ -21,29 +24,41 @@ class RequestDetails extends StatefulWidget {
 }
 
 class _RequestDetailsState extends State<RequestDetails> {
-  int _currentIndex = 2;
   late Future<Map<String, dynamic>> _orderDetailFuture;
-
-  void _onTapTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
+  bool _isRequestStarted = false;
+  DateTime? technicianStartTime;
 
   @override
   void initState() {
     super.initState();
     _orderDetailFuture = _fetchOrderDetails(widget.token, widget.orderId);
+    _loadRequestState();
   }
 
-  String formatDateTime(String utcDateTime) {
+  Future<void> _loadRequestState() async {
     try {
-      DateTime parsedDate = DateTime.parse(utcDateTime);
-      DateTime localDate = parsedDate.toLocal();
-      return DateFormat('yyyy-MM-dd HH:mm:ss').format(localDate);
+      final prefs = await SharedPreferences.getInstance();
+      // Load the state specific to the current job (orderId)
+      final isStarted =
+          prefs.getBool('isRequestStarted_${widget.orderId}') ?? false;
+      debugPrint(
+          "Loaded isRequestStarted for Job ${widget.orderId}: $isStarted");
+      setState(() {
+        _isRequestStarted = isStarted;
+      });
     } catch (e) {
-      print('Error parsing date: $e');
-      return 'Invalid date';
+      debugPrint("Error loading request state: $e");
+    }
+  }
+
+  Future<void> _saveRequestState(bool state) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      // Save the state specific to the current job (orderId)
+      await prefs.setBool('isRequestStarted_${widget.orderId}', state);
+      debugPrint("Saved isRequestStarted for Job ${widget.orderId}: $state");
+    } catch (e) {
+      debugPrint("Error saving request state: $e");
     }
   }
 
@@ -52,126 +67,152 @@ class _RequestDetailsState extends State<RequestDetails> {
     try {
       final orderDetails = await OrderDetails().getOrderDetail(token, orderId);
       if (orderDetails['success']) {
-        return orderDetails;
+        return orderDetails['result'];
       } else {
-        if (mounted) {
-          _showErrorDialog(orderDetails['error']);
-        }
-        throw Exception('Failed to fetch order details');
+        _showErrorDialog(orderDetails['error']);
+        throw Exception('Failed to fetch order details.');
       }
     } catch (error) {
-      if (mounted) {
-        _showErrorDialog('Error fetching order details: $error');
+      _showErrorDialog('Error fetching order details: $error');
+      throw Exception('Failed to fetch order details.');
+    }
+  }
+
+  Future<String> _getTechnicianIdFromToken(String token) async {
+    try {
+      final decodedToken = JwtDecoder.decode(token);
+      return decodedToken['userId']?.toString() ?? 'default';
+    } catch (error) {
+      return 'default';
+    }
+  }
+
+  Future<void> _sendLocationData(Position position) async {
+    try {
+      final technicianId = await _getTechnicianIdFromToken(widget.token);
+      if (technicianId != 'default') {
+        // Corrected the parameter order: longitude first, latitude second
+        await Sendtechlocation().sendLocation(
+          technicianId,
+          position.longitude, // Longitude comes first
+          position.latitude, // Latitude comes second
+          widget.token,
+        );
       }
-      throw Exception('Failed to fetch order details');
+    } catch (e) {
+      _showErrorDialog("Error sending location: $e");
     }
   }
 
-  void _showErrorDialog(String errorMessage) {
-    if (mounted) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Error'),
-            content: Text(errorMessage),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+  String formatDateTime(String utcDateTime) {
+    try {
+      DateTime parsedDate = DateTime.parse(utcDateTime);
+      DateTime localDate = parsedDate.toLocal();
+      return DateFormat('yyyy-MM-dd').format(localDate);
+    } catch (e) {
+      print('Error parsing date: $e');
+      return 'Invalid date';
     }
   }
 
-  // New method to show cancel confirmation dialog
-  void _showCancelDialog() {
-    String cancellationReason = '';
+  Future<Position> _getCurrentLocation() async {
+    final permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      final newPermission = await Geolocator.requestPermission();
+      if (newPermission == LocationPermission.denied ||
+          newPermission == LocationPermission.deniedForever) {
+        throw Exception("Location permissions are denied.");
+      }
+    }
+    return await Geolocator.getCurrentPosition();
+  }
 
+  void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-
-          title: const Text('Cancel Request'),
-
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Please enter the reason for cancellation:'),
-              TextField(
-
-                onChanged: (value) {
-                  cancellationReason = value; // Update the reason
-                },
-                decoration: const InputDecoration(
-                  hintText: 'Reason for cancellation',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                if (cancellationReason.isNotEmpty) {
-                  _cancelOrder(cancellationReason); // Call the cancel function
-                  Navigator.of(context).pop(); // Close the dialog
-                } else {
-                  // Show an error if the reason is empty
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please provide a reason.')),
-                  );
-                }
-              },
-
-              child: const Text('Confirm'),
-
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-
-              child: const Text('Cancel'),
-
-            ),
-          ],
-        );
-      },
+        ],
+      ),
     );
   }
 
-  // Function to handle order cancellation
+  void _showCancelDialog() {
+    String reason = '';
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cancel Request'),
+        content: TextField(
+          onChanged: (value) => reason = value,
+          decoration: const InputDecoration(
+            hintText: 'Reason for cancellation',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              if (reason.isNotEmpty) {
+                Navigator.of(context).pop();
+                await _cancelOrder(reason);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please provide a reason.')),
+                );
+              }
+            },
+            child: const Text('Confirm'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _cancelOrder(String reason) async {
     try {
       final response = await CancelService.declineOrder(
           widget.orderId, reason, widget.token);
-      // Handle successful cancellation response
       if (response['status'] == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Order cancelled successfully.')),
         );
-        // Optionally, navigate back or refresh the page
       }
     } catch (e) {
-      // Handle any errors during cancellation
-      _showErrorDialog('Failed to cancel order: $e');
+      _showErrorDialog("Error cancelling order: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       backgroundColor: AppColors.primary,
-      appBar: CustomAppBar(
-        token: widget.token,
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomePage(token: widget.token),
+              ),
+            );
+          },
+        ),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _orderDetailFuture,
@@ -181,134 +222,255 @@ class _RequestDetailsState extends State<RequestDetails> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            final orderDetails = snapshot.data!['result'];
+            final orderDetails = snapshot.data!;
+            String brand = 'Unknown brand';
+            String warranty = 'Warranty not available';
+            if (orderDetails['ProblemType'] == 'autogate') {
+              brand =
+                  orderDetails['customer']['autogateBrand'] ?? 'Unknown Brand';
+              warranty =
+                  orderDetails['customer']['autogateWarranty'] ?? 'No warranty';
+            } else if (orderDetails['ProblemType'] == 'alarm') {
+              brand = orderDetails['customer']['alarmBrand'] ?? 'Unknown Brand';
+              warranty =
+                  orderDetails['customer']['alarmWarranty'] ?? 'No warranty';
+            }
 
             return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Card(
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                            "Problem Type: ${orderDetails['ProblemType'] ?? 'Not provided'}"),
-                        const SizedBox(height: 20),
-                        Text(
-                            "Date and Time: ${formatDateTime(orderDetails['orderDate'])}"),
-                        const SizedBox(height: 20),
-                        Text("Priority: ${orderDetails['priority']}"),
-                        const SizedBox(height: 20),
-                        const Text("Problem Description"),
-                        const SizedBox(height: 10),
-                        Container(
-                          width: double.infinity,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextField(
-                              maxLines: null,
-                              decoration: InputDecoration(
-                                hintText: '${orderDetails['orderDetail']}',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(
-                                    color: Colors.grey,
-                                    width: 1.0,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(
-                                    color: Colors.blue,
-                                    width: 1.5,
-                                  ),
-                                ),
-                              ),
-                              style: const TextStyle(fontSize: 18),
-                            ),
-
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                                child: Text(
-                                    "Picture: ${orderDetails['orderImage']}")),
-                            const Text("View"),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Column(
-                          children: [
-                            MyButton(
-                              text: 'Order Complete',
-                              onTap: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CompletedJobDetails(
-                                      token: widget.token,
-                                      orderId: widget.orderId,
-                                    ),
-                                  ),
-                                );
-                              },
-                              color: Colors.green,
-                            ),
-                            const SizedBox(height: 20),
-                            MyButton(
-                              text: 'Cancel Request',
-                              onTap:
-                                  _showCancelDialog, // Call the dialog method
-                              color: Colors.red,
-                            ),
-                            const SizedBox(height: 20),
-                            MyButton(
-                                text: 'Part Request',
-                                onTap: () {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Request(
-                                              token: widget.token,
-                                              orderId: orderDetails['orderId']
-                                                  .toString(),
-                                            )),
-                                  );
-                                }),
-                            const SizedBox(height: 20),
-                            MyButton(
-                              text: 'Start Request',
-                              onTap: () {},
-                              color: AppColors.secondary,
-                            ),
-                          ],
-                        ),
-                      ],
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (orderDetails['orderImage'] != null)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.network(
+                        'http://82.112.238.13:5005/${orderDetails['orderImage']}',
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  else
+                    const Text("No Image Available"),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: Text(
+                      orderDetails['ProblemType'] ?? 'Unknown Problem',
+                      style: const TextStyle(
+                        color: AppColors.lightgrey,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 32,
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Address',
+                        style: TextStyle(
+                            color: AppColors.darkGreen,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        orderDetails['locationDetail'] ?? 'Not provided',
+                        style: const TextStyle(
+                            color: AppColors.lightgrey, fontSize: 15),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Brand',
+                                style: TextStyle(
+                                    color: AppColors.darkGreen,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                brand,
+                                style: const TextStyle(
+                                  color: AppColors.lightgrey,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text(
+                                'Date',
+                                style: TextStyle(
+                                    color: AppColors.darkGreen,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                formatDateTime(orderDetails['orderDate']),
+                                style: const TextStyle(
+                                  color: AppColors.lightgrey,
+                                  fontSize: 15,
+                                ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(
+                            width: 100,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Warranty',
+                                style: TextStyle(
+                                    color: AppColors.darkGreen,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                formatDateTime(warranty),
+                                style: const TextStyle(
+                                  color: AppColors.lightgrey,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text(
+                                'Time',
+                                style: TextStyle(
+                                    color: AppColors.darkGreen,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                orderDetails['orderTime'],
+                                style: const TextStyle(
+                                  color: AppColors.lightgrey,
+                                  fontSize: 15,
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const Text(
+                        "Problem Description",
+                        style:
+                            TextStyle(fontSize: 20, color: AppColors.darkGreen),
+                      ),
+                      Text(
+                        orderDetails['orderDetail'],
+                        style: const TextStyle(
+                            color: AppColors.lightgrey, fontSize: 15),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  MyButton(
+                    text: _isRequestStarted
+                        ? 'Complete Request'
+                        : 'Start Request',
+                    color: _isRequestStarted ? Colors.green : AppColors.orange,
+                    onTap: () async {
+                      if (!_isRequestStarted) {
+                        // Start Request logic
+                        try {
+                          final position = await _getCurrentLocation();
+                          await _sendLocationData(position);
+
+                          final startTime = DateTime.now();
+
+                          // Update status and start time
+                          await Sendtechlocation().changeStatus(
+                            technicianId:
+                                await _getTechnicianIdFromToken(widget.token),
+                            orderId: widget.orderId,
+                            token: widget.token,
+                            status: 'working',
+                          );
+
+                          // Update local state
+                          setState(() {
+                            _isRequestStarted = true;
+                          });
+
+                          // Save the state to SharedPreferences
+                          await _saveRequestState(true);
+
+                          debugPrint(
+                              "Technician start time set: ${startTime.toIso8601String()}");
+                        } catch (e) {
+                          _showErrorDialog("Error starting request: $e");
+                        }
+                      } else {
+                        // Complete Request logic
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CompletedJobDetails(
+                              token: widget.token,
+                              orderId: widget.orderId,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  MyButton(
+                    text: 'Cancel Request',
+                    onTap: _showCancelDialog,
+                    color: Colors.red,
+                  ),
+                  const SizedBox(height: 20),
+                  MyButton(
+                      text: 'View Messages',
+                      color: Colors.blue,
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ChatScreen(
+                                    currentUserId: widget.token,
+                                    chatPartnerId: widget.orderId,
+                                    token: widget.token)));
+                      }),
+                  const SizedBox(height: 20),
+                  if (_isRequestStarted)
+                    MyButton(
+                      text: 'Spare Part Request',
+                      color: Colors.brown,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Request(
+                              token: widget.token,
+                              orderId: widget.orderId,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                ],
               ),
             );
           } else {
-            return const Center(child: Text('No data available'));
+            return const Center(child: Text('No data available.'));
           }
         },
-
-      ),
-      bottomNavigationBar: BottomNav(
-        onTap: _onTapTapped,
-        currentIndex: _currentIndex,
-        token: widget.token,
       ),
     );
   }

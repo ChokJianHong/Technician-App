@@ -17,8 +17,7 @@ class CurrentJobs extends StatefulWidget {
 class _CurrentJobsState extends State<CurrentJobs> {
   late Future<List<OrderModel>> _latestOrderFuture;
   late String technicianId;
-  final TechnicianJobOrder technicianJobOrder =
-      TechnicianJobOrder();
+  final TechnicianJobOrder technicianJobOrder = TechnicianJobOrder();
 
   @override
   void initState() {
@@ -63,10 +62,12 @@ class _CurrentJobsState extends State<CurrentJobs> {
             );
           }
 
+          ongoingOrders.sort((a, b) => b.createAt.compareTo(a.createAt));
+
           return SizedBox(
-            height: 150, // Set a smaller height to control the side scroll view
+            height: 150,
             child: PageView.builder(
-              scrollDirection: Axis.horizontal, // Horizontal side scroll
+              scrollDirection: Axis.horizontal,
               controller: PageController(viewportFraction: 0.8),
               itemCount: ongoingOrders.length,
               itemBuilder: (context, index) {
@@ -76,13 +77,14 @@ class _CurrentJobsState extends State<CurrentJobs> {
                   child: GestureDetector(
                     onTap: () {
                       Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RequestDetails(
-                          token: widget.token, orderId: order.orderId.toString(),
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RequestDetails(
+                            token: widget.token,
+                            orderId: order.orderId.toString(),
+                          ),
                         ),
-                      ),
-                    );
+                      );
                     },
                     child: Transform.scale(
                       scale:

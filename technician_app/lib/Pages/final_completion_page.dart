@@ -1,46 +1,28 @@
-// ignore_for_file: file_names
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:technician_app/API/getOrderDetails.dart';
-import 'package:technician_app/Assets/Components/AppBar.dart';
-import 'package:technician_app/Pages/payment.dart';
-import 'package:technician_app/assets/components/BottomNav.dart';
-import 'package:technician_app/assets/components/button.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
+import 'package:technician_app/API/request_form_by_id.dart';
+import 'package:technician_app/Assets/Components/divider.dart';
 import 'package:technician_app/core/configs/theme/appColors.dart';
 
-class CompletedJobDetails extends StatefulWidget {
+class FinalCompletionPage extends StatefulWidget {
   final String token;
   final String orderId;
-
-  const CompletedJobDetails(
+  const FinalCompletionPage(
       {super.key, required this.token, required this.orderId});
 
   @override
-  State<CompletedJobDetails> createState() => _CompletedJobDetailsState();
+  State<FinalCompletionPage> createState() => _FinalCompletionPageState();
 }
 
-class _CompletedJobDetailsState extends State<CompletedJobDetails> {
-  int _currentIndex = 2;
+class _FinalCompletionPageState extends State<FinalCompletionPage> {
   late Future<Map<String, dynamic>> _orderDetailFuture;
-  final ImagePicker _picker = ImagePicker();
-  File? _image;
-
-  void _onTapTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
+  late Future<List<Map<String, dynamic>>> _partRequestsFuture;
 
   @override
   void initState() {
     super.initState();
+    _partRequestsFuture = _fetchPartRequests();
     _orderDetailFuture = _fetchOrderDetails(widget.token, widget.orderId);
   }
 
@@ -55,60 +37,22 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
     }
   }
 
-  // Function to capture an image with the camera
-  Future<void> _captureImageWithCamera() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    }
-  }
-
-  Future<String> _getTechnicianIdFromToken(String token) async {
+  Future<List<Map<String, dynamic>>> _fetchPartRequests() async {
     try {
-      final decodedToken = JwtDecoder.decode(token);
-      return decodedToken['userId']?.toString() ?? 'default';
+      // Use the provided API to fetch part requests by order ID
+      final List<Map<String, dynamic>> partRequests =
+          await RequestPartService.getRequestFormsByOrderId(
+        widget.orderId,
+        widget.token,
+      );
+
+      // Log the fetched parts for debugging
+      print('Fetched part requests: $partRequests');
+
+      return partRequests.isNotEmpty ? partRequests : [];
     } catch (error) {
-      return 'default';
-    }
-  }
-
-  Future<Map<String, dynamic>> _uploadImage(
-      File imageFile, String orderId) async {
-    try {
-      var request = http.MultipartRequest(
-        'PUT', // Change PUT to POST
-        Uri.parse(
-            'http://82.112.238.13:5005/dashboarddatabase/orders/$orderId/upload-image'), // Confirm this URL
-      );
-
-      // Add the authorization header
-      request.headers['Authorization'] = widget.token;
-
-      // Add the image file
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'image', // Confirm the key name with the backend
-          imageFile.path,
-          contentType: MediaType('image', 'jpeg'),
-        ),
-      );
-
-      // Send the request
-      var response = await request.send();
-
-      // Get the response
-      var responseBody = await http.Response.fromStream(response);
-
-      if (responseBody.statusCode == 200) {
-        return jsonDecode(responseBody.body);
-      } else {
-        throw Exception(
-            'Upload failed with status: ${responseBody.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Error uploading image: $e');
+      print("Error fetching part requests: $error");
+      return []; // Return an empty list in case of error
     }
   }
 
@@ -157,10 +101,16 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primary,
-      appBar: CustomAppBar(
-        token: widget.token,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        backgroundColor: AppColors.darkTeal,
       ),
+      backgroundColor: AppColors.primary,
       body: FutureBuilder<Map<String, dynamic>>(
         future: _orderDetailFuture,
         builder: (context, snapshot) {
@@ -342,6 +292,7 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
                         const SizedBox(
                           height: 20,
                         ),
+                        const ADivider(),
                         const Text(
                           'Evidence of Completion',
                           style: TextStyle(
@@ -349,26 +300,133 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
                               fontSize: 20,
                               fontWeight: FontWeight.bold),
                         ),
-                        Column(
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _image != null
-                                ? Image.file(_image!)
-                                : const Placeholder(
-                                    fallbackHeight: 200.0,
-                                    fallbackWidth: double.infinity,
+                            if (orderDetails['orderDoneImage'] != null)
+                              Flexible(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(
+                                      15.0), // Set the border radius
+                                  child: Image.network(
+                                    'http://82.112.238.13:5005/${orderDetails['orderDoneImage']}?timestamp=${DateTime.now().millisecondsSinceEpoch}',
+                                    width: double.infinity,
+                                    height: 200,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Text("Image not available");
+                                    },
                                   ),
-                            ElevatedButton(
-                              onPressed: _captureImageWithCamera,
-                              child: const Text('Take Picture'),
+                                ),
+                              )
+                            else
+                              const Text("No Image Available"),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Date Started',
+                                  style: TextStyle(
+                                      color: AppColors.darkGreen,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  formatDateTime(orderDetails['orderDate']),
+                                  style: const TextStyle(
+                                      color: AppColors.lightgrey, fontSize: 15),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 40),
-                            MyButton(
-                              text: 'Continue',
-                              color: AppColors.orange,
-                              onTap: () => _pictureTaken(),
+                            const SizedBox(
+                              width: 90,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Date Completed',
+                                  style: TextStyle(
+                                      color: AppColors.darkGreen,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  formatDateTime(orderDetails['orderDoneDate']),
+                                  style: const TextStyle(
+                                      color: AppColors.lightgrey, fontSize: 15),
+                                ),
+                              ],
                             ),
                           ],
                         ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        FutureBuilder<List<Map<String, dynamic>>>(
+                          future: _partRequestsFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                child: Text(
+                                    'Error fetching parts: ${snapshot.error}'),
+                              );
+                            } else if (snapshot.hasData &&
+                                snapshot.data!.isNotEmpty) {
+                              // Combine all 'parts_needed' fields into a single string
+                              final partsList = snapshot.data!
+                                  .map((partRequest) =>
+                                      partRequest['parts_needed'] ?? '')
+                                  .where((part) => part.isNotEmpty)
+                                  .toList();
+
+                              final partsNeededText = partsList.isNotEmpty
+                                  ? partsList.join(
+                                      ', ') // Combine parts into a comma-separated string
+                                  : 'No parts needed';
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Parts Needed',
+                                    style: TextStyle(
+                                      color: AppColors.darkGreen,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    partsNeededText,
+                                    style: const TextStyle(
+                                      color: AppColors.lightgrey,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return const Center(
+                                child: Text('No parts available'),
+                              );
+                            }
+                          },
+                        )
                       ],
                     ),
                   ],
@@ -380,76 +438,6 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
           }
         },
       ),
-      bottomNavigationBar: BottomNav(
-        onTap: _onTapTapped,
-        currentIndex: _currentIndex,
-        token: widget.token,
-      ),
     );
-  }
-
-  void _pictureTaken() async {
-    // Check if an image has been selected
-    if (_image == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select or take a picture!')),
-      );
-      return;
-    }
-
-    // Show loading indicator while uploading
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
-
-    try {
-      // Send data and image together
-      final result = await _uploadImage(_image!, widget.orderId);
-
-      // Dismiss loading indicator
-      Navigator.of(context).pop();
-
-      // Handle the server response
-      if (result['message'] == 'success') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Form submitted successfully!')),
-        );
-
-        // Fetch Technician ID from the token
-        String technicianId = await _getTechnicianIdFromToken(widget.token);
-
-        // Navigate to the Payment page
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Payment(
-              token: widget.token,
-              orderId: widget.orderId,
-              technicianId: technicianId,
-            ),
-          ),
-        );
-      } else {
-        // Handle server error response
-        String errorMessage = result['message'] ?? 'An error occurred';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $errorMessage')),
-        );
-      }
-    } catch (error) {
-      // Dismiss loading indicator on error
-      Navigator.of(context).pop();
-
-      // Handle network or other unexpected errors
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Network error: Unable to submit form')),
-      );
-    }
   }
 }

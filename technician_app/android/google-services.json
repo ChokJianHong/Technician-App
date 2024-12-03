@@ -1,0 +1,105 @@
+{
+  "project_info": {
+    "project_number": "532414743003",
+    "project_id": "fypcms-a3544",
+    "storage_bucket": "fypcms-a3544.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:532414743003:android:833a29ae76216ec5e027fe",
+        "android_client_info": {
+          "package_name": "com.example.customer_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5GIUHY6YBbP513fKDCC1kwoXPMhOXqJo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:532414743003:android:7106b5279525de4ce027fe",
+        "android_client_info": {
+          "package_name": "com.example.first_flutter_proj"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5GIUHY6YBbP513fKDCC1kwoXPMhOXqJo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:532414743003:android:d8c182b12289a33ee027fe",
+        "android_client_info": {
+          "package_name": "com.example.notification"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5GIUHY6YBbP513fKDCC1kwoXPMhOXqJo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:532414743003:android:e452b42c8f9a2e00e027fe",
+        "android_client_info": {
+          "package_name": "com.example.push_notification"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5GIUHY6YBbP513fKDCC1kwoXPMhOXqJo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:532414743003:android:4fa7a145443afbb3e027fe",
+        "android_client_info": {
+          "package_name": "com.example.technician_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5GIUHY6YBbP513fKDCC1kwoXPMhOXqJo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
