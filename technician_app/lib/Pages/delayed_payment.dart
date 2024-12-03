@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:signature/signature.dart';
-import 'package:technician_app/core/configs/theme/appColors.dart';
 
 class DelayedPaymentPage extends StatefulWidget {
   final String token;
